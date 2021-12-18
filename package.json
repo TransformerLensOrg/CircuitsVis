@@ -1,0 +1,37 @@
+{
+  "name": "pysvelte",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "blob": "^0.1.0",
+    "clean-webpack-plugin": "^3.0.0",
+    "glob": "^7.1.6",
+    "html-webpack-plugin": "^4.5.1",
+    "svelte-loader": "github:sveltejs/svelte-loader",
+    "webpack": "^5.16.0",
+    "webpack-cli": "^4.4.0",
+    "webpack-dev-server": "^3.11.2"
+  },
+  "dependencies": {
+    "buffer": "^6.0.3",
+    "d3": "^7.0.0",
+    "d3-geo": "^2.0.1",
+    "d3-scale": "^3.2.3",
+    "d3-scale-chromatic": "^2.0.0",
+    "ndarray": "^1.0.19",
+    "ndarray-ops": "^1.2.2",
+    "ndarray-scratch": "^1.2.0",
+    "npyz": "^0.4.2",
+    "numpy-parser": "^1.2.3",
+    "pako": "^2.0.3",
+    "path": "^0.12.7",
+    "svelte": "^3.31.2"
+  }
+}
