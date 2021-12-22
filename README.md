@@ -69,7 +69,16 @@ def init(name: str):
     assert name[0] == name[0].upper(), "Name must be capitalized."
 ```
 
+## Example component
 
+`src/AttentionMulti.svelte` contains an example of a component we've
+developed internally which we use to to visualize attention patterns
+from Transformer self-attention blocks. You can [view a rendered
+version of (a variant of) this
+component](https://transformer-circuits.pub/2021/framework/2L_HP_normal.html)
+in our recent paper.
+
+See `src/AttentionMulti.py` for documentation.
 
 
 ## Learn More
