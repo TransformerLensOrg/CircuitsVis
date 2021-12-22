@@ -1,17 +1,15 @@
 """Utilities for managing the publication of Html.
 
-This module isn't intended to be used directly by end users. 
-It should be implicitly used through Html.publish() or 
+This module isn't intended to be used directly by end users.
+It should be implicitly used through Html.publish() or
 pysvelte.PublishGroup().
 """
 
 import secrets
 from typing import Optional
 
-import dateutil.utils
+from datetime import date
 import pysvelte.config as config
-
-import belt.slack as slack
 
 
 def _html_to_message(html, url: str) -> str:
@@ -40,7 +38,7 @@ def expand_base_publish_path(path, default_suffix=".html"):
     if USER is None:
         raise RuntimeError(f"Could not find a user name to expand path '~...'.")
     HOME = f"{ROOT}/{USER}"
-    today = dateutil.utils.today()
+    today = date.today()
     MONTH_HOME = f"{HOME}/{today.year}-{today.month:02d}"
     if path is None:
         rand_str = secrets.token_urlsafe(8)

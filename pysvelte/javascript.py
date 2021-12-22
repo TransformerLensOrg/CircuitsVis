@@ -2,8 +2,6 @@ import stat
 import subprocess
 import threading
 
-from log import info
-
 from .vis_paths import PYSVELTE_ROOT, Path
 
 NODE_MODULES = PYSVELTE_ROOT / "node_modules"
@@ -37,7 +35,7 @@ def is_npm_install_necessary():
 def install_if_necessary():
     """Install npm modules if they're out of date or missing."""
     if is_npm_install_necessary():
-        info("Running npm install...")
+        print("Running npm install...")
         subprocess.check_call(["npm", "--prefix", str(PYSVELTE_ROOT), "install"])
 
 
@@ -57,9 +55,9 @@ def webpack_if_necessary(paths=None):
             for dist in dists
         )
         if stale:
-            info("pysvelte components appear to be unbuilt or stale")
+            print("pysvelte components appear to be unbuilt or stale")
             install_if_necessary()
-            info("Building pysvelte components with webpack...")
+            print("Building pysvelte components with webpack...")
             if paths:
                 entries = [p.split("/")[-1].replace(".js", "") for p in paths]
                 entries = ",".join(entries)
