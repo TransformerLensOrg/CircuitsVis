@@ -1,6 +1,42 @@
 # PySvelte
 
-**THIS LIBRARY IS TOTALLY UNSUPPORTED. IT IS PROVIDED AS IS, AS AN EXAMPLE OF ONE WAY TO SOLVE A PROBLEM. MANY FEATURES WILL NOT WORK WITHOUT YOU WRITING YOUR OWN `config.py` FILE.**
+This is a Python library for displaying web-dev visualisations inside Jupyter notebooks, with a focus on language model interpretability.
+
+Currently the main feature is a unidirectional attention pattern visualiser. Running this in a notebook:
+
+```py
+import pysvelte
+import numpy as np
+tokens = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
+attention_pattern = np.tril(np.random.normal(loc=0.3, scale=0.2, size=(8,8,3)))
+pysvelte.AttentionMulti(tokens=tokens, attention=attention_pattern)
+```
+
+will yield this interactive widget:
+
+![attention pattern visualiser](./attention_multi_demo.png)
+
+## Installation
+
+Currently, it's a little gnarly to install this package using `pip` [1].
+
+For now the most reliable approach is:
+1. Clone: `git clone https://github.com/neelnanda-io/PySvelte`
+2. Add the new `PySvelte` folder (root of the repository) to the Python search path with
+    ```py
+    import sys
+    sys.path.append('/path/to/PySvelte')
+    import pysvelte
+    ```
+3. Now you can use `pysvelte.Hello(name="World")` in your Python notebooks to get this output!
+
+    ![hello world in pysvelte](./hello_world.png)
+
+[1]: If you install with `pip install git+https://...` you won't be able to use any of the components due to a quirk of the folder structure
+
+---
+
+## Introduction
 
 If we want to understand neural networks, it's essential that we have effective ways of getting lots of information from the innards of those models into a readable form. Often, this will be a data visualization.
 
