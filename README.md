@@ -32,6 +32,8 @@ For now the most reliable approach is:
 
     ![hello world in pysvelte](./hello_world.png)
 
+4. Check out [the demo](./PySvelteDemo.ipynb) for examples of the components available so far
+
 [1]: If you install with `pip install git+https://...` you won't be able to use any of the components due to a quirk of the folder structure
 
 ---
