@@ -14,7 +14,9 @@ import {inflate} from 'pako/lib/inflate';
 
         {
             "__type__": "npy",
-            "data": "<npy file as base64 encoded string>"
+            "zdata": "<zlib compressed npy file as base64 encoded string>",
+            "min": <minimum value of the array>,
+            "max": <maximum value of the array>
         }
 
     NumPy arrays should be transformed into scijs ndarrays:
