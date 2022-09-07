@@ -111,6 +111,7 @@ export function sparse_color_map(v, zero_c = [0.98, 0.98, 0.98], isolate_channel
     if (hues == undefined){
         hues = rgb_hue_vector(v_len);
     }
+    console.log("Hues", hues)
     // console.log("sparse_color_map", hues);
     if (isolate_channel == undefined) {
         var S = [0, 0, 0];
@@ -142,6 +143,7 @@ export function sparse_color_map(v, zero_c = [0.98, 0.98, 0.98], isolate_channel
     }
 }
 
+
 /*
  arguments:
     v: sparse-ish vector to turn into a given color
@@ -153,5 +155,33 @@ export function sparse_color_map(v, zero_c = [0.98, 0.98, 0.98], isolate_channel
 export function sparse_color_map_css(v, zero_c = [0.98, 0.98, 0.98], isolate_channel = undefined, hues=undefined) {
     // console.log("sparse_color_map_css", isolate_channel, hues);
     var color = sparse_color_map(v, zero_c, isolate_channel, hues);
+    return rgb_to_css(color);
+}
+
+export function sparse_color_map_neuron(v, zero_c = [0.98, 0.98, 0.98]) {
+    // Takes in a single neuron value, in [-1, 1]. Generates two colours, one for positive and one for negative, and scales accordingly
+    if (v >= 0){
+        var C = [0, 0.7, 0.];
+        var S = [0, 0, 0];
+        for (var j = 0; j < 3; j++) {
+            S[j] = v * C[j] + (1 - v) * zero_c[j];
+        }
+    }
+    else{
+        var C = [1., 0, 0];
+        var S = [0, 0, 0];
+        for (var j = 0; j < 3; j++) {
+            S[j] = (-v) * C[j] + (1 + v) * zero_c[j];
+        }
+    }
+    console.log('Neuron color', v, S)
+
+    return S;
+}
+
+
+export function sparse_color_map_neuron_css(v, zero_c = [0.98, 0.98, 0.98]) {
+    // console.log("sparse_color_map_neuron_css", isolate_channel, hues);
+    var color = sparse_color_map_neuron(v, zero_c);
     return rgb_to_css(color);
 }
