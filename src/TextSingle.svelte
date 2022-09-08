@@ -13,14 +13,14 @@
     for (var i = 0; i < activations.shape[0]; i++) {
         activations_array.push(activations.data[i]);
     }
-    console.log(activations_array)
-    console.log(activations)
+    // console.log(activations_array)
+    // console.log(activations)
 
     var max_activation = Math.max(...activations_array);
     var min_activation = Math.min(...activations_array);
     var scaled_activations = activations_array.map(x => x / Math.max(max_activation, Math.abs(min_activation)));
-    console.log(max_activation)
-    console.log(scaled_activations)
+    // console.log(max_activation)
+    // console.log(scaled_activations)
     
     var all_token_colors = scaled_activations.map((x) => sparse_color_map_neuron_css(x));
 </script>
