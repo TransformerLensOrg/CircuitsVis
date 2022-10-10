@@ -134,7 +134,9 @@
             tok_from = focus_token_value;
             tok_to = tok_i;
         }
-        return get_color(attention, tok_from, tok_to, isolate_channel);
+        let color = get_color(attention, tok_from, tok_to, isolate_channel);
+        if (color === '#FFF') color = '#DDD';
+        return color;
     }
 
     export let all_token_colors;
@@ -296,6 +298,7 @@
         grid-template-columns: [left] min-content [right] minmax(min-content, 800px) [end];
         gap: 12px;
         margin-top: 24px;
+        color: white;
     }
     .tokens {
         grid-row: main;
