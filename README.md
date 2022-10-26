@@ -22,6 +22,8 @@ will yield this interactive widget:
 pip install git+https://github.com/neelnanda-io/PySvelte
 ```
 
+(Or for developing PySvelte, you can `git clone git@github.com:neelnanda-io/PySvelte.git`, `cd PySvelte`, `pip install -e . -U`. This will use your local development version when you `import pysvelte`.)
+
 ## Colab
 
 See https://colab.research.google.com/drive/1nbYcUurTIQK4x8wsyd6o-N84a6TKVgyx?usp=sharing for a demo. The process will be simplified in the near future so that you don't need to download node and compile Svelte files unless you need to edit them!
