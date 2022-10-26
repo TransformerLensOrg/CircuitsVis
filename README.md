@@ -18,24 +18,11 @@ will yield this interactive widget:
 
 ## Installation
 
-Currently, it's a little gnarly to install this package using `pip` [1].
+```bash
+pip install git+https://github.com/neelnanda-io/PySvelte
+```
 
-For now the most reliable approach is:
-1. Clone: `git clone https://github.com/neelnanda-io/PySvelte`
-2. Install Node.js
-3. Add the new `PySvelte` folder (root of the repository) to the Python search path with
-    ```py
-    import sys
-    sys.path.append('/path/to/PySvelte')
-    import pysvelte
-    ```
-4. Now you can use `pysvelte.Hello(name="World")` in your Python notebooks to get this output!
-
-    ![hello world in pysvelte](./hello_world.png)
-
-4. Check out [the demo](./PySvelteDemo.ipynb) for examples of the components available so far (you will need to open this locally)
-
-[1]: If you install with `pip install git+https://...` you won't be able to use any of the components due to a quirk of the folder structure
+(Or for developing PySvelte, you can `git clone git@github.com:neelnanda-io/PySvelte.git`, `cd PySvelte`, `pip install -e . -U`. This will use your local development version when you `import pysvelte`.)
 
 ## Colab
 

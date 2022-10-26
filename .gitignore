@@ -1,4 +1,14 @@
-dist
-node_modules
+# Byte-compiled / optimized / DLL files
 __pycache__
+
+# Distribution/packaging
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# Environments
 venv
+
+# Node
+node_modules/
