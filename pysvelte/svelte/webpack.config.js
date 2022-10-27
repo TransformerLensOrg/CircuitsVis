@@ -17,8 +17,8 @@ Build and serve only some file (faster):
 const path = require('path');
 const glob = require('glob');
 const fs = require('fs');
-const TerserPlugin = require("terser-webpack-plugin");
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const { ESBuildMinifyPlugin } = require('esbuild-loader');
 
 function make_entry_map(env) {
     /* Make an "entry map" describing which files should be built.
@@ -84,6 +84,7 @@ function make_entry_map(env) {
 // see https://webpack.js.org/concepts/ for documentation
 //
 module.exports = env => ({
+    mode: "production",
     // https://webpack.js.org/configuration/entry-context/
     entry: make_entry_map(env),
     // https://webpack.js.org/configuration/module/
@@ -103,17 +104,9 @@ module.exports = env => ({
     optimization: {
         minimize: true,
         minimizer: [
-            new TerserPlugin({
-                terserOptions: {
-                    // We disable many optimizations to
-                    // improve debugging. Javascript is tiny
-                    // compared to our data anyways.
-                    toplevel: false,
-                    keep_classnames: true,
-                    keep_fnames: true,
-                    mangle: false,
-                },
-            }),
+            new ESBuildMinifyPlugin({
+                target: 'es2015'
+            })
         ],
     },
     // https://webpack.js.org/configuration/target/

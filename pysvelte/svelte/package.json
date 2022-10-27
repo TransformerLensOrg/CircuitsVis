@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "webpack": "node ./node_modules/.bin/webpack"
   },
   "keywords": [],
   "author": "",
@@ -25,6 +26,7 @@
     "d3-geo": "^2.0.1",
     "d3-scale": "^3.2.3",
     "d3-scale-chromatic": "^2.0.0",
+    "esbuild-loader": "^2.20.0",
     "ndarray": "^1.0.19",
     "ndarray-ops": "^1.2.2",
     "ndarray-scratch": "^1.2.0",

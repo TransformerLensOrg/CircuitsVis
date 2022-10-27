@@ -64,7 +64,7 @@ def webpack_if_necessary(paths=None):
                 env_flag = [f"--env=entry={entries}"]
             else:
                 env_flag = []
-            subprocess.check_call(["npx", "webpack"] + env_flag, cwd=str(PYSVELTE_ROOT))
+            subprocess.check_call(["npm", "run", "webpack"] + env_flag, cwd=str(PYSVELTE_ROOT))
 
 
 def get_src_path(name):
