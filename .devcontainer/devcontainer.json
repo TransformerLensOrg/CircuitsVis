@@ -1,0 +1,67 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
+// https://github.com/microsoft/vscode-dev-containers/tree/v0.245.2/containers/python-3
+{
+	"name": "Python 3",
+	"build": {
+		"dockerfile": "Dockerfile",
+		"context": "..",
+		"args": {
+			// Update 'VARIANT' to pick a Python version: 3, 3.10, 3.9, 3.8, 3.7, 3.6
+			// Append -bullseye or -buster to pin to an OS version.
+			// Use -bullseye variants on local on arm64/Apple Silicon.
+			"VARIANT": "3.10-bullseye",
+			// Options
+			"NODE_VERSION": "lts/*"
+		}
+	},
+	// Configure tool-specific properties.
+	"customizations": {
+		// Configure properties specific to VS Code.
+		"vscode": {
+			// Set *default* container specific settings.json values on container create.
+			"settings": {
+				"python.defaultInterpreterPath": "/usr/local/bin/python",
+				"python.formatting.autopep8Path": "autopep8",
+				"python.linting.mypyPath": "mypy"
+			},
+			// Add the IDs of extensions you want installed when the container is created.
+			"extensions": [
+				"2gua.rainbow-brackets",
+				"2gua.rainbow-brackets",
+				"ardenivanov.svelte-intellisense",
+				"christian-kohler.npm-intellisense",
+				"christian-kohler.path-intellisense",
+				"davidanson.vscode-markdownlint",
+				"dbaeumer.vscode-eslint",
+				"donjayamanne.githistory",
+				"donjayamanne.python-extension-pack",
+				"eg2.vscode-npm-script",
+				"esbenp.prettier-vscode",
+				"github.vscode-pull-request-github",
+				"ionutvmi.path-autocomplete",
+				"ms-python.python",
+				"ms-python.vscode-pylance",
+				"ms-toolsai.jupyter-keymap",
+				"ms-toolsai.jupyter-renderers",
+				"ms-toolsai.jupyter",
+				"ms-vsliveshare.vsliveshare-pack",
+				"njpwerner.autodocstring",
+				"redhat.vscode-yaml",
+				"richie5um2.vscode-sort-json",
+				"rvest.vs-code-prettier-eslint",
+				"stkb.rewrap",
+				"streetsidesoftware.code-spell-checker",
+				"svelte.svelte-vscode",
+				"tushortz.python-extended-snippets",
+				"yzhang.markdown-all-in-one",
+				"pivaszbs.svelte-autoimport"
+			]
+		}
+	},
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	// "forwardPorts": [],
+	// Use 'postCreateCommand' to run commands after the container is created.
+	"postCreateCommand": "pip install .",
+	// Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
+	"remoteUser": "vscode"
+}
