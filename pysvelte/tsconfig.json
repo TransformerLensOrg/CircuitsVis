@@ -1,0 +1,38 @@
+{
+    "compilerOptions": {
+        "jsx": "react",
+        "types": [
+            "jest",
+            "node",
+            "@testing-library/jest-dom"
+        ],
+        "target": "ES2018",
+        "lib": [
+            "dom",
+            "dom.iterable"
+        ],
+        "allowJs": true,
+        "skipLibCheck": true,
+        "noEmit": true,
+        "esModuleInterop": true,
+        "experimentalDecorators": true,
+        "module": "esnext",
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
+        "isolatedModules": false,
+        "baseUrl": ".",
+        "incremental": true
+    },
+    "exclude": [
+        "node_modules",
+        ".build",
+        "snapshots"
+    ],
+    "include": [
+        "./**/*.ts",
+        "./**/*.tsx",
+        "./**/*.js",
+        ".eslintrc.js",
+        "esbuild.js"
+    ]
+}
