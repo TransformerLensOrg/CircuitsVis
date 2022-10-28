@@ -2,6 +2,11 @@
   "name": "pysvelte",
   "version": "1.0.0",
   "description": "",
+  "scripts": {
+    "test": "jest",
+    "esbuild": "esbuild",
+    "lint": "eslint"
+  },
   "main": "index.js",
   "keywords": [],
   "author": "",
