@@ -1,8 +1,9 @@
 """Helper functions to build visualizations using HTML/web frameworks."""
+import random
 import subprocess
-from filehash.filehash import FileHash
 from pathlib import Path
 
+from filehash.filehash import FileHash
 from IPython.display import HTML, Javascript, display
 
 
@@ -112,9 +113,9 @@ def render(entry: Path, **kwargs) -> HTML:
 
     # Custom elements must have unique names, including a hyphen. They cannot be
     # redefined, so if the source changes we also want to change the element
-    # name. Since the compiled javascript filename includes a hash of the file,
-    # we simply also use this filename as the custom element name.
-    custom_element_name = bundled_js_path.stem.replace("_", "-")
+    # name.
+    custom_element_name = bundled_js_path.stem.replace(
+        "_", "-").lower() + str(random.randint(1, 9999))
 
     # Create and return the html
     script = create_custom_element_script(bundled_js_path, custom_element_name)
@@ -127,7 +128,7 @@ def dev() -> None:
 
     Run this at the top of a notebook, if you want to enable re-loading of
     visualization components (when you're editing them).
-    
+
     Utilizes a global custom browser patch, to allow redefining of web custom
     elements. https://github.com/caridy/redefine-custom-elements
 
