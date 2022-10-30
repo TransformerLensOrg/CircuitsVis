@@ -22,7 +22,7 @@ build({
     // Svelte support
     sveltePlugin({
       preprocess: sveltePreprocess(),
-      css: true, // Include CSS in the bundled JavaScript
+      compilerOptions: { css: true },
     }),
   ],
   outfile: argv.outfile,
