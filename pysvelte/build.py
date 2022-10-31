@@ -9,6 +9,15 @@ from IPython.display import Javascript, display
 from pysvelte.html import Html
 
 
+def install_if_necessary():
+    """Install npm modules if they're missing."""
+    NODE_MODULES = Path(__file__).parent / "node_modules"
+    if not NODE_MODULES.exists():
+        print("Running npm install...")
+        subprocess.check_call(
+            ["npm", "--prefix", str(Path(__file__).parent), "install"])
+
+
 def bundle_source(entry: Path) -> Path:
     """Bundle up the JavaScript/TypeScript source
 
@@ -27,6 +36,9 @@ def bundle_source(entry: Path) -> Path:
     # Get the package.json path (the bundler script is setup here)
     package_json_dir = Path(__file__).parent
     esbuild_script = package_json_dir / "esbuild.js"
+
+    # Install npm modules if necessary
+    install_if_necessary()
 
     # Set the output file path (with a hash to prevent conflicts)
     out_dir = Path(__file__).parent / ".build"
@@ -123,32 +135,3 @@ def render(entry: Path, **kwargs) -> Html:
     script = create_custom_element_script(bundled_js_path, custom_element_name)
     custom_element = create_custom_element(custom_element_name, **kwargs)
     return Html(script + "\n" + custom_element)
-
-
-def dev() -> None:
-    """Enable development mode
-
-    Run this at the top of a notebook, if you want to enable re-loading of
-    visualization components (when you're editing them).
-
-    Utilizes a global custom browser patch, to allow redefining of web custom
-    elements. https://github.com/caridy/redefine-custom-elements
-
-    @example
-    ```
-    %load_ext autoreload
-    %autoreload 2
-    from pysvelte import build
-    build.dev()
-    ```
-    """
-    # Get the patch
-    redefine_custom_elements_path = Path(__file__).parent / "node_modules" \
-        / "redefine-custom-elements" / "lib" / "index.js"
-
-    with open(redefine_custom_elements_path) as file:
-        source = file.read()
-
-    # Serve within the notebook
-    script = Javascript(data=source)
-    display(script)

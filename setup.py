@@ -11,16 +11,12 @@ from setuptools.command.egg_info import egg_info
 def install_npm():
     """Install node modules"""
     # Get the package.json directory
-    print("running setup")
     dir_path = Path(__file__).parent / "pysvelte"
-    print(dir_path)
 
     # Setup the install command using this
     command = [
         'npm',
         'install',
-        # '--prefix',
-        # str(dir_path.absolute())
     ]
 
     subprocess.run(command, capture_output=True, cwd=dir_path)
