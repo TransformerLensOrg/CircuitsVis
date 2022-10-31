@@ -1,14 +1,17 @@
-from typing import List, Union
+import json
+from pathlib import Path
 
 import numpy as np
-import torch
+from IPython.display import HTML
 
-Tensor = Union[np.ndarray, torch.Tensor]
+from ... import build
 
 
-def init(
-    tokens: List[str], activations: Tensor, neuron_name=""
-):
+def TextNeuronActivations(
+    tokens: list[str],
+    activations: np.ndarray,
+    neuron_name=""
+) -> HTML:
     """Visualize the activation patterns over the tokens in some text.
 
     Args:
@@ -17,8 +20,16 @@ def init(
       neuron_name: A string representing the neuron name.
 
     """
+    # Validate data
     assert (
         len(tokens) == activations.shape[0]
     ), "tokens and activations must be same length"
     assert activations.ndim == 1, "activations must be 1D"
-    return
+
+    # Create params
+    return build.render(
+        Path(__file__).parent / "TextNeuronActivations.svelte",
+        tokens=json.dumps(tokens),
+        activations=json.dumps(activations.tolist()),
+        neuron_name=neuron_name
+    )

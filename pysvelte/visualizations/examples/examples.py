@@ -2,9 +2,10 @@ from IPython.display import HTML
 from pathlib import Path
 from ... import build
 
+
 def Hello(name: str) -> HTML:
     """Hello example using the Svelte code
-    
+
     You can define a function like this so that your visualization has a
     docstring and typings.
 

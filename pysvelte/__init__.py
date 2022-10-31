@@ -1,14 +1,18 @@
-from .html import Html
-from .publish import PublishGroup
-from .SvelteComponent import SvelteComponent
+from .visualizations.activations import activations
+from .visualizations.attention import attention
+from .visualizations.examples import examples
+from build import *
 
-__all__ = ["SvelteComponent", "Html"]
+# Legacy named exports (these have been re-named)
+from .visualizations.attention.attention import \
+    AttentionPatterns as AttentionMulti
+from .visualizations.activations.activations import \
+    TextNeuronActivations as TextSingle
 
-
-def refresh():
-    for component in SvelteComponent.autogenerate():
-        globals()[component.name] = component
-        __all__.append(component.name)
-
-
-refresh()
+__all__ = [
+    "activations",
+    "attention",
+    "AttentionMulti",
+    "examples",
+    "TextSingle"
+]
