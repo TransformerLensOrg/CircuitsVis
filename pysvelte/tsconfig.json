@@ -21,7 +21,7 @@
         "resolveJsonModule": true,
         "isolatedModules": false,
         "baseUrl": ".",
-        "incremental": true
+        "incremental": false
     },
     "exclude": [
         "node_modules",

@@ -40,3 +40,6 @@ jobs:
     - name: Lint
       run: yarn lint
       working-directory: ${{env.javascript-root}}
+    - name: Check types
+      run: yarn tsc --noEmit
+      working-directory: ${{env.javascript-root}}
