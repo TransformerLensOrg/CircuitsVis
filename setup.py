@@ -5,12 +5,15 @@ from pathlib import Path
 from setuptools import setup
 from setuptools.command.develop import develop
 from setuptools.command.install import install
+from setuptools.command.egg_info import egg_info
 
 
 def install_npm():
     """Install node modules"""
     # Get the package.json directory
+    print("running setup")
     dir_path = Path(__file__).parent / "pysvelte"
+    print(dir_path)
 
     # Setup the install command using this
     command = [
@@ -19,10 +22,6 @@ def install_npm():
         # '--prefix',
         # str(dir_path.absolute())
     ]
-
-    print("trying")
-    print(" ".join(command))
-    print("how was that?")
 
     subprocess.run(command, capture_output=True, cwd=dir_path)
 
@@ -40,6 +39,14 @@ class PostInstallCommand(install):
 
     def run(self):
         install.run(self)
+        install_npm()
+
+
+class EggInfoCommand(egg_info):
+    """Post-install command when using egg_info."""
+
+    def run(self):
+        egg_info.run(self)
         install_npm()
 
 
@@ -61,6 +68,7 @@ setup(
         'pytest',
         'snapshottest',
         'torch',
+        "ipython",
         'tqdm',
         'transformers',
         'typeguard'
@@ -68,6 +76,7 @@ setup(
     cmdclass={
         'develop': PostDevelopCommand,
         'install': PostInstallCommand,
+        'egg_info': EggInfoCommand,
     },
     include_package_data=True,
     use_scm_version=False,

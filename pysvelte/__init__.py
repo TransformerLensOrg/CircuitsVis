@@ -1,12 +1,12 @@
-from .visualizations.activations import activations
-from .visualizations.attention import attention
-from .visualizations.examples import examples
-from build import *
+from pysvelte.visualizations.activations import activations
+from pysvelte.visualizations.attention import attention
+from pysvelte.visualizations.examples import examples
+from pysvelte.build import *
 
 # Legacy named exports (these have been re-named)
-from .visualizations.attention.attention import \
+from pysvelte.visualizations.attention.attention import \
     AttentionPatterns as AttentionMulti
-from .visualizations.activations.activations import \
+from pysvelte.visualizations.activations.activations import \
     TextNeuronActivations as TextSingle
 
 __all__ = [

@@ -1,19 +1,17 @@
 import json
 from pathlib import Path
-from typing import Optional
+from typing import List, Optional
 
 import numpy as np
-from IPython.display import HTML
-
-from ... import build
+from pysvelte import build, html
 
 
 def AttentionPatterns(
-    tokens: list[str],
+    tokens: List[str],
     attention: np.ndarray,
     # info_weighted: Optional[np.ndarray] = None,
     # head_labels: Optional[str] = None
-) -> HTML:
+) -> html.Html:
     """Visualize the attention patterns for multiple attention heads.
 
     This component is used to visualize attention patterns from a Transformer

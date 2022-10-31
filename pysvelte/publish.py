@@ -36,7 +36,8 @@ def expand_base_publish_path(path, default_suffix=".html"):
     ROOT = config.publish_default_root()
     USER = config.get_username()
     if USER is None:
-        raise RuntimeError(f"Could not find a user name to expand path '~...'.")
+        raise RuntimeError(
+            f"Could not find a user name to expand path '~...'.")
     HOME = f"{ROOT}/{USER}"
     today = date.today()
     MONTH_HOME = f"{HOME}/{today.year}-{today.month:02d}"
@@ -48,7 +49,8 @@ def expand_base_publish_path(path, default_suffix=".html"):
     elif path.startswith("~~/"):
         path = f"{MONTH_HOME}/{path[len('~~/'):]}"
     else:
-        raise RuntimeError(f"Unknown expansion pattern '{path.split('/')[0]}/'")
+        raise RuntimeError(
+            f"Unknown expansion pattern '{path.split('/')[0]}/'")
     return path
 
 
@@ -154,7 +156,8 @@ class PublishGroup(Publisher):
     """
 
     def __init__(self, root_path: str, title=None, description=None):
-        self.group_path = expand_base_publish_path(root_path, default_suffix="/")
+        self.group_path = expand_base_publish_path(
+            root_path, default_suffix="/")
         assert self.group_path[-1] == "/"
         self.group_index_path = self.group_path + "index.html"
         self.group_index_url = config.remote_path_to_url(self.group_index_path)
@@ -199,7 +202,8 @@ class PublishGroup(Publisher):
         """Announce the publication of a piece of html to slack.
 
         All pages are announced to the same thread."""
-        config.announce(html, url, channel, publish_group_url=self.group_index_url)
+        config.announce(html, url, channel,
+                        publish_group_url=self.group_index_url)
 
     def expand_path(self, path: Optional[str]) -> str:
         """Expand a path to the specific path a piece of Html should be published to.
@@ -210,7 +214,7 @@ class PublishGroup(Publisher):
             path = f"{rand_str}.html"
         for prefix in ["~/", "~~/", "~~~/", "/"]:
             if path.startswith(prefix):
-                path = path[len(prefix) :]
+                path = path[len(prefix):]
                 break
         path = self.group_path + path
         return path

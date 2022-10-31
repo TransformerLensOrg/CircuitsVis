@@ -1,17 +1,16 @@
 import json
 from pathlib import Path
+from typing import List
 
 import numpy as np
-from IPython.display import HTML
-
-from ... import build
+from pysvelte import build, html
 
 
 def TextNeuronActivations(
-    tokens: list[str],
+    tokens: List[str],
     activations: np.ndarray,
     neuron_name=""
-) -> HTML:
+) -> html.Html:
     """Visualize the activation patterns over the tokens in some text.
 
     Args:

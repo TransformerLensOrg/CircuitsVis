@@ -1,9 +1,8 @@
-from IPython.display import HTML
 from pathlib import Path
-from ... import build
+from pysvelte import build, html
 
 
-def Hello(name: str) -> HTML:
+def Hello(name: str) -> html.Html:
     """Hello example using the Svelte code
 
     You can define a function like this so that your visualization has a

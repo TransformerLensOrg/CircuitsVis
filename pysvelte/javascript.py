@@ -2,7 +2,7 @@ import stat
 import subprocess
 import threading
 
-from .vis_paths import PYSVELTE_ROOT, Path
+from pysvelte.vis_paths import PYSVELTE_ROOT, Path
 
 NODE_MODULES = PYSVELTE_ROOT / "node_modules"
 PACKAGE_JSON = PYSVELTE_ROOT / "package.json"
@@ -36,7 +36,8 @@ def install_if_necessary():
     """Install npm modules if they're out of date or missing."""
     if is_npm_install_necessary():
         print("Running npm install...")
-        subprocess.check_call(["npm", "--prefix", str(PYSVELTE_ROOT), "install"])
+        subprocess.check_call(
+            ["npm", "--prefix", str(PYSVELTE_ROOT), "install"])
 
 
 vis_build_lock = threading.Lock()
@@ -64,7 +65,8 @@ def webpack_if_necessary(paths=None):
                 env_flag = [f"--env=entry={entries}"]
             else:
                 env_flag = []
-            subprocess.check_call(["npm", "run", "webpack"] + env_flag, cwd=str(PYSVELTE_ROOT))
+            subprocess.check_call(
+                ["npm", "run", "webpack"] + env_flag, cwd=str(PYSVELTE_ROOT))
 
 
 def get_src_path(name):

@@ -1,7 +1,7 @@
 from typing import Optional
 
-from .javascript import get_script_tags
-from .publish import get_publisher
+from pysvelte.javascript import get_script_tags
+from pysvelte.publish import get_publisher
 
 # import plotly.graph_objects as go
 
@@ -60,7 +60,8 @@ class Html:
             self.title = title or html.layout.title.text
             self.chunks = [html.to_html()]
         else:
-            raise Exception(f"Can't coerce type {type(html)} (={html}) to Html.")
+            raise Exception(
+                f"Can't coerce type {type(html)} (={html}) to Html.")
 
     def html_str(self) -> str:
         """

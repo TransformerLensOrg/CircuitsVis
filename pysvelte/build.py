@@ -4,7 +4,9 @@ import subprocess
 from pathlib import Path
 
 from filehash.filehash import FileHash
-from IPython.display import HTML, Javascript, display
+from IPython.display import Javascript, display
+
+from pysvelte.html import Html
 
 
 def bundle_source(entry: Path) -> Path:
@@ -94,7 +96,7 @@ def create_custom_element(custom_element_name: str, **kwargs: str) -> str:
     return f"<{custom_element_name} {params}/>"
 
 
-def render(entry: Path, **kwargs) -> HTML:
+def render(entry: Path, **kwargs) -> Html:
     """Render a visualization as a HTML custom element
 
     https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements
@@ -120,7 +122,7 @@ def render(entry: Path, **kwargs) -> HTML:
     # Create and return the html
     script = create_custom_element_script(bundled_js_path, custom_element_name)
     custom_element = create_custom_element(custom_element_name, **kwargs)
-    return HTML(script + "\n" + custom_element)
+    return Html(script + "\n" + custom_element)
 
 
 def dev() -> None:
