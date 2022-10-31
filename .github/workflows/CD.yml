@@ -12,7 +12,7 @@ env:
   javascript-root: 'pysvelte'
 
 jobs:
-  test-python:
+  python:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -27,7 +27,7 @@ jobs:
     - name: Pytest
       run: pytest
 
-  test-javascript:
+  javascript:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -36,4 +36,7 @@ jobs:
       working-directory: ${{env.javascript-root}}
     - name: Jest
       run: yarn test
+      working-directory: ${{env.javascript-root}}
+    - name: Lint
+      run: yarn lint
       working-directory: ${{env.javascript-root}}
