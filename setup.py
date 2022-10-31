@@ -51,7 +51,7 @@ setup(
     description="A library for visualising and interpreting model activations within a Jupyter Notebook",
     long_description=open("README.md").read(),
     install_requires=[
-         'einops',
+        'einops',
         'datasets',
         'filehash',
         'ipython',
