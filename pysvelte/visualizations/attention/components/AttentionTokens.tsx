@@ -97,6 +97,9 @@ export function Token({
   const [r, g, b] = averageColor.arraySync();
   const backgroundColor = tinycolor({ r, g, b });
 
+  // Set the text color to always be visible (allowing for the background color)
+  const textColor = backgroundColor.getBrightness() < 180 ? "white" : "black";
+
   return (
     <button
       style={{
@@ -104,7 +107,7 @@ export function Token({
         borderColor: "#DDD",
         borderStyle: "solid",
         borderWidth: 1,
-        color: "#fff",
+        color: textColor,
         display: "inline-block",
         margin: 3,
         padding: 3,
