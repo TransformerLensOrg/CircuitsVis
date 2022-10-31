@@ -8,6 +8,9 @@ on:
     branches: 
       - master
 
+env:
+  javascript-root: 'pysvelte'
+
 jobs:
   test-python:
     runs-on: ubuntu-latest
@@ -22,5 +25,15 @@ jobs:
         python -m pip install --upgrade pip
         pip install .
     - name: Pytest
-      run: |
-        pytest
+      run: pytest
+
+  test-javascript:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install dependencies
+      run: yarn install
+      working-directory: ${{env.javascript-root}}
+    - name: Jest
+      run: yarn test
+      working-directory: ${{env.javascript-root}}
