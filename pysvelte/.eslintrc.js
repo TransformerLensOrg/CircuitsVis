@@ -34,12 +34,12 @@ module.exports = {
   },
   overrides: [
     {
-      files: ['*.svelte'],
-      processor: 'svelte3/svelte3'
-    }
+      files: ["*.svelte"],
+      processor: "svelte3/svelte3",
+    },
   ],
-  settings: { 
+  settings: {
     react: { version: "detect" },
-    'svelte3/typescript': true,
-   },
+    "svelte3/typescript": true,
+  },
 };

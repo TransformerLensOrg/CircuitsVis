@@ -1,7 +1,16 @@
 {
     "rewrap.autoWrap.enabled": true,
-    "[typescriptreact]": {
-        "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
+    "eslint.packageManager": "yarn",
+    "eslint.workingDirectories": [
+      {
+        "mode": "auto"
+      }
+    ],
+    "eslint.options": {
+      "ignorePath": "../.gitignore"
     },
-    "editor.formatOnSave": true
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": true
+    },
+    "eslint.validate": ["javascript", "typescript"],
 }
