@@ -27,7 +27,6 @@
 			// Add the IDs of extensions you want installed when the container is created.
 			"extensions": [
 				"2gua.rainbow-brackets",
-				"2gua.rainbow-brackets",
 				"ardenivanov.svelte-intellisense",
 				"christian-kohler.npm-intellisense",
 				"christian-kohler.path-intellisense",
