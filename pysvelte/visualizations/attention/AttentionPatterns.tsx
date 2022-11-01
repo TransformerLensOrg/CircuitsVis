@@ -184,7 +184,12 @@ export default class CustomVisualization extends HTMLElement {
     const attributeNames = new Set(this.getAttributeNames());
     const props: any = {};
     attributeNames.forEach((attributeName) => {
-      props[attributeName] = JSON.parse(this.getAttribute(attributeName));
+      // Try to JSON parse, and if that fails assume to be a string input
+      try {
+        props[attributeName] = JSON.parse(this.getAttribute(attributeName));
+      } catch (_e) {
+        props[attributeName] = this.getAttribute(attributeName);
+      }
     });
 
     // Setup React rendering

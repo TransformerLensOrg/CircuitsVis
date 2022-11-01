@@ -7,7 +7,12 @@
 			const attributeNames = new Set(this.getAttributeNames());
 			const props = {}
 			for (const attributeName of attributeNames) {
-				props[attributeName] = JSON.parse(this.getAttribute(attributeName));
+				// Try to JSON parse, and if that fails assume to be a string input
+				try {
+					props[attributeName] = JSON.parse(this.getAttribute(attributeName));
+				} catch (_e) {
+					props[attributeName] = this.getAttribute(attributeName);
+				}
 			}
 
 			// Create a mount point
