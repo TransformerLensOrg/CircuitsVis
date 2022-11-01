@@ -1,3 +1,7 @@
 {
-    "rewrap.autoWrap.enabled": true
+    "rewrap.autoWrap.enabled": true,
+    "[typescriptreact]": {
+        "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
+    },
+    "editor.formatOnSave": true
 }
