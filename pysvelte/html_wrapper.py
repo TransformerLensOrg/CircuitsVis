@@ -1,10 +1,6 @@
 from typing import Optional
 
-from pysvelte.javascript import get_script_tags
 from pysvelte.publish import get_publisher
-
-# import plotly.graph_objects as go
-
 
 def isinstance_noimport(obj, cls_str):
     """Performs an isinstance() check using a stringified class name.
@@ -38,12 +34,9 @@ class Html:
         html=None,
         title=None,
         description=None,
-        script_paths=None,
         extra_head_content="",
     ):
         html = html or []
-        script_paths = script_paths or []
-        self.script_paths = set(script_paths)
         self.title = title
         self.description = description
         self.extra_head_content = extra_head_content
@@ -53,7 +46,6 @@ class Html:
             self.chunks = [html]
         elif isinstance(html, Html):
             self.chunks = html.chunks
-            self.script_paths = html.script_paths
             self.title = title or html.title
             self.description = description or html.description
         elif isinstance_noimport(html, "plotly.graph_objs._figure.Figure"):
@@ -95,7 +87,6 @@ class Html:
             <meta charset="utf-8">
             <title>{self.title or ""}</title>
             {description_meta_line}
-            {get_script_tags(self.script_paths, dev_host=dev_host)}
             {self.extra_head_content}
         </head>
         <body>
@@ -110,10 +101,7 @@ class Html:
         Render the HTML in "colab inline" format, with javascript from script paths
         (but ignoring "dev mode" and just requesting static pages, because it doesn't work in colab).
         """
-        return f"""
-        {get_script_tags(self.script_paths)}
-        {self.html_str()}
-        """
+        return self.html_str()
 
     @staticmethod
     def _add_util(a, b) -> "Html":
@@ -125,15 +113,12 @@ class Html:
         a = Html(a)
         b = Html(b)
         chunks = []
-        script_paths = set()
         extra_head_content = []
         for x in [a, b]:
             chunks += x.chunks
-            script_paths |= x.script_paths
             extra_head_content.append(x.extra_head_content)
         return Html(
             chunks,
-            script_paths=script_paths,
             title=a.title or b.title,
             description=a.description or b.description,
             extra_head_content=extra_head_content[0] + extra_head_content[1],

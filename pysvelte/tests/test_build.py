@@ -74,4 +74,4 @@ class TestRender:
 
         # Check it renders correctly
         assert "<mock-element name='mock-name'></mock-element>" in str(
-            html.data)
+            html_wrapper.data)

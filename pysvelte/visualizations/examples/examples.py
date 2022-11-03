@@ -1,8 +1,8 @@
 from pathlib import Path
-from pysvelte import build, html
+from pysvelte import build, html_wrapper
 
 
-def Hello(name: str) -> html.Html:
+def Hello(name: str) -> html_wrapper.Html:
     """Hello example using the Svelte code
 
     You can define a function like this so that your visualization has a

@@ -3,14 +3,14 @@ from pathlib import Path
 from typing import List, Optional
 
 import numpy as np
-from pysvelte import build, html
+from pysvelte import build, html_wrapper
 
 
 def TextNeuronActivations(
     tokens: List[str],
     activations: np.ndarray,
     neuron_name: Optional[str] = None
-) -> html.Html:
+) -> html_wrapper.Html:
     """Visualize the activation patterns over the tokens in some text.
 
     Args:

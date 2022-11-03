@@ -6,7 +6,7 @@ from pathlib import Path
 from filehash.filehash import FileHash
 from IPython.display import Javascript, display
 
-from pysvelte.html import Html
+from pysvelte.html_wrapper import Html
 
 
 def install_if_necessary():

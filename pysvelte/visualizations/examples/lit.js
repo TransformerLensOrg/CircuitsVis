@@ -7,7 +7,7 @@ export default class CustomVisualization extends LitElement {
   // Setup custom element attributes - these will be provided by keyword
   // arguments to `build.render()` in the python code.
   static properties = {
-    name: { type: String },
+    name: { type: String }
   };
 
   constructor() {
