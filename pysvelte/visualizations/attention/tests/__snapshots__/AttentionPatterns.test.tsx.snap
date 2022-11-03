@@ -1,0 +1,58 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`colorAttentionTensors creates colors for heads matching the snapshot 1`] = `
+[
+  [
+    [
+      [
+        0,
+        0,
+        0,
+      ],
+      [
+        230,
+        25,
+        25,
+      ],
+    ],
+    [
+      [
+        0,
+        0,
+        0,
+      ],
+      [
+        230,
+        25,
+        25,
+      ],
+    ],
+  ],
+  [
+    [
+      [
+        255,
+        255,
+        255,
+      ],
+      [
+        25,
+        229,
+        230,
+      ],
+    ],
+    [
+      [
+        255,
+        255,
+        255,
+      ],
+      [
+        25,
+        229,
+        230,
+      ],
+    ],
+  ],
+]
+`;

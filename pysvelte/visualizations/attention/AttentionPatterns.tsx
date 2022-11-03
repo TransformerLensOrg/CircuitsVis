@@ -1,7 +1,9 @@
 import React, { useMemo, useState } from "react";
-import { createRoot } from "react-dom/client";
+import ReactDOM from "react-dom";
 import { einsum, Rank, tensor, Tensor3D, Tensor4D } from "@tensorflow/tfjs";
 import tinycolor from "tinycolor2";
+import PropTypes from "prop-types";
+import reactToWebComponent from "react-to-webcomponent";
 import { AttentionImage } from "./components/AttentionImage";
 import { Tokens, TokensView } from "./components/AttentionTokens";
 
@@ -44,7 +46,7 @@ export function colorAttentionTensors(attentionInput: number[][][]): Tensor4D {
         const attentionColor = tinycolor({
           h: (headNumber / attention.length) * 360, // Hue (degrees 0-360)
           s: 0.8, // Saturation (slightly off 100% to make less glaring)
-          l: 1 - sourceAttention, // Luminance (shows amount of attention)
+          l: 1 - sourceAttention // Luminance (shows amount of attention)
         });
 
         // Return as a nested list in the format [red, green, blue]
@@ -62,13 +64,17 @@ export function colorAttentionTensors(attentionInput: number[][][]): Tensor4D {
  */
 export function AttentionPatterns({
   tokens,
-  attention,
+  attention
 }: {
-  /** Array of tokens e.g. ["Hello", "my", "name", "is"...] */
-  tokens: string[];
-  /** Attention input as [dest_tokens x source_tokens x heads] */
-  attention: number[][][];
+  /** Array of tokens e.g. ["Hello", "my", "name", "is"...] (JSON stringified) */
+  tokens: string;
+  /** Attention input as [dest_tokens x source_tokens x heads] (JSON stringified) */
+  attention: string;
 }) {
+  // JSON parse the props
+  const tokensParsed = JSON.parse(tokens) as string[];
+  const attentionParsed = JSON.parse(attention) as number[][][];
+
   // State for which head/token is focused
   const [selectedHead, selectHead] = useState<number>(null);
   const [hoveredHead, hoverHead] = useState<number>(null);
@@ -79,8 +85,8 @@ export function AttentionPatterns({
 
   // Color the attention values (by head)
   const coloredAttention = useMemo(
-    () => colorAttentionTensors(attention),
-    [attention]
+    () => colorAttentionTensors(attentionParsed),
+    [attentionParsed]
   );
   const heads = coloredAttention.unstack<Tensor3D>(0);
 
@@ -116,7 +122,7 @@ export function AttentionPatterns({
                 key={headNumber}
                 style={{
                   margin: 0,
-                  marginRight: 15,
+                  marginRight: 15
                 }}
                 onClick={() => {
                   if (selectedHead === headNumber) {
@@ -166,7 +172,7 @@ export function AttentionPatterns({
             focusedHead={focusedHead}
             focusedToken={selectedToken}
             focusToken={selectToken}
-            tokens={tokens}
+            tokens={tokensParsed}
             tokensView={tokensView}
           />
         </div>
@@ -176,28 +182,18 @@ export function AttentionPatterns({
 }
 
 /**
- * Export as a custom web component
+ * Run-time type checking
  */
-export default class CustomVisualization extends HTMLElement {
-  connectedCallback() {
-    // Get custom element attributes
-    const attributeNames = new Set(this.getAttributeNames());
-    const props: any = {};
-    attributeNames.forEach((attributeName) => {
-      // Try to JSON parse, and if that fails assume to be a string input
-      try {
-        props[attributeName] = JSON.parse(this.getAttribute(attributeName));
-      } catch (_e) {
-        props[attributeName] = this.getAttribute(attributeName);
-      }
-    });
+AttentionPatterns.propTypes = {
+  tokens: PropTypes.string.isRequired,
+  attention: PropTypes.string.isRequired
+};
 
-    // Setup React rendering
-    const mountPoint = document.createElement("span");
-    this.attachShadow({ mode: "open" }).appendChild(mountPoint);
-    const root = createRoot(mountPoint);
-
-    // Render
-    root.render(<AttentionPatterns {...(props as any)} />);
-  }
-}
+/**
+ * Convert to a web component
+ */
+export const CustomVisualization = reactToWebComponent(
+  AttentionPatterns,
+  React as any,
+  ReactDOM as any
+);

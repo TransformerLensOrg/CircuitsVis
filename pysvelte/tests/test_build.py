@@ -41,17 +41,6 @@ class TestBundleSource:
             source_code = file.read()
             snapshot.assert_match(source_code)
 
-    def test_react(self, snapshot):
-        # Bundle React example
-        entry = Path(__file__).parent.parent / "visualizations" / \
-            "examples" / "react.tsx"
-        bundled_js_path = build.bundle_source(entry)
-
-        # Check the bundled output matches the snapshot
-        with open(bundled_js_path) as file:
-            source_code = file.read()
-            snapshot.assert_match(source_code)
-
     def test_svelte(self, snapshot):
         # Bundle Svelte example
         entry = Path(__file__).parent.parent / "visualizations" / \

@@ -1,25 +1,38 @@
-import * as React from "react";
-import { createRoot } from "react-dom/client";
+import React from "react";
+import ReactDOM from "react-dom";
+import PropTypes from "prop-types";
 
-export function SimpleGreetingReact({ name }: { name: string }) {
-  return <p>Hello, {name}!</p>;
-}
+import reactToWebComponent from "react-to-webcomponent";
 
 /**
  * React TypeScript Example
  */
-export default class CustomVisualization extends HTMLElement {
-  connectedCallback() {
-    // Get custom element attributes - these will be provided by keyword
-    // arguments to `build.render()` in the python code.
-    const name = this.getAttribute("name");
-
-    // Setup React rendering
-    const mountPoint = document.createElement("span");
-    this.attachShadow({ mode: "open" }).appendChild(mountPoint);
-    const root = createRoot(mountPoint);
-
-    // Render
-    root.render(<SimpleGreetingReact name={name} />);
-  }
+export function SimpleGreetingReact({ name }: { name: string }) {
+  return <p>Hello, {name}!</p>;
 }
+/**
+ * Prop Types
+ *
+ * You must include runtime type checking of your custom element props,
+ * like this:
+ *
+ *  - `PropTypes.string.isRequired` if required
+ *  - `PropTypes.string ` if optional
+ *
+ * Note web Custom Elements only accept string props (if you're passing a JSON,
+ * simply JSON.parse() it in your react element).
+ */
+SimpleGreetingReact.propTypes = {
+  name: PropTypes.string.isRequired
+};
+
+/**
+ * Export react component as a custom Web Element
+ *
+ * You can do this as below, using the `react-to-webcomponent` library.
+ */
+export const CustomVisualization = reactToWebComponent(
+  SimpleGreetingReact,
+  React as any,
+  ReactDOM as any
+);
