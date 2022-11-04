@@ -30,7 +30,7 @@ import { useHoverLock } from "./components/useHoverLock";
  */
 export function colorAttentionTensors(attentionInput: number[][][]): Tensor4D {
   // Create a TensorFlow tensor from the attention data
-  const attentionTensor = tensor<Rank.R3>(attentionInput); // [dest_tokens x source_tokens x heads]
+  const attentionTensor = tensor<Rank.R3>(attentionInput, undefined, "float32"); // [dest_tokens x source_tokens x heads]
 
   // Rearrange to [heads x dest_tokens x source_tokens]
   const attention = einsum(

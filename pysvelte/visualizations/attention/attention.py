@@ -1,3 +1,4 @@
+import html
 import json
 from pathlib import Path
 from typing import List, Optional
@@ -53,11 +54,14 @@ def AttentionPatterns(
     #         attention.shape == info_weighted.shape
     #     ), "info_weighted must be the same shape as attention"
 
+    # Encode twice (as Jupyter decodes once before printing)
+    escaped_tokens = [html.escape(html.escape(token)) for token in tokens]
+
     props: dict = {
-        "tokens": json.dumps(tokens),
+        "tokens": json.dumps(escaped_tokens),
         "attention": json.dumps(attention.tolist())
     }
-
+    
     # if info_weighted:
     #     props.info_weighted = json.dumps(  # type: ignore
     #         info_weighted.tolist())
