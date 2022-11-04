@@ -3,54 +3,31 @@ from .. import build
 
 
 class TestBundleSource:
-    """Test that the bundler is consistently bundling
+    """Test that the bundler builds without errors"""
     
-    Use snapshots to check the bundle output is consistent.
-    """
-    
-    def test_vanilla_js(self, snapshot):
+    def test_vanilla_js(self):
         # Bundle Vanilla JS example
         entry = Path(__file__).parent.parent / "visualizations" / \
             "examples" / "vanilla_js.js"
-        bundled_js_path = build.bundle_source(entry)
+        build.bundle_source(entry)
 
-        # Check the bundled output matches the snapshot
-        with open(bundled_js_path) as file:
-            source_code = file.read()
-            snapshot.assert_match(source_code)
-
-    def test_lit_js(self, snapshot):
+    def test_lit_js(self):
         # Bundle Lit JS example
         entry = Path(__file__).parent.parent / "visualizations" / \
             "examples" / "lit.js"
-        bundled_js_path = build.bundle_source(entry)
+        build.bundle_source(entry)
 
-        # Check the bundled output matches the snapshot
-        with open(bundled_js_path) as file:
-            source_code = file.read()
-            snapshot.assert_match(source_code)
-
-    def test_lit_ts(self, snapshot):
+    def test_lit_ts(self):
         # Bundle Lit TS example
         entry = Path(__file__).parent.parent / "visualizations" / \
             "examples" / "lit_ts.ts"
-        bundled_js_path = build.bundle_source(entry)
+        build.bundle_source(entry)
 
-        # Check the bundled output matches the snapshot
-        with open(bundled_js_path) as file:
-            source_code = file.read()
-            snapshot.assert_match(source_code)
-
-    def test_svelte(self, snapshot):
+    def test_svelte(self):
         # Bundle Svelte example
         entry = Path(__file__).parent.parent / "visualizations" / \
             "examples" / "svelte.svelte"
-        bundled_js_path = build.bundle_source(entry)
-
-        # Check the bundled output matches the snapshot
-        with open(bundled_js_path) as file:
-            source_code = file.read()
-            snapshot.assert_match(source_code)
+        build.bundle_source(entry)
 
 
 class TestCreateCustomElement:

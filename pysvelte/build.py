@@ -55,9 +55,9 @@ def bundle_source(entry: Path) -> Path:
         "--format=esm"
     ],
         cwd=package_json_dir.absolute(),
-        # stderr=subprocess.STDOUT,
-        # capture_output=True
-        stdout=subprocess.DEVNULL  # Don't output to the console
+        capture_output=True,
+        text=True,
+        check=True # Raise an exception if bundling fails
     )
 
     # Return the bundled output file

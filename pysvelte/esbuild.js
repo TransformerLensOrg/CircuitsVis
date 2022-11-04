@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 const { build } = require("esbuild");
 const { esbuildDecorators } = require("@anatine/esbuild-decorators");
 const { hideBin } = require("yargs/helpers");
@@ -22,9 +23,9 @@ build({
     // Svelte support
     sveltePlugin({
       preprocess: sveltePreprocess(),
-      compilerOptions: { css: true },
-    }),
+      compilerOptions: { css: true }
+    })
   ],
   outfile: argv.outfile,
-  format: "esm",
+  format: "esm"
 });
