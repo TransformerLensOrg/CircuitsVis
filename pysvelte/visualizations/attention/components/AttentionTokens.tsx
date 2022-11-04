@@ -1,5 +1,5 @@
 import React from "react";
-import { Rank, Tensor, Tensor3D, Tensor4D } from "@tensorflow/tfjs";
+import { einsum, Rank, Tensor, Tensor3D, Tensor4D } from "@tensorflow/tfjs";
 import tinycolor from "tinycolor2";
 
 export enum TokensView {
@@ -12,7 +12,7 @@ export enum TokensView {
  *
  * Used to calculate the color of a specific token block (div).
  *
- * @param meanAttentionAcrossHeads [dest_tokens x src_tokens x rgb]
+ * @param maxAttentionAcrossHeads [dest_tokens x src_tokens x rgb]
  * @param tokenIndex Current token index
  * @param tokensView
  * @param focusedToken Selected/focused token
@@ -20,7 +20,7 @@ export enum TokensView {
  * @returns Relevant tokens from which to average the color [dest_tokens x src_tokens x rgb]
  */
 export function getTokensToAverage(
-  meanAttentionAcrossHeads: Tensor3D,
+  maxAttentionAcrossHeads: Tensor3D,
   tokenIndex: number,
   tokensView: TokensView,
   focusedToken?: number
@@ -57,7 +57,7 @@ export function getTokensToAverage(
     sourceEnd = focusedToken;
   }
 
-  return meanAttentionAcrossHeads.slice(
+  return maxAttentionAcrossHeads.slice(
     [destinationStart, sourceStart],
     [destinationEnd + 1 - destinationStart, sourceEnd + 1 - sourceStart]
   );
@@ -71,7 +71,7 @@ export function Token({
   onClickToken,
   onMouseEnterToken,
   onMouseLeaveToken,
-  meanAttentionAcrossHeads,
+  maxAttentionAcrossHeads,
   text,
   tokenIndex,
   tokensView
@@ -80,7 +80,7 @@ export function Token({
   onClickToken: (e: number) => void;
   onMouseEnterToken: (e: number) => void;
   onMouseLeaveToken: () => void;
-  meanAttentionAcrossHeads: Tensor3D;
+  maxAttentionAcrossHeads: Tensor3D;
   text: string;
   tokenIndex: number;
   tokensView: TokensView;
@@ -89,7 +89,7 @@ export function Token({
 
   // Get the average of the colors of the source tokens that we can attend to.
   const relevantTokens = getTokensToAverage(
-    meanAttentionAcrossHeads,
+    maxAttentionAcrossHeads,
     tokenIndex,
     tokensView,
     focusedToken
@@ -110,22 +110,21 @@ export function Token({
         backgroundColor: backgroundColor.toRgbString(),
         borderColor: "#DDD",
         borderStyle: "solid",
-        borderWidth: 1,
+        borderWidth: 0,
+        borderRightWidth: 1,
         color: textColor,
         display: "inline-block",
-        margin: 3,
+        marginBottom: 3,
         padding: 3,
-        paddingLeft: 5,
-        paddingRight: 5,
         // Focussed box shadow
         boxShadow: isFocused ? "0px 0px 3px 3px rgba(0,0,200,0.4)" : null
       }}
       onClick={() => onClickToken(tokenIndex)}
       onMouseEnter={() => onMouseEnterToken(tokenIndex)}
       onMouseLeave={onMouseLeaveToken}
-    >
-      {text}
-    </button>
+      // Dangerously set so that we can print un-escaped html characters
+      dangerouslySetInnerHTML={{ __html: text.replace(" ", "&nbsp;") }}
+    />
   );
 }
 
@@ -163,8 +162,12 @@ export function Tokens({
       ? coloredAttention.slice([focusedHead], [1])
       : coloredAttention;
 
-  // Get the mean attention across attention heads
-  const meanAttentionAcrossHeads = focusedAttention.mean<Tensor3D>(0);
+  // Get the max attention across attention heads (by color darkness, so min in
+  // terms of rgb values)
+  const maxAttentionAcrossHeads = einsum(
+    "hdsc -> dsch",
+    focusedAttention
+  ).min<Tensor3D>(3);
 
   return (
     <div>
@@ -175,7 +178,7 @@ export function Tokens({
           onMouseEnterToken={onMouseEnterToken}
           onMouseLeaveToken={onMouseLeaveToken}
           key={tokenIndex}
-          meanAttentionAcrossHeads={meanAttentionAcrossHeads}
+          maxAttentionAcrossHeads={maxAttentionAcrossHeads}
           text={text}
           tokenIndex={tokenIndex}
           tokensView={tokensView}

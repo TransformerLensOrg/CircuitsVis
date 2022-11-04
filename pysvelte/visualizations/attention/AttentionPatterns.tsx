@@ -99,14 +99,18 @@ export function AttentionPatterns({
   );
   const heads = coloredAttention.unstack<Tensor3D>(0);
 
-  // Average attention color across all heads
-  // This is helpful as we can see if, on average, only one or two colored heads
-  // are focussing on a specific source token from a destination token.
-  const meanAttentionAcrossHeads = coloredAttention.mean(0);
+  // Max attention color across all heads
+  // This is helpful as we can see if, for example, only one or two colored
+  // heads are focussing on a specific source token from a destination token.
+  // To do this we re-arrange to put heads at the last dimension and then max
+  // this (by color darkness, so min in terms of rgb values)
+  const maxAttentionAcrossHeads = einsum("hdsc -> dsch", coloredAttention).min(
+    3
+  );
 
   // Get the focused head based on the state (selected/hovered)
   const focusedAttention =
-    focusedHead !== null ? heads[focusedHead] : meanAttentionAcrossHeads;
+    focusedHead !== null ? heads[focusedHead] : maxAttentionAcrossHeads;
 
   return (
     <div>
