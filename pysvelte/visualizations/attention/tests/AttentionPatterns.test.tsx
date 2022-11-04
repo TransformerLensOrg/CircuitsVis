@@ -1,4 +1,4 @@
-import { setBackend, ones } from "@tensorflow/tfjs";
+import { setBackend, ones, Rank } from "@tensorflow/tfjs";
 import { render, screen } from "@testing-library/react";
 import React from "react";
 import { AttentionPatterns, colorAttentionTensors } from "../AttentionPatterns";
@@ -35,13 +35,10 @@ describe("colorAttentionTensors", () => {
 describe("AttentionPatterns", () => {
   it("renders", () => {
     const tokens = ["A", "B", "C", "D"];
-    const attention = ones([4, 4, 16]);
+    const attention = ones<Rank.R3>([4, 4, 16]);
 
     render(
-      <AttentionPatterns
-        tokens={JSON.stringify(tokens)}
-        attention={JSON.stringify(attention.arraySync())}
-      />
+      <AttentionPatterns tokens={tokens} attention={attention.arraySync()} />
     );
 
     // Check the header text loads

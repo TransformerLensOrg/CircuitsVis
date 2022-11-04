@@ -2,10 +2,10 @@ import React, { useMemo, useState } from "react";
 import ReactDOM from "react-dom";
 import { einsum, Rank, tensor, Tensor3D, Tensor4D } from "@tensorflow/tfjs";
 import tinycolor from "tinycolor2";
-import PropTypes from "prop-types";
 import reactToWebComponent from "react-to-webcomponent";
 import { AttentionImage } from "./components/AttentionImage";
 import { Tokens, TokensView } from "./components/AttentionTokens";
+import { useHoverLock } from "./components/useHoverLock";
 
 /**
  * Color the attention values by heads
@@ -67,26 +67,35 @@ export function AttentionPatterns({
   attention
 }: {
   /** Array of tokens e.g. ["Hello", "my", "name", "is"...] (JSON stringified) */
-  tokens: string;
+  tokens: string[];
   /** Attention input as [dest_tokens x source_tokens x heads] (JSON stringified) */
-  attention: string;
+  attention: number[][][];
 }) {
-  // JSON parse the props
-  const tokensParsed = JSON.parse(tokens) as string[];
-  const attentionParsed = JSON.parse(attention) as number[][][];
+  // Attention head focussed state
+  const {
+    focused: focusedHead,
+    onClick: onClickHead,
+    onMouseEnter: onMouseEnterHead,
+    onMouseLeave: onMouseLeaveHead
+  } = useHoverLock();
 
-  // State for which head/token is focused
-  const [selectedHead, selectHead] = useState<number>(null);
-  const [hoveredHead, hoverHead] = useState<number>(null);
-  const [selectedToken, selectToken] = useState<number>(null);
+  // State for which token is focussed
+  const {
+    focused: focussedToken,
+    onClick: onClickToken,
+    onMouseEnter: onMouseEnterToken,
+    onMouseLeave: onMouseLeaveToken
+  } = useHoverLock();
+
+  // State for the token view type
   const [tokensView, setTokensView] = useState<TokensView>(
     TokensView.DESTINATION_TO_SOURCE
   );
 
   // Color the attention values (by head)
   const coloredAttention = useMemo(
-    () => colorAttentionTensors(attentionParsed),
-    [attentionParsed]
+    () => colorAttentionTensors(attention),
+    [attention]
   );
   const heads = coloredAttention.unstack<Tensor3D>(0);
 
@@ -96,7 +105,6 @@ export function AttentionPatterns({
   const meanAttentionAcrossHeads = coloredAttention.mean(0);
 
   // Get the focused head based on the state (selected/hovered)
-  const focusedHead = selectedHead ?? hoveredHead ?? null;
   const focusedAttention =
     focusedHead !== null ? heads[focusedHead] : meanAttentionAcrossHeads;
 
@@ -124,19 +132,9 @@ export function AttentionPatterns({
                   margin: 0,
                   marginRight: 15
                 }}
-                onClick={() => {
-                  if (selectedHead === headNumber) {
-                    selectHead(null);
-                  } else {
-                    selectHead(headNumber);
-                  }
-                }}
-                onMouseEnter={() => {
-                  hoverHead(headNumber);
-                }}
-                onMouseLeave={() => {
-                  hoverHead(null);
-                }}
+                onClick={() => onClickHead(headNumber)}
+                onMouseEnter={() => onMouseEnterHead(headNumber)}
+                onMouseLeave={onMouseLeaveHead}
               >
                 <AttentionImage
                   coloredAttention={head}
@@ -170,9 +168,11 @@ export function AttentionPatterns({
           <Tokens
             coloredAttention={coloredAttention}
             focusedHead={focusedHead}
-            focusedToken={selectedToken}
-            focusToken={selectToken}
-            tokens={tokensParsed}
+            focusedToken={focussedToken}
+            onClickToken={onClickToken}
+            onMouseEnterToken={onMouseEnterToken}
+            onMouseLeaveToken={onMouseLeaveToken}
+            tokens={tokens}
             tokensView={tokensView}
           />
         </div>
@@ -182,18 +182,16 @@ export function AttentionPatterns({
 }
 
 /**
- * Run-time type checking
- */
-AttentionPatterns.propTypes = {
-  tokens: PropTypes.string.isRequired,
-  attention: PropTypes.string.isRequired
-};
-
-/**
  * Convert to a web component
  */
 export const CustomVisualization = reactToWebComponent(
-  AttentionPatterns,
+  AttentionPatterns as any,
   React as any,
-  ReactDOM as any
+  ReactDOM as any,
+  {
+    props: {
+      tokens: Array,
+      attention: Array
+    }
+  }
 );

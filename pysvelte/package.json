@@ -51,6 +51,7 @@
     "@anatine/esbuild-decorators": "^0.2.19",
     "@tensorflow/tfjs": "^4.0.0",
     "@tensorflow/tfjs-node": "^4.0.0",
+    "@testing-library/react-hooks": "^8.0.1",
     "lit": "^2.4.0",
     "numpy-parser": "^1.2.3",
     "prop-types": "^15.8.1",
@@ -68,6 +69,8 @@
         "ts-jest"
       ]
     },
-    "setupFiles": ["jest-canvas-mock"]
+    "setupFiles": [
+      "jest-canvas-mock"
+    ]
   }
 }
