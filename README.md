@@ -1,4 +1,4 @@
-# PySvelte
+# Circuits Vis
 
 This is a Python library for displaying web-dev visualisations inside Jupyter notebooks, with a focus on language model interpretability.
 
