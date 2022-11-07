@@ -1,16 +1,26 @@
 {
-    "rewrap.autoWrap.enabled": true,
-    "eslint.packageManager": "yarn",
-    "eslint.workingDirectories": [
-      {
-        "mode": "auto"
-      }
-    ],
-    "eslint.options": {
-      "ignorePath": "../.gitignore"
-    },
-    "editor.codeActionsOnSave": {
-      "source.fixAll.eslint": true
-    },
-    "eslint.validate": ["javascript", "typescript"],
+  "rewrap.autoWrap.enabled": true,
+  "eslint.packageManager": "yarn",
+  "eslint.workingDirectories": [
+    {
+      "mode": "auto"
+    }
+  ],
+  "eslint.options": {
+    "ignorePath": "../.gitignore"
+  },
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "eslint.validate": [
+    "javascript",
+    "typescript"
+  ],
+  "cSpell.words": [
+    "circuitsvis",
+    "crossorigin"
+  ],
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": false,
 }
