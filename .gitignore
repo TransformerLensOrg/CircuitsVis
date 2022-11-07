@@ -9,7 +9,8 @@ dist/
 __pycache__
 venv
 *-checkpoint.ipynb
-python/requirements.txt
+requirements.txt
+poetry.lock
 
 # Node
 node_modules/
