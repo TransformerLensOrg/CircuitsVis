@@ -20,7 +20,8 @@ dependencies = [
     "tqdm",
     "transformers",
     "ipython",
-    "typeguard"
+    "typeguard",
+    "mypy"
 ]
 
 # Allow version inferance
