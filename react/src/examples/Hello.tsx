@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 
 /**
  * Hello Example
@@ -9,9 +9,5 @@ export function Hello({
   /** Name to say "Hello" to */
   name: string;
 }) {
-  const [state, setState] = useState<number>(1);
-
-  console.log(state, typeof setState);
-
   return <p>Hello, {name}!</p>;
 }
