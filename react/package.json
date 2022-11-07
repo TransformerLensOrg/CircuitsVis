@@ -1,7 +1,7 @@
 {
   "name": "circuitsvis",
   "description": "Mechanistic Interpretability Visualizations",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "main": "dist/commonjs/index.js",
   "module": "dist/module/index.js",
   "unpkg": "dist/cdn/iife.js",
