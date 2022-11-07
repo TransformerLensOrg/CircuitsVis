@@ -10,8 +10,7 @@
   "types": "dist/module/index.d.ts",
   "sideEffects": false,
   "files": [
-    "dist",
-    "dist/__tests__"
+    "dist"
   ],
   "exports": {
     "./package.json": "./package.json",
@@ -22,10 +21,10 @@
     }
   },
   "scripts": {
-    "test": "jest",
+    "test": "jest ./src",
     "lint": "eslint",
     "buildBrowser": "node ./esbuild.js",
-    "buildNode": "tsc",
+    "buildNode": "tsc --project tsconfig.build.json",
     "build": "yarn buildBrowser && yarn buildNode",
     "typeCheck": "tsc --noEmit",
     "storybook": "start-storybook -p 6006",

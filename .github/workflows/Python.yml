@@ -4,12 +4,17 @@ on:
   push:
     branches: 
       - master
+    paths:
+      - python/**
   pull_request:
     branches: 
       - master
+    paths:
+      - python/**
 
-env:
-  working-directory: 'pysvelte'
+defaults:
+  run:
+    working-directory: 'python'
 
 jobs:
   test:
