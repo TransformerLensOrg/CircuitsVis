@@ -1,0 +1,31 @@
+name: React
+
+on:
+  push:
+    branches: 
+      - master
+  pull_request:
+    branches: 
+      - master
+
+env:
+  working-directory: 'pysvelte'
+
+jobs:
+  test:
+    name: "Test, Type Check & Lint"
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install dependencies
+      run: yarn
+      working-directory: ${{env.working-directory}}
+    - name: Jest
+      run: yarn test
+      working-directory: ${{env.working-directory}}
+    - name: Lint
+      run: yarn lint
+      working-directory: ${{env.working-directory}}
+    - name: Check types
+      run: yarn typeCheck
+      working-directory: ${{env.working-directory}}
