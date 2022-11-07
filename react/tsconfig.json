@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "sourceMap": true,
+    "module": "es2015",
+    "target": "es2018",
+    "moduleResolution": "node",
+    "outDir": "./dist/module",
+    "jsx": "react",
+    "skipLibCheck": true,
+    "declaration": true,
+    "declarationMap": true,
+    "esModuleInterop": true,
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+  },
+  "include": [
+    "src",
+    "esbuild.js"
+  ],
+  "exclude": [
+    "node_modules",
+  ],
+}

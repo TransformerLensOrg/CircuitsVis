@@ -1,8 +1,6 @@
 import React, { useMemo, useState } from "react";
-import ReactDOM from "react-dom";
 import { einsum, Rank, tensor, Tensor3D, Tensor4D } from "@tensorflow/tfjs";
 import tinycolor from "tinycolor2";
-import reactToWebComponent from "react-to-webcomponent";
 import { AttentionImage } from "./components/AttentionImage";
 import { Tokens, TokensView } from "./components/AttentionTokens";
 import { useHoverLock } from "./components/useHoverLock";
@@ -30,13 +28,9 @@ import { useHoverLock } from "./components/useHoverLock";
  */
 export function colorAttentionTensors(attentionInput: number[][][]): Tensor4D {
   // Create a TensorFlow tensor from the attention data
-  const attentionTensor = tensor<Rank.R3>(attentionInput, undefined, "float32"); // [dest_tokens x source_tokens x heads]
+  const attentionTensor = tensor<Rank.R3>(attentionInput); // [heads x dest_tokens x source_tokens]
 
-  // Rearrange to [heads x dest_tokens x source_tokens]
-  const attention = einsum(
-    "dsh -> hds",
-    attentionTensor
-  ).arraySync() as number[][][];
+  const attention = attentionTensor.arraySync() as number[][][];
 
   // Set the colors
   const colored = attention.map((head, headNumber) =>
@@ -66,11 +60,23 @@ export function AttentionPatterns({
   tokens,
   attention
 }: {
-  /** Array of tokens e.g. ["Hello", "my", "name", "is"...] (JSON stringified) */
+  /**
+   * Array of tokens
+   *
+   * @example
+   * ```typescript
+   * ["Hello", "my", "name", "is"...]
+   * ```
+   */
   tokens: string[];
   /** Attention input as [dest_tokens x source_tokens x heads] (JSON stringified) */
   attention: number[][][];
 }) {
+  // State for the token view type
+  const [tokensView, setTokensView] = useState<TokensView>(
+    TokensView.DESTINATION_TO_SOURCE
+  );
+
   // Attention head focussed state
   const {
     focused: focusedHead,
@@ -86,11 +92,6 @@ export function AttentionPatterns({
     onMouseEnter: onMouseEnterToken,
     onMouseLeave: onMouseLeaveToken
   } = useHoverLock();
-
-  // State for the token view type
-  const [tokensView, setTokensView] = useState<TokensView>(
-    TokensView.DESTINATION_TO_SOURCE
-  );
 
   // Color the attention values (by head)
   const coloredAttention = useMemo(
@@ -110,7 +111,7 @@ export function AttentionPatterns({
 
   // Get the focused head based on the state (selected/hovered)
   const focusedAttention =
-    focusedHead !== null ? heads[focusedHead] : maxAttentionAcrossHeads;
+    focusedHead === null ? maxAttentionAcrossHeads : heads[focusedHead];
 
   return (
     <div>
@@ -184,18 +185,3 @@ export function AttentionPatterns({
     </div>
   );
 }
-
-/**
- * Convert to a web component
- */
-export const CustomVisualization = reactToWebComponent(
-  AttentionPatterns as any,
-  React as any,
-  ReactDOM as any,
-  {
-    props: {
-      tokens: Array,
-      attention: Array
-    }
-  }
-);

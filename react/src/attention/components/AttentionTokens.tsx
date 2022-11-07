@@ -1,6 +1,6 @@
-import React from "react";
 import { einsum, Rank, Tensor, Tensor3D, Tensor4D } from "@tensorflow/tfjs";
 import tinycolor from "tinycolor2";
+import React from "react";
 
 export enum TokensView {
   DESTINATION_TO_SOURCE = "DESTINATION_TO_SOURCE",
@@ -36,7 +36,7 @@ export function getTokensToAverage(
   // If a token is selected (and we're showing destination -> source attention),
   // show the attention from the selected destination token to this token.
   if (
-    focusedToken !== null &&
+    typeof focusedToken === "number" &&
     tokensView === TokensView.DESTINATION_TO_SOURCE
   ) {
     destinationStart = focusedToken;
@@ -48,7 +48,7 @@ export function getTokensToAverage(
   // If a token is selected (but instead we're showing source -> destination),
   // show the attention from the selected source token to this token.
   else if (
-    focusedToken !== null &&
+    typeof focusedToken === "number" &&
     tokensView === TokensView.SOURCE_TO_DESTINATION
   ) {
     destinationStart = tokenIndex;
@@ -115,9 +115,9 @@ export function Token({
         color: textColor,
         display: "inline-block",
         marginBottom: 3,
-        padding: 3,
+        padding: "3px 0px",
         // Focussed box shadow
-        boxShadow: isFocused ? "0px 0px 3px 3px rgba(0,0,200,0.4)" : null
+        boxShadow: isFocused ? "0px 0px 3px 3px rgba(0,0,200,0.4)" : undefined
       }}
       onClick={() => onClickToken(tokenIndex)}
       onMouseEnter={() => onMouseEnterToken(tokenIndex)}
