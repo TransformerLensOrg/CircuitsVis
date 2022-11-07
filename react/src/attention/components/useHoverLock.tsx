@@ -5,9 +5,14 @@ import { useState } from "react";
  *
  * Prioritizes an element being locked (clicked) rather than hovered.
  */
-export function useHoverLock() {
-  const [hoveredElement, setHoveredElement] = useState<number>(null);
-  const [lockedElement, setLockedElement] = useState<number>(null);
+export function useHoverLock(): {
+  focused: number;
+  onClick: (element: number) => void;
+  onMouseEnter: (element: number) => void;
+  onMouseLeave: () => void;
+} {
+  const [hoveredElement, setHoveredElement] = useState<number | null>(null);
+  const [lockedElement, setLockedElement] = useState<number | null>(null);
 
   function onClick(element: number): void {
     if (lockedElement === element) {
@@ -25,10 +30,10 @@ export function useHoverLock() {
     setHoveredElement(null);
   }
 
-  const focussed = lockedElement ?? hoveredElement;
+  const focused = lockedElement ?? hoveredElement;
 
   return {
-    focused: focussed,
+    focused: focused as number,
     onClick,
     onMouseEnter,
     onMouseLeave

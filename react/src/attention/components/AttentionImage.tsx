@@ -24,17 +24,17 @@ export interface AttentionImageProps {
 export function AttentionImage({
   coloredAttention,
   style = {},
-  isSelected = false,
+  isSelected = false
 }: AttentionImageProps) {
   // Add a reference to the HTML Canvas element in the DOM, so we can update it
-  const canvasRef = useRef<HTMLCanvasElement>();
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   // Draw the attention pattern onto the HTML Canvas
   // Runs in `useEffect` as we need the canvas to be added to the DOM first,
   // before we can interact with it.
   useEffect(() => {
     const canvas = canvasRef.current;
-    browser.toPixels(coloredAttention.toInt(), canvas);
+    browser.toPixels(coloredAttention.toInt(), canvas as HTMLCanvasElement);
   }, [coloredAttention]);
 
   return (
@@ -49,11 +49,11 @@ export function AttentionImage({
         borderStyle: "solid",
         borderWidth: 1,
         // Focussed box shadow
-        boxShadow: isSelected ? "0px 0px 3px 3px rgba(0,0,200,0.4)" : null,
+        boxShadow: isSelected ? "0px 0px 3px 3px rgba(0,0,200,0.4)" : undefined,
         // Default width
         width: 200,
         // Any other style settings
-        ...style,
+        ...style
       }}
     />
   );
