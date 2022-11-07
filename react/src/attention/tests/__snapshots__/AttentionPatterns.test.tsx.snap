@@ -10,16 +10,16 @@ exports[`colorAttentionTensors creates colors for heads matching the snapshot 1`
         0,
       ],
       [
-        230,
-        25,
-        25,
+        255,
+        255,
+        255,
       ],
     ],
     [
       [
-        0,
-        0,
-        0,
+        230,
+        25,
+        25,
       ],
       [
         230,
@@ -31,21 +31,21 @@ exports[`colorAttentionTensors creates colors for heads matching the snapshot 1`
   [
     [
       [
-        255,
-        255,
-        255,
+        0,
+        0,
+        0,
       ],
       [
-        25,
-        229,
-        230,
+        255,
+        255,
+        255,
       ],
     ],
     [
       [
-        255,
-        255,
-        255,
+        25,
+        229,
+        230,
       ],
       [
         25,

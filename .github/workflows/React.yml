@@ -4,12 +4,17 @@ on:
   push:
     branches: 
       - master
+    paths:
+      - react/**
   pull_request:
     branches: 
       - master
+    paths:
+      - react/**
 
-env:
-  working-directory: 'pysvelte'
+defaults:
+  run:
+    working-directory: react
 
 jobs:
   test:
@@ -19,13 +24,43 @@ jobs:
     - uses: actions/checkout@v3
     - name: Install dependencies
       run: yarn
-      working-directory: ${{env.working-directory}}
     - name: Jest
       run: yarn test
-      working-directory: ${{env.working-directory}}
     - name: Lint
       run: yarn lint
-      working-directory: ${{env.working-directory}}
     - name: Check types
       run: yarn typeCheck
-      working-directory: ${{env.working-directory}}
+
+  publish-npm:
+    name: "Publish to NPMJS"
+    if: github.event_name == 'push' # Push/merge only, not on PR
+    needs: [test]
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: write
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'yarn'
+      - name: Install dependencies
+        run: yarn
+      - name: Build
+        run: yarn build
+      - name: Bump node version # Auto bump minor version
+        run: yarn bump
+      - name: Publish to NPMJS
+        id: publish
+        uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: package.json
+          greater-version-only: true
+      - name: Commit new version number
+        if: steps.publish.outputs.type != 'none'
+        uses: stefanzweifel/git-auto-commit-action@v4.14.1
+        with:
+          commit_message: "Release version ${{ steps.publish.outputs.version }} to NPMJS"
+          
