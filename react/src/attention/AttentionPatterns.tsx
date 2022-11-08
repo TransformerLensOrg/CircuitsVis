@@ -8,11 +8,10 @@ import { useHoverLock } from "./components/useHoverLock";
 /**
  * Color the attention values by heads
  *
- * We want attention values (re-ordered to [heads x dest_tokens x src_tokens]),
- * to be colored by each head (i.e. becoming [heads x dest_tokens x src_tokens x
- * rgb_color_channel]). This way, when outputting an image of just one attention
- * head it will be colored (by the specific hue assigned to that attention head)
- * rather than grayscale.
+ * We want attention values to be colored by each head (i.e. becoming [heads x
+ * dest_tokens x src_tokens x rgb_color_channel]). This way, when outputting an
+ * image of just one attention head it will be colored (by the specific hue
+ * assigned to that attention head) rather than grayscale.
  *
  * Importantly, when outputting an image that averages
  * several attention heads we can then also average over the colors (so that we
@@ -58,19 +57,15 @@ export function colorAttentionTensors(attentionInput: number[][][]): Tensor4D {
  */
 export function AttentionPatterns({
   tokens,
-  attention
+  attention,
+  headLabels
 }: {
-  /**
-   * Array of tokens
-   *
-   * @example
-   * ```typescript
-   * ["Hello", "my", "name", "is"...]
-   * ```
-   */
+  /** Array of tokens e.g. `["Hello", "my", "name", "is"...]` */
   tokens: string[];
   /** Attention input as [dest_tokens x source_tokens x heads] (JSON stringified) */
   attention: number[][][];
+  /** Head labels */
+  headLabels?: string[];
 }) {
   // State for the token view type
   const [tokensView, setTokensView] = useState<TokensView>(
@@ -146,7 +141,9 @@ export function AttentionPatterns({
                   style={{ width: 80 }}
                   isSelected={headNumber === focusedHead}
                 />
-                <figcaption>Head {headNumber}</figcaption>
+                <figcaption>
+                  {headLabels?.[headNumber] ?? `Head ${headNumber}`}
+                </figcaption>
               </figure>
             ))}
           </div>

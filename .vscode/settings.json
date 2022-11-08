@@ -22,4 +22,5 @@
     "crossorigin",
     "Interpretability"
   ],
+  "rewrap.reformat": false,
 }

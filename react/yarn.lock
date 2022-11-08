@@ -10206,7 +10206,7 @@ prompts@^2.0.1, prompts@^2.4.0:
     kleur "^3.0.3"
     sisteransi "^1.0.5"
 
-prop-types@^15.0.0, prop-types@^15.7.2, prop-types@^15.8.1:
+prop-types@^15.0.0, prop-types@^15.7.2, prop-types@^15.8.0, prop-types@^15.8.1:
   version "15.8.1"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.8.1.tgz#67d87bf1a694f48435cf332c24af10214a3140b5"
   integrity sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==
@@ -10406,6 +10406,13 @@ react-error-boundary@^3.1.0:
   integrity sha512-uM9uPzZJTF6wRQORmSrvOIgt4lJ9MC1sNgEOj2XGsDTRE4kmpWxg7ENK9EWNKJRMAOY9z0MuF4yIfl6gp4sotA==
   dependencies:
     "@babel/runtime" "^7.12.5"
+
+react-grid-system@^8.1.6:
+  version "8.1.6"
+  resolved "https://registry.yarnpkg.com/react-grid-system/-/react-grid-system-8.1.6.tgz#1ee145ca694e480d98a96a8d9ae34520e913d934"
+  integrity sha512-1CuQNbT0FRw6iBZrUxOT9S42uRnJOUQsG2iahZUrPGAMul7uHkrov90OfBGLrA2C0hrZ1PFq3UCbRalvwrvkuQ==
+  dependencies:
+    prop-types "^15.8.0"
 
 react-inspector@^5.1.0:
   version "5.1.1"

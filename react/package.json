@@ -21,7 +21,7 @@
     }
   },
   "scripts": {
-    "test": "jest ./src",
+    "test": "jest",
     "lint": "eslint",
     "buildBrowser": "node ./esbuild.js",
     "buildNode": "tsc --project tsconfig.build.json",
@@ -36,6 +36,7 @@
   "dependencies": {
     "@tensorflow/tfjs": "^4.0.0",
     "@tensorflow/tfjs-node": "^4.0.0",
+    "react-grid-system": "^8.1.6",
     "tinycolor2": "^1.4.2"
   },
   "devDependencies": {
