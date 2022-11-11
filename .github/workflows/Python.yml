@@ -25,15 +25,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
     - name: Set up Python
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v4
       with:
         python-version: '3.9'
+        cache: 'poetry'
     - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install poetry
-        poetry install --with dev
+      run: poetry install --with dev
     - name: Pytest
       run: poetry run pytest
     - name: Type check
@@ -49,15 +49,15 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v3
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
       - name: Set up Python
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v4
         with:
           python-version: '3.9'
+          cache: 'poetry'
       - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install poetry
-          poetry install --with dev
+        run: poetry install --with dev
       - name: Build
         run: poetry build
       - name: Bump package version
