@@ -30,6 +30,7 @@ jobs:
       with:
         python-version: '3.9'
         cache: 'poetry'
+        cache-dependency-path: '**/poetry.lock'
     - name: Install dependencies
       run: poetry install --with dev
     - name: Pytest
