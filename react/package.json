@@ -35,7 +35,7 @@
   "license": "MIT",
   "dependencies": {
     "@tensorflow/tfjs": "^4.0.0",
-    "@tensorflow/tfjs-node": "^4.0.0",
+    "colord": "^2.9.3",
     "react-grid-system": "^8.1.6",
     "tinycolor2": "^1.4.2"
   },
@@ -49,6 +49,7 @@
     "@storybook/preset-typescript": "^3.0.0",
     "@storybook/react": "^6.5.13",
     "@storybook/testing-library": "^0.0.13",
+    "@tensorflow/tfjs-node": "^4.0.0",
     "@testing-library/jest-dom": "5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/react-hooks": "^8.0.1",
