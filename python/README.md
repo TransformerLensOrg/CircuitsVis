@@ -1,3 +1,3 @@
 # Circuits Vis
 
-Mechanistic Interpretability visualizations
+Mechanistic Interpretability visualizations.
