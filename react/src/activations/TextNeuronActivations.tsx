@@ -1,7 +1,7 @@
 import { Rank, tensor, Tensor1D, Tensor3D } from "@tensorflow/tfjs";
 import React, { useState } from "react";
 import { Container, Row, Col } from "react-grid-system";
-import tinycolor from "tinycolor2";
+import { ColoredTokens } from "../tokens/ColoredTokens";
 
 export function NumberSelector({
   largestNumber,
@@ -30,28 +30,6 @@ export function NumberSelector({
   );
 }
 
-export function Token({
-  token,
-  activation
-}: {
-  token: string;
-  activation: number;
-}) {
-  const backgroundColor = tinycolor({
-    h: 0,
-    s: 1,
-    l: 1 - activation
-  }).toRgbString();
-
-  return (
-    <span
-      style={{ display: "inline-block", backgroundColor, whiteSpace: "pre" }}
-    >
-      {token}
-    </span>
-  );
-}
-
 /**
  * Get the selected activations
  *
@@ -71,33 +49,6 @@ export function getSelectedActivations(
   return relevantActivations.arraySync();
 }
 
-export function Tokens({
-  activations,
-  tokens,
-  layerNumber,
-  neuronNumber
-}: {
-  /** Activations [ tokens x layers x neurons ] */
-  activations: Tensor3D;
-  tokens: string[];
-  layerNumber: number;
-  neuronNumber: number;
-}) {
-  // Get the relevant activations
-  const relevantActivations: number[] = getSelectedActivations(
-    activations,
-    layerNumber,
-    neuronNumber
-  );
-  return (
-    <p>
-      {tokens.map((token, idx) => (
-        <Token key={idx} token={token} activation={relevantActivations[idx]} />
-      ))}
-    </p>
-  );
-}
-
 /**
  * Show activations (colored by intensity) for each token in some text
  *
@@ -105,11 +56,15 @@ export function Tokens({
  */
 export function TextNeuronActivations({
   tokens,
-  activations
+  activations,
+  firstDimensionName = "Layer",
+  secondDimensionName = "Neuron"
 }: {
   tokens: string[];
   /** Activations [ tokens x layers x neurons ] */
   activations: number[][][];
+  firstDimensionName?: string;
+  secondDimensionName?: string;
 }) {
   const [layerNumber, setLayerNumber] = useState<number>(0);
   const [neuronNumber, setNeuronNumber] = useState<number>(0);
@@ -121,12 +76,19 @@ export function TextNeuronActivations({
   const numberOfLayers = activationsTensor.shape[1];
   const numberOfNeurons = activationsTensor.shape[2];
 
+  // Get the relevant activations
+  const relevantActivations: number[] = getSelectedActivations(
+    activationsTensor,
+    layerNumber,
+    neuronNumber
+  );
+
   return (
-    <Container>
+    <Container fluid>
       <Row>
         <Col>
           <label htmlFor="layer-selector" style={{ marginRight: 15 }}>
-            Layer Number:
+            {firstDimensionName}:
           </label>
           <NumberSelector
             id="layer-selector"
@@ -138,7 +100,7 @@ export function TextNeuronActivations({
 
         <Col>
           <label htmlFor="neuron-selector" style={{ marginRight: 15 }}>
-            Neuron Number:
+            {secondDimensionName}:
           </label>
           <NumberSelector
             id="neuron-selector"
@@ -149,14 +111,9 @@ export function TextNeuronActivations({
         </Col>
       </Row>
 
-      <Row>
+      <Row style={{ marginTop: 15 }}>
         <Col>
-          <Tokens
-            tokens={tokens}
-            activations={activationsTensor}
-            layerNumber={layerNumber}
-            neuronNumber={neuronNumber}
-          />
+          <ColoredTokens tokens={tokens} values={relevantActivations} />
         </Col>
       </Row>
     </Container>

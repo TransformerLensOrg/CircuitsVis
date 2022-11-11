@@ -41,6 +41,6 @@ describe("TextNeuronActivations", () => {
     );
 
     // Check it renders
-    screen.getByText("Layer Number:");
+    screen.getByText("Layer:");
   });
 });
