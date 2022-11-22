@@ -1,43 +1,25 @@
+import { colord } from "colord";
 import { getTokenBackgroundColor } from "./Token";
 
 describe("getBackgroundColor", () => {
-  it("goes 100% to first color if at min", () => {
-    const res = getTokenBackgroundColor(0, 0, 1, "white", "red");
+  it("sets a positive color to blue", () => {
+    const res = getTokenBackgroundColor(1, -1, 1);
     const hsl = res.toHsl();
-    expect(hsl).toMatchInlineSnapshot(`
-      {
-        "a": 1,
-        "h": 161,
-        "l": 100,
-        "s": 100,
-      }
-    `);
+    const greenHue = colord("blue").toHsv().h;
+    expect(hsl.h).toBeCloseTo(greenHue);
   });
 
-  it("goes 100% to second color if at max", () => {
-    const res = getTokenBackgroundColor(1, 0, 1, "white", "red");
+  it("sets a negative color to red", () => {
+    const res = getTokenBackgroundColor(-1, -1, 1);
     const hsl = res.toHsl();
-    expect(hsl).toMatchInlineSnapshot(`
-      {
-        "a": 1,
-        "h": 0,
-        "l": 50,
-        "s": 100,
-      }
-    `);
+    const blueHue = colord("red").toHsv().h;
+    expect(hsl.h).toBeCloseTo(blueHue);
   });
 
-  it("combines red and white correctly, at 80% red", () => {
+  it("sets 0 to white", () => {
     // Should be 80% red
-    const res = getTokenBackgroundColor(0.8, 0, 1, "white", "red");
+    const res = getTokenBackgroundColor(0, -1, 1);
     const hsl = res.toHsl();
-    expect(hsl).toMatchInlineSnapshot(`
-      {
-        "a": 1,
-        "h": 11,
-        "l": 61,
-        "s": 100,
-      }
-    `);
+    expect(hsl.l).toBeCloseTo(100);
   });
 });

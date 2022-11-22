@@ -85,7 +85,7 @@ export function TextNeuronActivations({
 
   return (
     <Container fluid>
-      <Row>
+      <Row style={{ paddingTop: 5, paddingBottom: 5 }}>
         <Col>
           <label htmlFor="layer-selector" style={{ marginRight: 15 }}>
             {firstDimensionName}:
@@ -97,7 +97,9 @@ export function TextNeuronActivations({
             setCurrentValue={setLayerNumber}
           />
         </Col>
+      </Row>
 
+      <Row>
         <Col>
           <label htmlFor="neuron-selector" style={{ marginRight: 15 }}>
             {secondDimensionName}:

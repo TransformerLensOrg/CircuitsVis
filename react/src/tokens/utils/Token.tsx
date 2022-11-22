@@ -2,26 +2,27 @@ import React from "react";
 import { colord, extend, AnyColor, Colord } from "colord";
 import mixPlugin from "colord/plugins/mix";
 import namesPlugin from "colord/plugins/names";
+import { usePopperTooltip } from "react-popper-tooltip";
 
 extend([mixPlugin, namesPlugin]);
 
 /**
  * Get the token background color
  *
- * Combines two colors based on how close a value is to the min/max of a range
+ * Defaults to color blind friendly colors (https://davidmathlogic.com/colorblind/#%23D81B60-%231E88E5-%23FFC107-%23004D40)
  */
 export function getTokenBackgroundColor(
   value: number,
   min: number,
   max: number,
-  minColor: AnyColor,
-  maxColor: AnyColor
+  negativeColor: AnyColor = "red",
+  positiveColor: AnyColor = "blue"
 ): Colord {
-  const minColorParsed = colord(minColor);
-  const maxColorParsed = colord(maxColor);
-  const portionMax = (value - min) / (max - min);
-  const portionMaxBounded = Math.min(Math.max(portionMax, 0), 1);
-  return minColorParsed.mix(maxColorParsed, portionMaxBounded);
+  if (value > 0) {
+    return colord(positiveColor).mix(colord("white"), 1 - value / max);
+  }
+
+  return colord(negativeColor).mix(colord("white"), 1 - value / min);
 }
 
 /**
@@ -32,28 +33,36 @@ export function Token({
   value,
   min,
   max,
-  minColor,
-  maxColor
+  negativeColor,
+  positiveColor
 }: {
   token: string;
   value: number;
   min: number;
   max: number;
-  minColor: AnyColor;
-  maxColor: AnyColor;
+  negativeColor?: AnyColor;
+  positiveColor?: AnyColor;
 }) {
+  // Hover state
+  const { getTooltipProps, setTooltipRef, setTriggerRef, visible } =
+    usePopperTooltip({
+      followCursor: true
+    });
+
   // Get the background color
   const backgroundColor = getTokenBackgroundColor(
     value,
     min,
     max,
-    minColor,
-    maxColor
+    negativeColor,
+    positiveColor
   ).toRgbString();
 
   // Get the text color
-  const textColor = colord(backgroundColor).isDark() ? "white" : "black";
+  const textColor =
+    colord(backgroundColor).brightness() < 0.6 ? "white" : "black";
 
+  // Format the span (CSS style)
   const spanStyle: React.CSSProperties = {
     display: "inline-block",
     backgroundColor,
@@ -67,36 +76,43 @@ export function Token({
     borderColor: "#eee"
   };
 
-  // Spaces are encoded as the HTML space tag
+  // Handle special tokens (e.g. spaces/line breaks)
   const tokenReplaceSpaces = token.replace(/\s/g, "&nbsp;");
-
-  // Handle line breaks
-  // Add a new line symbol and then replace new lines with a <br> tag
-  if (token.includes("\n")) {
-    const tokenReplaceLineBreaks = token.replace(/\n/g, "¶");
-    const lineBreakElements = token.match(/\n/g)!;
-
-    return (
-      <>
-        <span
-          style={{ ...spanStyle, color: "#ddd" }}
-          dangerouslySetInnerHTML={{ __html: tokenReplaceLineBreaks }}
-        ></span>
-        {lineBreakElements.map((_break, idx) => (
-          <br key={idx} />
-        ))}
-      </>
-    );
-  }
+  const tokenReplaceLineBreaks = tokenReplaceSpaces.replace(/\n/g, "¶");
+  const lineBreakElements = token.match(/\n/g)!;
 
   return (
     <>
-      <span data-tip="hello world">
+      <span ref={setTriggerRef}>
         <span
           style={spanStyle}
-          dangerouslySetInnerHTML={{ __html: tokenReplaceSpaces }}
+          dangerouslySetInnerHTML={{ __html: tokenReplaceLineBreaks }}
         ></span>
+        {lineBreakElements?.map((_break, idx) => (
+          <br key={idx} />
+        ))}
       </span>
+
+      {visible && (
+        <div
+          ref={setTooltipRef}
+          {...getTooltipProps({
+            style: {
+              background: "#333",
+              color: "white",
+              textAlign: "center",
+              padding: 10,
+              borderRadius: 5,
+              boxShadow: "5px 5px rgba(0, 0, 0, 0.03)",
+              marginTop: 15
+            }
+          })}
+        >
+          <strong>{token}</strong>
+          <br />
+          {value}
+        </div>
+      )}
     </>
   );
 }

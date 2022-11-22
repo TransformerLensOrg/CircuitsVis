@@ -37,6 +37,7 @@
     "@tensorflow/tfjs": "^4.0.0",
     "colord": "^2.9.3",
     "react-grid-system": "^8.1.6",
+    "react-popper-tooltip": "^4.4.2",
     "tinycolor2": "^1.4.2"
   },
   "devDependencies": {
