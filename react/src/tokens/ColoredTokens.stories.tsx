@@ -5,19 +5,23 @@ import { ColoredTokens } from "./ColoredTokens";
 
 export default {
   title: "ColoredTokens",
-  component: ColoredTokens
+  component: ColoredTokens,
+  argTypes: {
+    negativeColor: { control: "color" },
+    positiveColor: { control: "color" },
+    tokens: { control: { type: "object", raw: true } },
+    values: { control: { type: "object", raw: true } }
+  }
 } as ComponentMeta<typeof ColoredTokens>;
 
 const Template: ComponentStory<typeof ColoredTokens> = (args) => (
   <ColoredTokens {...args} />
 );
 
-export const RandomActivations = Template.bind({});
-RandomActivations.args = {
-  tokens: mockTokens,
-  values: mockValues,
-  minValue: -1,
+export const CodeExample = Template.bind({});
+CodeExample.args = {
   maxValue: 1,
-  negativeColor: undefined,
-  positiveColor: undefined
+  minValue: -1,
+  tokens: mockTokens,
+  values: mockValues
 };

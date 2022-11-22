@@ -50,7 +50,7 @@ export function getSelectedActivations(
 }
 
 /**
- * Show activations (colored by intensity) for each token in some text
+ * Show activations (colored by intensity) for each token.
  *
  * Includes drop-downs for layer and neuron numbers.
  */
@@ -59,13 +59,7 @@ export function TextNeuronActivations({
   activations,
   firstDimensionName = "Layer",
   secondDimensionName = "Neuron"
-}: {
-  tokens: string[];
-  /** Activations [ tokens x layers x neurons ] */
-  activations: number[][][];
-  firstDimensionName?: string;
-  secondDimensionName?: string;
-}) {
+}: TextNeuronActivationsProps) {
   const [layerNumber, setLayerNumber] = useState<number>(0);
   const [neuronNumber, setNeuronNumber] = useState<number>(0);
 
@@ -120,4 +114,31 @@ export function TextNeuronActivations({
       </Row>
     </Container>
   );
+}
+
+export interface TextNeuronActivationsProps {
+  /**
+   * List of tokens
+   *
+   * Must be the same length as the number of activations.
+   */
+  tokens: string[];
+
+  /**
+   * Activations
+   *
+   * Should be a nested list of numbers, of the form [ tokens x layers x neurons
+   * ].
+   */
+  activations: number[][][];
+
+  /**
+   * Name of the first dimension
+   */
+  firstDimensionName?: string;
+
+  /**
+   * Name of the second dimension
+   */
+  secondDimensionName?: string;
 }

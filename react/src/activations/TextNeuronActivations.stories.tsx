@@ -12,8 +12,8 @@ const Template: ComponentStory<typeof TextNeuronActivations> = (args) => (
   <TextNeuronActivations {...args} />
 );
 
-export const RandomActivations = Template.bind({});
-RandomActivations.args = {
+export const SmallModelExample = Template.bind({});
+SmallModelExample.args = {
   tokens: mockTokens,
   activations: mockActivations
 };

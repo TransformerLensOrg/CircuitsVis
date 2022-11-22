@@ -10,5 +10,5 @@ export default {
 
 const Template: ComponentStory<typeof Hello> = (args) => <Hello {...args} />;
 
-export const Bob = Template.bind({});
-Bob.args = { name: "Bob" };
+export const BobExample = Template.bind({});
+BobExample.args = { name: "Bob" };
