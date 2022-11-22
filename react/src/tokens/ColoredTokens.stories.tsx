@@ -16,8 +16,8 @@ export const RandomActivations = Template.bind({});
 RandomActivations.args = {
   tokens: mockTokens,
   values: mockValues,
-  minValue: 0,
+  minValue: -1,
   maxValue: 1,
-  minColor: "white",
-  maxColor: "red"
+  negativeColor: undefined,
+  positiveColor: undefined
 };

@@ -13,18 +13,18 @@ export function ColoredTokens({
   values,
   minValue,
   maxValue,
-  minColor,
-  maxColor
+  negativeColor,
+  positiveColor
 }: {
   tokens: string[];
   values: number[];
   minValue?: number;
   maxValue?: number;
-  minColor?: AnyColor;
-  maxColor?: AnyColor;
+  negativeColor?: AnyColor;
+  positiveColor?: AnyColor;
 }) {
-  const tokenMin = Number.isNaN(minValue) ? Math.min(...values) : minValue!;
-  const tokenMax = Number.isNaN(maxValue) ? Math.min(...values) : maxValue!;
+  const tokenMin = Number.isNaN(minValue) ? minValue! : Math.min(...values);
+  const tokenMax = Number.isNaN(maxValue) ? maxValue! : Math.max(...values);
 
   return (
     <div className="colored-tokens">
@@ -35,8 +35,8 @@ export function ColoredTokens({
           value={values[key]}
           min={tokenMin}
           max={tokenMax}
-          minColor={minColor || "white"}
-          maxColor={maxColor || "red"}
+          negativeColor={negativeColor}
+          positiveColor={positiveColor}
         />
       ))}
     </div>
