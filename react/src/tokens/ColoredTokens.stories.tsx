@@ -4,7 +4,6 @@ import { mockValues, mockTokens } from "./mocks/coloredTokens";
 import { ColoredTokens } from "./ColoredTokens";
 
 export default {
-  title: "ColoredTokens",
   component: ColoredTokens,
   argTypes: {
     negativeColor: { control: "color" },

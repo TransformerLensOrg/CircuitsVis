@@ -4,7 +4,6 @@ import { mockActivations, mockTokens } from "./mocks/textNeuronActivations";
 import { TextNeuronActivations } from "./TextNeuronActivations";
 
 export default {
-  title: "TextNeuronActivations",
   component: TextNeuronActivations
 } as ComponentMeta<typeof TextNeuronActivations>;
 

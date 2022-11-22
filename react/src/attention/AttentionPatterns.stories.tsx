@@ -5,7 +5,6 @@ import { AttentionPatterns } from "./AttentionPatterns";
 import { mockAttention, mockTokens } from "./mocks/attention";
 
 export default {
-  title: "AttentionPatterns",
   component: AttentionPatterns
 } as ComponentMeta<typeof AttentionPatterns>;
 
