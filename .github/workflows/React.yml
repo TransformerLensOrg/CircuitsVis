@@ -64,4 +64,36 @@ jobs:
           token: ${{ secrets.NPM_TOKEN }}
           package: ${{env.working-directory}}/package.json
           check-version: true
-          
+
+  publish-storybook:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    name: "Publish Storybook Docs"
+    if: github.event_name == 'push' # Push/merge only, not on PR
+    needs: [test]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Pages
+        uses: actions/configure-pages@v2
+      - uses: actions/checkout@v3
+      - name: Install dependencies
+        run: yarn
+      - name: Build
+        run: yarn build
+      - name: Build storybook
+        run: yarn build-storybook
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          # Upload entire repository
+          path: 'react/storybook-static'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
