@@ -2,7 +2,12 @@ import { ComponentStory, ComponentMeta } from "@storybook/react";
 import React from "react";
 
 import { AttentionPattern } from "./AttentionPattern";
-import { mockAttention, mockTokens } from "./mocks/attention";
+import {
+  mockAttention,
+  mockShortAttention,
+  mockShortPrompt,
+  mockTokens
+} from "./mocks/attention";
 
 export default {
   component: AttentionPattern,
@@ -23,4 +28,11 @@ export const InductionHead: ComponentStory<typeof AttentionPattern> =
 InductionHead.args = {
   tokens: mockTokens,
   attention: mockAttention[0]
+};
+
+export const SmallDummyHead: ComponentStory<typeof AttentionPattern> =
+  Template.bind({});
+SmallDummyHead.args = {
+  tokens: mockShortPrompt,
+  attention: mockShortAttention
 };

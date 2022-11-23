@@ -74,8 +74,8 @@ export function AttentionPattern({
           return color.toRgbString();
         },
         // Block size
-        width: ({ chart }) => (chart.chartArea || {}).width / tokens.length,
-        height: ({ chart }) => (chart.chartArea || {}).height / tokens.length
+        width: (ctx) => ctx.chart.chartArea.width / tokens.length,
+        height: (ctx) => ctx.chart.chartArea.height / tokens.length
       }
     ]
   };
@@ -103,12 +103,14 @@ export function AttentionPattern({
         title: { display: true, text: "Source Token", padding: 1 },
         type: "category" as any,
         labels: uniqueTokens,
+        offset: true,
         ticks: { display: true },
         grid: { display: false }
       },
       y: {
         title: { display: true, text: "Destination Token", padding: 1 },
         type: "category" as any,
+        offset: true,
         labels: [...uniqueTokens].reverse(),
         ticks: { display: true },
         grid: { display: false }
@@ -134,7 +136,7 @@ export interface AttentionPatternProps {
    * Maximum value
    *
    * Used to determine how dark the token color is when positive (i.e. based on
-   * how close it is to the minimum value).
+   * how close it is to the maximum value).
    *
    * @default Math.max(...values)
    */
@@ -190,7 +192,7 @@ export interface AttentionPatternProps {
   /**
    * Attention head activations
    *
-   * Of the format [ dest_pos x src_pos ]
+   * Of the shape [ dest_pos x src_pos ]
    */
   attention: number[][];
 }
