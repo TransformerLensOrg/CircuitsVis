@@ -17,8 +17,8 @@ export function ColoredTokens({
   tokens,
   values
 }: ColoredTokensProps) {
-  const tokenMin = Number.isNaN(minValue) ? minValue! : Math.min(...values);
-  const tokenMax = Number.isNaN(maxValue) ? maxValue! : Math.max(...values);
+  const tokenMin = minValue ?? Math.min(...values);
+  const tokenMax = maxValue ?? Math.max(...values);
 
   return (
     <div className="colored-tokens" style={{ paddingBottom: 30 }}>

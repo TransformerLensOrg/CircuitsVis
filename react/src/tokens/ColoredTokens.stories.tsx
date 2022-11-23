@@ -19,8 +19,6 @@ const Template: ComponentStory<typeof ColoredTokens> = (args) => (
 
 export const CodeExample = Template.bind({});
 CodeExample.args = {
-  maxValue: 1,
-  minValue: -1,
   tokens: mockTokens,
   values: mockValues
 };
