@@ -7,8 +7,8 @@ def colored_tokens(
     values: List[float],
     min_value: Optional[float] = None,
     max_value: Optional[float] = None,
-    min_color: Optional[str] = None,
-    max_color: Optional[str] = None,
+    negative_color: Optional[str] = None,
+    positive_color: Optional[str] = None,
     development_mode: Optional[bool] = None
 ) -> RenderedHTML:
     """Show tokens (colored by values) for each token in some text
@@ -24,13 +24,20 @@ def colored_tokens(
     Returns:
         Html: Colored tokens visualization
     """
+    kwargs = {
+        "tokens": tokens,
+        "values": values,
+        "minValue": min_value,
+        "maxValue": max_value,
+        "negativeColor": negative_color,
+        "positiveColor": positive_color,
+        "development_mode": development_mode,
+    }
+    
+    # Remove kwargs that are None
+    kwargs = {k: v for k, v in kwargs.items() if v is not None}
+    
     return render(
         "ColoredTokens",
-        tokens=tokens,
-        values=values,
-        minValue=min_value,
-        maxValue=max_value,
-        minColor=min_color,
-        maxColor=max_color,
-        development_mode=development_mode
+        **kwargs
     )
