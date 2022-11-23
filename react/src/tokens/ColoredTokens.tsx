@@ -19,7 +19,7 @@ export function ColoredTokens({
   const tokenMax = Number.isNaN(maxValue) ? maxValue! : Math.max(...values);
 
   return (
-    <div className="colored-tokens">
+    <div className="colored-tokens" style={{ paddingBottom: 30 }}>
       {tokens.map((token, key) => (
         <Token
           key={key}

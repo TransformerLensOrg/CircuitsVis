@@ -89,7 +89,7 @@ def render_dev(react_element_name: str, **kwargs) -> RenderedHTML:
     with open(filename, encoding="utf-8") as file:
         inline_js = file.read()
 
-    html = f"""<div id="{uuid}"/>
+    html = f"""<div id="{uuid}" style="margin: 15px 0;"/>
     <script crossorigin type="module">
     {inline_js}
     
@@ -113,7 +113,7 @@ def render_prod(react_element_name: str, **kwargs) -> RenderedHTML:
     # Stringify keyword args
     props = json.dumps(kwargs)
 
-    html = f"""<div id="{uuid}"/>
+    html = f"""<div id="{uuid}" style="margin: 15px 0;"/>
     <script crossorigin type="module">
     import {"{ render, "+ react_element_name + " }"} from "https://unpkg.com/circuitsvis/dist/cdn/esm.js";
     render(
