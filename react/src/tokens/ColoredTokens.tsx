@@ -6,6 +6,8 @@ import { Token } from "./utils/Token";
  * Display tokens with a background representing how negative (close to
  * `negativeColor`) or positive (close to `positiveColor`) the token is. Zero is
  * always displayed as white.
+ *
+ * Hover over a token, to view its value.
  */
 export function ColoredTokens({
   maxValue,
@@ -61,9 +63,6 @@ export interface ColoredTokensProps {
    *
    * Color to use for negative values. This can be any valid CSS color string.
    *
-   * Note that only the hue and saturation are used, as the lightness is set
-   * based on the value of each token.
-   *
    * Be mindful of color blindness if not using the default here.
    *
    * @default "red"
@@ -78,9 +77,6 @@ export interface ColoredTokensProps {
    * Positive color
    *
    * Color to use for positive values. This can be any valid CSS color string.
-   *
-   * Note that only the hue and saturation are used, as the lightness is set
-   * based on the value of each token.
    *
    * Be mindful of color blindness if not using the default here.
    *
