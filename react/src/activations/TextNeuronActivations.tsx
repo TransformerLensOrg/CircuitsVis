@@ -33,7 +33,7 @@ export function NumberSelector({
 /**
  * Get the selected activations
  *
- * @param activations All activations [ tokens x layers x neurons ]
+ * @param activations All activations [ samples x tokens x layers x neurons ]
  * @param layerNumber
  * @param neuronNumber
  */
@@ -44,7 +44,7 @@ export function getSelectedActivations(
 ): number[] {
   const relevantActivations = activations
     .slice([0, layerNumber, neuronNumber], [-1, 1, 1])
-    .squeeze<Tensor1D>([1, 2]);
+    .squeeze<Tensor1D>([1, 2]); // squeeze out all but the token dimension
 
   return relevantActivations.arraySync();
 }
@@ -63,19 +63,32 @@ export function TextNeuronActivations({
   const [layerNumber, setLayerNumber] = useState<number>(0);
   const [neuronNumber, setNeuronNumber] = useState<number>(0);
 
-  // Convert the activations to a tensor
-  const activationsTensor = tensor<Rank.R3>(activations);
+  const activationsTensors = activations.map((sampleActivations) => {
+    return tensor<Rank.R3>(sampleActivations);
+  });
+  // Get number of layers/neurons (Assumes all samples have the same number of layers/neurons)
+  const numberOfLayers = activationsTensors[0].shape[1];
+  const numberOfNeurons = activationsTensors[0].shape[2];
 
-  // Get number of layers/neurons
-  const numberOfLayers = activationsTensor.shape[1];
-  const numberOfNeurons = activationsTensor.shape[2];
-
-  // Get the relevant activations
-  const relevantActivations: number[] = getSelectedActivations(
-    activationsTensor,
-    layerNumber,
-    neuronNumber
+  // Get the relevant activations for each sample
+  const relevantActivations: number[][] = activationsTensors.map(
+    (sampleActivations) => {
+      return getSelectedActivations(
+        sampleActivations,
+        layerNumber,
+        neuronNumber
+      );
+    }
   );
+
+  const boxedSampleStyle = {
+    border: "1px solid black",
+    borderRadius: 5,
+    padding: 10,
+    marginTop: 10,
+    marginBottom: 10,
+    backgroundColor: "#f5f5f5"
+  };
 
   return (
     <Container fluid>
@@ -106,31 +119,39 @@ export function TextNeuronActivations({
           />
         </Col>
       </Row>
-
-      <Row style={{ marginTop: 15 }}>
-        <Col>
-          <ColoredTokens tokens={tokens} values={relevantActivations} />
-        </Col>
-      </Row>
+      {/* For each set of activations in relevantActivations, show the corresponding ColoredTokens objects in separate raised boxes */}
+      {relevantActivations.map((sampleActivations, index) => {
+        return (
+          <Row key={index}>
+            <Col style={boxedSampleStyle}>
+              <ColoredTokens
+                tokens={tokens[index]}
+                values={sampleActivations}
+              />
+            </Col>
+          </Row>
+        );
+      })}
     </Container>
   );
 }
 
 export interface TextNeuronActivationsProps {
   /**
-   * List of tokens
+   * List of lists of tokens
    *
-   * Must be the same length as the number of activations.
+   * Each list must be the same length as the number of activations in the
+   * corresponding activations list.
    */
-  tokens: string[];
+  tokens: string[][];
 
   /**
    * Activations
    *
-   * Should be a nested list of numbers, of the form [ tokens x layers x neurons
+   * Should be a nested list of numbers, of the form [ sample x tokens x layers x neurons
    * ].
    */
-  activations: number[][][];
+  activations: number[][][][];
 
   /**
    * Name of the first dimension
