@@ -6,18 +6,23 @@ import { ColoredTokens } from "../tokens/ColoredTokens";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 export function NumberSelector({
+  smallestNumber = 0,
   largestNumber,
   currentValue,
   setCurrentValue,
   id
 }: {
+  smallestNumber?: number;
   largestNumber: number;
   currentValue: number;
   setCurrentValue: (num: number) => void;
   id: string;
 }) {
-  // Initialize an array of numbers 0-largestNumber
-  const options = [...Array(largestNumber).keys()];
+  // Initialize an array of numbers smallestNumber-largestNumber
+  const options = [...Array(largestNumber - smallestNumber + 1).keys()].map(
+    (i) => i + smallestNumber
+  );
+  // const options = [...Array(largestNumber).keys()];
 
   return (
     <select
@@ -97,11 +102,11 @@ export function TextNeuronActivations({
   tokens,
   activations,
   firstDimensionName = "Layer",
-  secondDimensionName = "Neuron",
-  itemsPerPage = 10
+  secondDimensionName = "Neuron"
 }: TextNeuronActivationsProps) {
   const [layerNumber, setLayerNumber] = useState<number>(0);
   const [neuronNumber, setNeuronNumber] = useState<number>(0);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(10);
   // We start with an empty list of samples.
   const [itemOffset, setItemOffset] = useState<number>(0);
 
@@ -148,7 +153,7 @@ export function TextNeuronActivations({
           </label>
           <NumberSelector
             id="layer-selector"
-            largestNumber={numberOfLayers!}
+            largestNumber={numberOfLayers - 1}
             currentValue={layerNumber}
             setCurrentValue={setLayerNumber}
           />
@@ -161,7 +166,7 @@ export function TextNeuronActivations({
           </label>
           <NumberSelector
             id="neuron-selector"
-            largestNumber={numberOfNeurons!}
+            largestNumber={numberOfNeurons - 1}
             currentValue={neuronNumber}
             setCurrentValue={setNeuronNumber}
           />
@@ -187,6 +192,18 @@ export function TextNeuronActivations({
             breakLinkClassName="page-link"
             containerClassName="pagination"
             activeClassName="active"
+          />
+        </Col>
+        <Col>
+          <label htmlFor="items-per-page-selector" style={{ marginRight: 15 }}>
+            Items per page:
+          </label>
+          <NumberSelector
+            id="items-per-page-selector"
+            smallestNumber={1}
+            largestNumber={currentActivations.length}
+            currentValue={itemsPerPage}
+            setCurrentValue={setItemsPerPage}
           />
         </Col>
       </Row>
@@ -224,11 +241,4 @@ export interface TextNeuronActivationsProps {
    * Name of the second dimension
    */
   secondDimensionName?: string;
-
-  /**
-   *
-   * Number of items to show per page
-   *
-   */
-  itemsPerPage?: number;
 }
