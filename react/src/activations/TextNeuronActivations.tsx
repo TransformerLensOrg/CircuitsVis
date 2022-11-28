@@ -1,6 +1,6 @@
 import ReactPaginate from "react-paginate";
 import { Rank, tensor, Tensor1D, Tensor3D } from "@tensorflow/tfjs";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Container, Row, Col } from "react-grid-system";
 import { ColoredTokens } from "../tokens/ColoredTokens";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -102,6 +102,10 @@ export function TextNeuronActivations({
 }: TextNeuronActivationsProps) {
   const [layerNumber, setLayerNumber] = useState<number>(0);
   const [neuronNumber, setNeuronNumber] = useState<number>(0);
+  // We start with an empty list of samples.
+  const [itemOffset, setItemOffset] = useState<number>(0);
+
+  const endOffset: number = itemOffset + itemsPerPage;
 
   const activationsTensors = activations.map((sampleActivations) => {
     return tensor<Rank.R3>(sampleActivations);
@@ -121,24 +125,12 @@ export function TextNeuronActivations({
     }
   );
 
-  // We start with an empty list of samples.
-  const [visibleActivations, setVisibleActivations] = useState<
-    number[][] | null
-  >(null);
-  const [visibleTokens, setVisibleTokens] = useState<string[][] | null>(null);
-  const [pageCount, setPageCount] = useState<number>(0);
-  // Here we use item offsets; we could also use page offsets
-  // following the API or data you're working with.
-  const [itemOffset, setItemOffset] = useState<number>(0);
-
-  useEffect(() => {
-    // Fetch items from another resources.
-    const endOffset = itemOffset + itemsPerPage;
-    // console.log(`Loading items from ${itemOffset} to ${endOffset}`);
-    setVisibleActivations(currentActivations.slice(itemOffset, endOffset));
-    setVisibleTokens(tokens.slice(itemOffset, endOffset));
-    setPageCount(Math.ceil(currentActivations.length / itemsPerPage));
-  }, [currentActivations, itemOffset, itemsPerPage, tokens]);
+  const visibleActivations: number[][] = currentActivations.slice(
+    itemOffset,
+    endOffset
+  );
+  const visibleTokens: string[][] = tokens.slice(itemOffset, endOffset);
+  const pageCount: number = Math.ceil(currentActivations.length / itemsPerPage);
 
   // Invoke when user click to request another page.
   const handlePageClick = (event: any) => {
