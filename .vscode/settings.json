@@ -24,4 +24,5 @@
     "Interpretability"
   ],
   "rewrap.reformat": false,
+  "editor.formatOnSave": true,
 }
