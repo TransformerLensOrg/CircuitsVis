@@ -1,5 +1,5 @@
 import { colord } from "colord";
-import { getTokenBackgroundColor } from "./Token";
+import { getTokenBackgroundColor } from "../getTokenBackgroundColor";
 
 describe("getBackgroundColor", () => {
   it("sets a positive color to blue", () => {

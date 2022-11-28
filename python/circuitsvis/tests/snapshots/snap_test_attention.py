@@ -7,7 +7,7 @@ from snapshottest import Snapshot
 
 snapshots = Snapshot()
 
-snapshots['TestAttention.test_matches_snapshot 1'] = '''<div id="circuits-vis-mock"/>
+snapshots['TestAttention.test_matches_snapshot 1'] = '''<div id="circuits-vis-mock" style="margin: 15px 0;"/>
     <script crossorigin type="module">
     import { render, AttentionPatterns } from "https://unpkg.com/circuitsvis/dist/cdn/esm.js";
     render(
