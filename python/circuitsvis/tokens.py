@@ -31,7 +31,6 @@ def colored_tokens(
         "maxValue": max_value,
         "negativeColor": negative_color,
         "positiveColor": positive_color,
-        "development_mode": development_mode,
     }
     
     # Remove kwargs that are None
@@ -39,5 +38,6 @@ def colored_tokens(
     
     return render(
         "ColoredTokens",
+        development_mode,
         **kwargs
     )
