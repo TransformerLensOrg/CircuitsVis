@@ -40,6 +40,7 @@ export function AttentionPattern({
   minValue = -1,
   negativeColor,
   positiveColor,
+  showAxisLabels = true,
   tokens
 }: AttentionPatternProps) {
   // Tokens must be unique (for the categories), so we add an index prefix
@@ -105,7 +106,8 @@ export function AttentionPattern({
         labels: uniqueTokens,
         offset: true,
         ticks: { display: true },
-        grid: { display: false }
+        grid: { display: false },
+        display: showAxisLabels
       },
       y: {
         title: { display: true, text: "Destination Token", padding: 1 },
@@ -113,7 +115,8 @@ export function AttentionPattern({
         offset: true,
         labels: [...uniqueTokens].reverse(),
         ticks: { display: true },
-        grid: { display: false }
+        grid: { display: false },
+        display: showAxisLabels
       }
     }
   };
@@ -132,6 +135,13 @@ export function AttentionPattern({
 }
 
 export interface AttentionPatternProps {
+  /**
+   * Attention head activations
+   *
+   * Of the shape [ dest_pos x src_pos ]
+   */
+  attention: number[][];
+
   /**
    * Maximum value
    *
@@ -183,16 +193,14 @@ export interface AttentionPatternProps {
   positiveColor?: string;
 
   /**
+   * Show axis labels
+   */
+  showAxisLabels?: boolean;
+
+  /**
    * List of tokens
    *
    * Must be the same length as the list of values.
    */
   tokens: string[];
-
-  /**
-   * Attention head activations
-   *
-   * Of the shape [ dest_pos x src_pos ]
-   */
-  attention: number[][];
 }
