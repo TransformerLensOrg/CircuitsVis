@@ -48,7 +48,7 @@ const text: string = `
   Preparation
 `;
 
-function chunkText(textArr: string[]) {
+function chunkText(textArr: string[]): string[][] {
   // Split textArr into chunks of random size between 50 and 100 words
   const chunks: string[][] = [];
   let i = 0;
@@ -60,17 +60,21 @@ function chunkText(textArr: string[]) {
   return chunks;
 }
 
-export const mockTokens: string[][] = chunkText(text.split(/(?=\s)/));
-
 const numLayers: number = 2;
 const numNeurons: number = 3;
-function createRandom3DActivationMatrix(shape: number[]) {
+function createRandom3DActivationMatrix(shape: number[]): number[][][] {
   return Array.from(Array(shape[0]), () =>
     Array.from(Array(shape[1]), () =>
       Array.from(Array(shape[2]), () => Math.random())
     )
   );
 }
+
+export const k: number = 3;
+export const mockTokens: string[][] = chunkText(text.split(/(?=\s)/));
+
 export const mockActivations: number[][][][] = mockTokens.map((tokens) => {
   return createRandom3DActivationMatrix([tokens.length, numLayers, numNeurons]);
 });
+
+export const objType: string = "SVD Direction";

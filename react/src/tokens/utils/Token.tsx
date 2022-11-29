@@ -12,7 +12,8 @@ export function Token({
   min,
   max,
   negativeColor,
-  positiveColor
+  positiveColor,
+  border
 }: {
   token: string;
   value: number;
@@ -20,6 +21,7 @@ export function Token({
   max: number;
   negativeColor?: AnyColor;
   positiveColor?: AnyColor;
+  border?: boolean;
 }) {
   // Hover state
   const { getTooltipProps, setTooltipRef, setTriggerRef, visible } =
@@ -50,7 +52,7 @@ export function Token({
     marginLeft: -1,
     marginBottom: 1,
     borderWidth: 1,
-    borderStyle: "solid",
+    borderStyle: border ? "solid" : "none",
     borderColor: "#eee"
   };
 

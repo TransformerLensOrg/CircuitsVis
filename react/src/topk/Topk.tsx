@@ -1,8 +1,8 @@
-import { Rank, tensor, Tensor1D, Tensor3D } from "@tensorflow/tfjs";
+import { Rank, tensor, Tensor1D, Tensor3D, reverse, topk as tfTopk } from "@tensorflow/tfjs";
 import React, { useState } from "react";
 import { Container, Row, Col } from "react-grid-system";
 import { ColoredTokens } from "../tokens/ColoredTokens";
-
+import { getTokenBackgroundColor } from "../utils/getTokenBackgroundColor";
 
 export function NumberSelector({
   smallestNumber = 0,
@@ -47,48 +47,76 @@ export function getSelectedActivations(
   activations: Tensor3D,
   layerNumber: number,
   neuronNumber: number
-): number[] {
+): Tensor1D {
   const currentActivations = activations
     .slice([0, layerNumber, neuronNumber], [-1, 1, 1])
     .squeeze<Tensor1D>([1, 2]); // squeeze out all but the token dimension
 
-  return currentActivations.arraySync();
+  return currentActivations;
 }
 
-// Styling for the background of the samples
-const boxedSampleStyle = {
-  border: "1px solid black",
-  borderRadius: 5,
-  padding: 10,
-  marginTop: 10,
-  marginBottom: 10,
-  backgroundColor: "#f5f5f5"
+// Styling for each cell in the table
+function tdStyle(value: number): React.CSSProperties {
+  // The background color is determined by the activation value
+  const backgroundColor = getTokenBackgroundColor(
+    value,
+    0,
+    1,
+  ).toRgbString();
+  return {
+    backgroundColor: backgroundColor,
+    border: "1px solid black",
+  };
 };
 
-export function Items({
-  visibleActivations,
-  visibleTokens
+export function TopBottomKTable({
+  topkActivations,
+  bottomkActivations,
+  topkTokens,
+  bottomkTokens,
 }: {
-  visibleActivations: number[][] | null;
-  visibleTokens: string[][] | null;
+  topkActivations: number[];
+  bottomkActivations: number[];
+  topkTokens: string[];
+  bottomkTokens: string[];
 }) {
-  // For each set of activations in visibleActivations, show the
-  // corresponding ColoredTokens objects in separate raised boxes
+  // Create a table with a single column corresponding to the topk activations coloured by their activation value
   return (
-    <div>
-      {visibleActivations &&
-        visibleTokens &&
-        visibleActivations.map((sampleActivations, index) => (
-          <Row key={index}>
-            <Col style={boxedSampleStyle}>
-              <ColoredTokens
-                tokens={visibleTokens[index]}
-                values={sampleActivations}
-              />
-            </Col>
-          </Row>
-        ))}
-    </div>
+    <Container fluid>
+      {topkActivations.map((activation, index) => (
+        <Row key={index}>
+          <Col style={tdStyle(activation)}>
+            <ColoredTokens
+              tokens={[topkTokens[index]]}
+              values={[activation]}
+              maxValue={1}
+              minValue={0}
+              paddingBottom={0}
+              border={false}
+            />
+          </Col>
+        </Row>
+      ))}
+      <Row>
+        <Col>
+          <div style={{ textAlign: "center" }}>...</div>
+        </Col>
+      </Row>
+      {bottomkActivations.map((activation, index) => (
+        <Row key={index}>
+          <Col style={tdStyle(activation)}>
+            <ColoredTokens
+              tokens={[bottomkTokens[index]]}
+              values={[activation]}
+              maxValue={1}
+              minValue={0}
+              paddingBottom={0}
+              border={false}
+            />
+          </Col>
+        </Row>
+      ))}
+    </Container>
   );
 }
 
@@ -100,8 +128,10 @@ export function Items({
 export function Topk({
   tokens,
   activations,
-  firstDimensionName = "Layer",
-  secondDimensionName = "Neuron"
+  k = 5,
+  firstDimensionName = "Sample",
+  secondDimensionName = "Layer",
+  thirdDimensionName = "Neuron"
 }: TopkProps) {
   const [layerNumber, setLayerNumber] = useState<number>(0);
   const [neuronNumber, setNeuronNumber] = useState<number>(0);
@@ -116,19 +146,32 @@ export function Topk({
   const numberOfSamples = activationsTensors.length;
 
   // Get the relevant activations for the selected sample, layer, and neuron
-  const currentActivations: number[] = getSelectedActivations(
+  const currentActivations: Tensor1D = getSelectedActivations(
     activationsTensors[sampleNumber],
     layerNumber,
     neuronNumber
   );
   const currentTokens: string[] = tokens[sampleNumber];
 
+  const { values: topkValsRaw, indices: topkIdxsRaw } = tfTopk(currentActivations, k, true);
+  const { values: bottomkValsRaw, indices: bottomkIdxsRaw } = tfTopk(currentActivations.mul(-1), k, true);
+  // const topkVals = (topkValsRaw.arraySync() as number[]);
+  const topkVals: number[] = (topkValsRaw.arraySync() as number[]);
+  const topkIdxs: number[] = (topkIdxsRaw.arraySync() as number[]);
+  // Bottom vals are ordered from highest to lowest activations (just like top vals)
+  const bottomkVals: number[] = (reverse(bottomkValsRaw.mul(-1), -1).arraySync() as number[]);
+  const bottomkIdxs: number[] = (reverse(bottomkIdxsRaw, -1).arraySync() as number[]);
+
+  // Must type cast to prevent error: " Property 'map' does not exist on type 'number'."
+  const topkTokens: string[] = topkIdxs.map((idx) => currentTokens[idx]);
+  const bottomkTokens: string[] = bottomkIdxs.map((idx) => currentTokens[idx]);
+
   return (
     <Container fluid>
       <Row style={{ paddingTop: 5, paddingBottom: 5 }}>
         <Col>
           <label htmlFor="sample-selector" style={{ marginRight: 15 }}>
-            Sample
+            {firstDimensionName}:
           </label>
           <NumberSelector
             id="sample-selector"
@@ -142,7 +185,7 @@ export function Topk({
       <Row style={{ paddingTop: 5, paddingBottom: 5 }}>
         <Col>
           <label htmlFor="layer-selector" style={{ marginRight: 15 }}>
-            {firstDimensionName}:
+            {secondDimensionName}:
           </label>
           <NumberSelector
             id="layer-selector"
@@ -155,7 +198,7 @@ export function Topk({
       <Row>
         <Col>
           <label htmlFor="neuron-selector" style={{ marginRight: 15 }}>
-            {secondDimensionName}:
+            {thirdDimensionName}:
           </label>
           <NumberSelector
             id="neuron-selector"
@@ -166,9 +209,12 @@ export function Topk({
         </Col>
       </Row>
       <Row style={{ marginTop: 15 }}>
-        <Col>
-          <ColoredTokens tokens={currentTokens} values={currentActivations} />
-        </Col>
+        <TopBottomKTable
+          topkActivations={topkVals}
+          bottomkActivations={bottomkVals}
+          topkTokens={topkTokens}
+          bottomkTokens={bottomkTokens}
+        />
       </Row>
     </Container>
   );
@@ -176,7 +222,7 @@ export function Topk({
 
 export interface TopkProps {
   /**
-   * List of lists of tokens
+   * List of lists of tokens [ samples x tokens ]
    *
    * Each list must be the same length as the number of activations in the
    * corresponding activations list.
@@ -186,10 +232,14 @@ export interface TopkProps {
   /**
    * Activations
    *
-   * Should be a nested list of numbers, of the form [ sample x tokens x layers x neurons
-   * ].
+   * Should be a nested list of numbers of the form [ samples x tokens x layers x neurons ].
    */
   activations: number[][][][];
+
+  /**
+   * Number of top/bottom activations to show
+   */
+  k?: number;
 
   /**
    * Name of the first dimension
@@ -200,4 +250,9 @@ export interface TopkProps {
    * Name of the second dimension
    */
   secondDimensionName?: string;
+
+  /**
+   * Name of the third dimension
+   */
+  thirdDimensionName?: string;
 }
