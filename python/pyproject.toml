@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "circuitsvis"
-version = "1.14.0"
+version = "1.15.0"
 description = "Mechanistic Interpretability Visualizations"
 authors = ["Your Name <you@example.com>"]
 license = "MIT"
