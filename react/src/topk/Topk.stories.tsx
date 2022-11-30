@@ -11,7 +11,7 @@ const Template: ComponentStory<typeof Topk> = (args) => <Topk {...args} />;
 
 export const SmallModelExample = Template.bind({});
 SmallModelExample.args = {
-  k: k,
+  k,
   tokens: mockTokens,
   activations: mockActivations,
   thirdDimensionName: objType

@@ -61,7 +61,7 @@ function chunkText(textArr: string[]): string[][] {
 }
 
 const numLayers: number = 2;
-const numNeurons: number = 3;
+const numSVDDirs: number = 30;
 function createRandom3DActivationMatrix(shape: number[]): number[][][] {
   return Array.from(Array(shape[0]), () =>
     Array.from(Array(shape[1]), () =>
@@ -70,11 +70,11 @@ function createRandom3DActivationMatrix(shape: number[]): number[][][] {
   );
 }
 
-export const k: number = 3;
+export const k: number = 7;
 export const mockTokens: string[][] = chunkText(text.split(/(?=\s)/));
 
 export const mockActivations: number[][][][] = mockTokens.map((tokens) => {
-  return createRandom3DActivationMatrix([tokens.length, numLayers, numNeurons]);
+  return createRandom3DActivationMatrix([tokens.length, numLayers, numSVDDirs]);
 });
 
 export const objType: string = "SVD Direction";

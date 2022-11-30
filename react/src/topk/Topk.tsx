@@ -1,8 +1,79 @@
-import { Rank, tensor, Tensor1D, Tensor3D, reverse, topk as tfTopk } from "@tensorflow/tfjs";
-import React, { useState } from "react";
+import {
+  Rank,
+  tensor,
+  Tensor2D,
+  Tensor3D,
+  reverse,
+  topk as tfTopk
+} from "@tensorflow/tfjs";
+import React, { useState, useEffect } from "react";
 import { Container, Row, Col } from "react-grid-system";
 import { ColoredTokens } from "../tokens/ColoredTokens";
 import { getTokenBackgroundColor } from "../utils/getTokenBackgroundColor";
+import {
+  rangeArrToString,
+  rangeStringToArr
+} from "../utils/rangeStrArrConversion";
+
+/**
+ * Create an array of ranges to display in the select. Each range is
+ * represented by a string of the form "start-end", where start is the first
+ * number in the range and end is the last number in the range. E.g. if
+ * largestNumber=4, smallestNumber=0, and numValsInRange=2, then the ranges array
+ * will be ["0-1", "2-3", "4"].
+ * @param {number} smallestNumber - Smallest number in the range.
+ * @param {number} largestNumber Largest number included in the ranges.
+ * @param {Array<number>} currentRangeArr Current range selected represented as an array of numbers.
+ * @param {function(Array<number>): void} setCurrentValue Function for setting
+ * the selected range.
+ * @param {number} numValsInRange The max number of values in each range.
+ * @param {number} id The id of the select.
+ * // Returns an html select element.
+ * @returns Select element.
+ */
+export function RangeSelector({
+  smallestNumber = 0,
+  largestNumber,
+  currentRangeArr,
+  setCurrentValue,
+  numValsInRange,
+  id
+}: {
+  smallestNumber?: number;
+  largestNumber: number;
+  currentRangeArr: number[];
+  setCurrentValue: (rangeArr: number[]) => void;
+  numValsInRange: number;
+  id: string;
+}) {
+  // Convert the current range to a string.
+  const currentRange: string = rangeArrToString(currentRangeArr);
+
+  // Create an array of ranges to display in the select.
+  const ranges: string[] = [];
+  for (let i = smallestNumber; i <= largestNumber; i += numValsInRange) {
+    const start = i;
+    const end = Math.min(i + numValsInRange - 1, largestNumber);
+    if (start === end) {
+      ranges.push(`${start}`);
+    } else {
+      ranges.push(`${start}-${end}`);
+    }
+  }
+  return (
+    <select
+      value={currentRange}
+      onChange={(event) =>
+        setCurrentValue(rangeStringToArr(event.target.value))
+      }
+      id={id}
+    >
+      {ranges.map((range) => (
+        <option key={range}>{range}</option>
+      ))}
+    </select>
+  );
+}
 
 export function NumberSelector({
   smallestNumber = 0,
@@ -21,7 +92,6 @@ export function NumberSelector({
   const options = [...Array(largestNumber - smallestNumber + 1).keys()].map(
     (i) => i + smallestNumber
   );
-  // const options = [...Array(largestNumber).keys()];
 
   return (
     <select
@@ -39,81 +109,111 @@ export function NumberSelector({
 /**
  * Get the selected activations
  *
- * @param activations All activations [ samples x tokens x layers x neurons ]
+ * @param activations All activations [ tokens x layers x neurons ]
  * @param layerNumber
- * @param neuronNumber
+ * @param neuronStartNumber
+ * @param neuronEndNumber
+ * @returns Selected activations [ neurons x tokens ]. This form is required for
+ * topk which can only calculate the topk over the final dimension
  */
 export function getSelectedActivations(
   activations: Tensor3D,
   layerNumber: number,
-  neuronNumber: number
-): Tensor1D {
-  const currentActivations = activations
-    .slice([0, layerNumber, neuronNumber], [-1, 1, 1])
-    .squeeze<Tensor1D>([1, 2]); // squeeze out all but the token dimension
-
-  return currentActivations;
+  neuronStartNumber: number,
+  neuronEndNumber: number
+): Tensor2D {
+  const currentActivations: Tensor2D = activations
+    .slice(
+      [0, layerNumber, neuronStartNumber],
+      [-1, 1, neuronEndNumber - neuronStartNumber + 1]
+    )
+    .squeeze<Tensor2D>([1]) // squeeze out the layer dimension
+    .transpose(); // transpose so that the tokens are the last dimension (needed for tfjs's topk)
+  return currentActivations; // [neurons x tokens]
 }
 
 // Styling for each cell in the table
-function tdStyle(value: number): React.CSSProperties {
+function tdStyle(value: number, maxTokenLength: number): React.CSSProperties {
   // The background color is determined by the activation value
-  const backgroundColor = getTokenBackgroundColor(
-    value,
-    0,
-    1,
-  ).toRgbString();
+  const backgroundColor = getTokenBackgroundColor(value, 0, 1).toRgbString();
   return {
-    backgroundColor: backgroundColor,
+    backgroundColor,
     border: "1px solid black",
+    width: `${maxTokenLength + 2}ch`
   };
-};
+}
 
 export function TopBottomKTable({
   topkActivations,
   bottomkActivations,
   topkTokens,
   bottomkTokens,
+  maxTokenLength,
+  neuronNumbers
 }: {
-  topkActivations: number[];
-  bottomkActivations: number[];
-  topkTokens: string[];
-  bottomkTokens: string[];
+  topkActivations: number[][]; // [tokens x neurons]
+  bottomkActivations: number[][]; // [tokens x neurons]
+  topkTokens: string[][]; // [tokens x neurons]
+  bottomkTokens: string[][]; // [tokens x neurons]
+  maxTokenLength: number;
+  neuronNumbers: number[];
 }) {
-  // Create a table with a single column corresponding to the topk activations coloured by their activation value
+  // Create a table of size [topkActivations.shape with each column
+  // corresponding to the topk activations coloured by their activation value
+  // for a specific neuron
+
   return (
     <Container fluid>
-      {topkActivations.map((activation, index) => (
-        <Row key={index}>
-          <Col style={tdStyle(activation)}>
-            <ColoredTokens
-              tokens={[topkTokens[index]]}
-              values={[activation]}
-              maxValue={1}
-              minValue={0}
-              paddingBottom={0}
-              border={false}
-            />
+      {/* The first header row just shows the current neuron idx */}
+      <Row>
+        {neuronNumbers.map((neuronNumber) => (
+          <Col key={neuronNumber} style={{ textAlign: "center" }}>
+            {neuronNumber}
           </Col>
+        ))}
+      </Row>
+      {topkActivations.map((activations, tokenIdx) => (
+        <Row key={tokenIdx}>
+          {/* Show the coloured token for each activation */}
+          {activations.map((activation, neuronIdx) => (
+            <Col key={neuronIdx} style={tdStyle(activation, maxTokenLength)}>
+              <ColoredTokens
+                tokens={[topkTokens[tokenIdx][neuronIdx]]}
+                values={[activation]}
+                maxValue={1}
+                minValue={0}
+                paddingBottom={0}
+                border={false}
+              />
+            </Col>
+          ))}
         </Row>
       ))}
       <Row>
-        <Col>
-          <div style={{ textAlign: "center" }}>...</div>
-        </Col>
+        {/* Add an ellipse for each column */}
+        {Array(topkActivations[0].length)
+          .fill(0)
+          .map((_, idx) => (
+            <Col key={idx}>
+              <div style={{ textAlign: "center" }}>...</div>
+            </Col>
+          ))}
       </Row>
-      {bottomkActivations.map((activation, index) => (
-        <Row key={index}>
-          <Col style={tdStyle(activation)}>
-            <ColoredTokens
-              tokens={[bottomkTokens[index]]}
-              values={[activation]}
-              maxValue={1}
-              minValue={0}
-              paddingBottom={0}
-              border={false}
-            />
-          </Col>
+      {bottomkActivations.map((activations, tokenIdx) => (
+        <Row key={tokenIdx}>
+          {/* Show the coloured token for each activation */}
+          {activations.map((activation, neuronIdx) => (
+            <Col key={neuronIdx} style={tdStyle(activation, maxTokenLength)}>
+              <ColoredTokens
+                tokens={[bottomkTokens[tokenIdx][neuronIdx]]}
+                values={[activation]}
+                maxValue={1}
+                minValue={0}
+                paddingBottom={0}
+                border={false}
+              />
+            </Col>
+          ))}
         </Row>
       ))}
     </Container>
@@ -133,10 +233,6 @@ export function Topk({
   secondDimensionName = "Layer",
   thirdDimensionName = "Neuron"
 }: TopkProps) {
-  const [layerNumber, setLayerNumber] = useState<number>(0);
-  const [neuronNumber, setNeuronNumber] = useState<number>(0);
-  const [sampleNumber, setSampleNumber] = useState<number>(0);
-
   const activationsTensors = activations.map((sampleActivations) => {
     return tensor<Rank.R3>(sampleActivations);
   });
@@ -145,66 +241,121 @@ export function Topk({
   const numberOfNeurons = activationsTensors[0].shape[2];
   const numberOfSamples = activationsTensors.length;
 
-  // Get the relevant activations for the selected sample, layer, and neuron
-  const currentActivations: Tensor1D = getSelectedActivations(
+  const [sampleNumber, setSampleNumber] = useState<number>(0);
+  const [layerNumber, setLayerNumber] = useState<number>(0);
+  const [colsToShow, setColsToShow] = useState<number>(5);
+  const [neuronNumbers, setNeuronNumbers] = useState<number[]>(
+    numberOfSamples > 1 ? [...Array(colsToShow).keys()] : [0]
+  );
+
+  useEffect(() => {
+    // When the user changes the colsToShow, update the neuronNumbers
+    setNeuronNumbers(numberOfSamples > 1 ? [...Array(colsToShow).keys()] : [0]);
+  }, [colsToShow, numberOfSamples]);
+
+  const currentTokens: string[] = tokens[sampleNumber];
+  // Get the relevant activations for the selected samples, layer, and neuron.
+  const currentActivations: Tensor2D = getSelectedActivations(
     activationsTensors[sampleNumber],
     layerNumber,
-    neuronNumber
+    neuronNumbers[0],
+    neuronNumbers[neuronNumbers.length - 1]
+  ); // [neurons x tokens]
+
+  const { values: topkValsRaw, indices: topkIdxsRaw } = tfTopk(
+    currentActivations,
+    k,
+    true
   );
-  const currentTokens: string[] = tokens[sampleNumber];
-
-  const { values: topkValsRaw, indices: topkIdxsRaw } = tfTopk(currentActivations, k, true);
-  const { values: bottomkValsRaw, indices: bottomkIdxsRaw } = tfTopk(currentActivations.mul(-1), k, true);
-  // const topkVals = (topkValsRaw.arraySync() as number[]);
-  const topkVals: number[] = (topkValsRaw.arraySync() as number[]);
-  const topkIdxs: number[] = (topkIdxsRaw.arraySync() as number[]);
+  const { values: bottomkValsRaw, indices: bottomkIdxsRaw } = tfTopk(
+    currentActivations.mul(-1),
+    k,
+    true
+  );
+  // The topk and bottomk values, indices and tokens will be tensors of shape
+  // [tokens x neurons]. This form makes it easier to display the table
+  const topkVals: number[][] = topkValsRaw
+    .transpose()
+    .arraySync() as number[][];
+  const topkIdxs: number[][] = topkIdxsRaw
+    .transpose()
+    .arraySync() as number[][];
   // Bottom vals are ordered from highest to lowest activations (just like top vals)
-  const bottomkVals: number[] = (reverse(bottomkValsRaw.mul(-1), -1).arraySync() as number[]);
-  const bottomkIdxs: number[] = (reverse(bottomkIdxsRaw, -1).arraySync() as number[]);
+  const bottomkVals: number[][] = reverse(bottomkValsRaw.mul(-1), -1)
+    .transpose()
+    .arraySync() as number[][];
+  const bottomkIdxs: number[][] = reverse(bottomkIdxsRaw, -1)
+    .transpose()
+    .arraySync() as number[][];
 
-  // Must type cast to prevent error: " Property 'map' does not exist on type 'number'."
-  const topkTokens: string[] = topkIdxs.map((idx) => currentTokens[idx]);
-  const bottomkTokens: string[] = bottomkIdxs.map((idx) => currentTokens[idx]);
+  const topkTokens: string[][] = topkIdxs.map((outerArr) =>
+    outerArr.map((token_idx) => currentTokens[token_idx])
+  );
+  const bottomkTokens: string[][] = bottomkIdxs.map((outerArr) =>
+    outerArr.map((token_idx) => currentTokens[token_idx])
+  );
+
+  // Calculate the max token length for use in the table column width
+  const maxTokenLength: number = Math.max(
+    ...currentTokens.map((token) => token.length)
+  );
 
   return (
     <Container fluid>
-      <Row style={{ paddingTop: 5, paddingBottom: 5 }}>
-        <Col>
-          <label htmlFor="sample-selector" style={{ marginRight: 15 }}>
-            {firstDimensionName}:
-          </label>
-          <NumberSelector
-            id="sample-selector"
-            smallestNumber={0}
-            largestNumber={numberOfSamples - 1}
-            currentValue={sampleNumber}
-            setCurrentValue={setSampleNumber}
-          />
-        </Col>
-      </Row>
-      <Row style={{ paddingTop: 5, paddingBottom: 5 }}>
-        <Col>
-          <label htmlFor="layer-selector" style={{ marginRight: 15 }}>
-            {secondDimensionName}:
-          </label>
-          <NumberSelector
-            id="layer-selector"
-            largestNumber={numberOfLayers - 1}
-            currentValue={layerNumber}
-            setCurrentValue={setLayerNumber}
-          />
-        </Col>
-      </Row>
       <Row>
         <Col>
-          <label htmlFor="neuron-selector" style={{ marginRight: 15 }}>
-            {thirdDimensionName}:
+          <Row style={{ paddingTop: 5, paddingBottom: 5 }}>
+            <Col>
+              <label htmlFor="sample-selector" style={{ marginRight: 15 }}>
+                {firstDimensionName}:
+              </label>
+              <NumberSelector
+                id="sample-selector"
+                smallestNumber={0}
+                largestNumber={numberOfSamples - 1}
+                currentValue={sampleNumber}
+                setCurrentValue={setSampleNumber}
+              />
+            </Col>
+          </Row>
+          <Row style={{ paddingTop: 5, paddingBottom: 5 }}>
+            <Col>
+              <label htmlFor="layer-selector" style={{ marginRight: 15 }}>
+                {secondDimensionName}:
+              </label>
+              <NumberSelector
+                id="layer-selector"
+                largestNumber={numberOfLayers - 1}
+                currentValue={layerNumber}
+                setCurrentValue={setLayerNumber}
+              />
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <label htmlFor="neuron-selector" style={{ marginRight: 15 }}>
+                {thirdDimensionName}:
+              </label>
+              <RangeSelector
+                id="neuron-selector"
+                largestNumber={numberOfNeurons - 1}
+                currentRangeArr={neuronNumbers}
+                setCurrentValue={setNeuronNumbers}
+                numValsInRange={colsToShow}
+              />
+            </Col>
+          </Row>
+        </Col>
+        <Col>
+          <label htmlFor="visibleCols-selector" style={{ marginRight: 15 }}>
+            {thirdDimensionName}s to show:
           </label>
           <NumberSelector
-            id="neuron-selector"
-            largestNumber={numberOfNeurons - 1}
-            currentValue={neuronNumber}
-            setCurrentValue={setNeuronNumber}
+            id="visible-cols-selector"
+            smallestNumber={1}
+            largestNumber={numberOfNeurons}
+            currentValue={colsToShow}
+            setCurrentValue={setColsToShow}
           />
         </Col>
       </Row>
@@ -214,6 +365,8 @@ export function Topk({
           bottomkActivations={bottomkVals}
           topkTokens={topkTokens}
           bottomkTokens={bottomkTokens}
+          maxTokenLength={maxTokenLength}
+          neuronNumbers={neuronNumbers}
         />
       </Row>
     </Container>
