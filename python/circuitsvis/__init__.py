@@ -1,4 +1,4 @@
 """CircuitsVis"""
-import pkg_resources
+import importlib.metadata
 
-__version__ = pkg_resources.require("circuitsvis")[0].version
+__version__ = importlib.metadata.version("circuitsvis")
