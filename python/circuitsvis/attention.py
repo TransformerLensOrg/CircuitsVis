@@ -1,13 +1,12 @@
 """Attention visualisations"""
 from typing import List, Optional
-from circuitsvis.render import RenderedHTML, render
+from circuitsvis.utils.render import RenderedHTML, render
 import numpy as np
 
 
 def attention_patterns(
     tokens: List[str],
     attention: np.ndarray,
-    development_mode: Optional[bool] = None
 ) -> RenderedHTML:
     """Attention Patterns
 
@@ -26,14 +25,12 @@ def attention_patterns(
         "AttentionPatterns",
         tokens=tokens,
         attention=attention_list,
-        development_mode=development_mode
     )
 
 
 def attention_pattern(
     tokens: List[str],
     attention: np.ndarray,
-    development_mode: Optional[bool] = None,
     max_value: Optional[float] = None,
     min_value: Optional[float] = None,
     negative_color: Optional[str] = None,
@@ -82,6 +79,5 @@ def attention_pattern(
 
     return render(
         "AttentionPattern",
-        development_mode=development_mode,
         **kwargs
     )

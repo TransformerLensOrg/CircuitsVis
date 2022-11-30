@@ -1,5 +1,4 @@
-import circuitsvis.attention
-import circuitsvis.examples
-import circuitsvis.render
+"""CircuitsVis"""
+import importlib.metadata
 
-__main__ = ["attention", "examples", "render"]
+__version__ = importlib.metadata.version("circuitsvis")

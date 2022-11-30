@@ -1,11 +1,8 @@
-from typing import List, Optional
-from circuitsvis.render import RenderedHTML, render
-import numpy as np
+from circuitsvis.utils.render import RenderedHTML, render
 
 
 def hello(
     name: str,
-    development_mode: Optional[bool] = None
 ) -> RenderedHTML:
     """Hello example
 
@@ -18,5 +15,4 @@ def hello(
     return render(
         "Hello",
         name=name,
-        development_mode=development_mode
     )

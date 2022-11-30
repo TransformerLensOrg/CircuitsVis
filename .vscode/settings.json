@@ -21,7 +21,8 @@
     "Colab",
     "Colord",
     "crossorigin",
-    "Interpretability"
+    "Interpretability",
+    "NPMJS"
   ],
   "rewrap.reformat": false,
   "editor.formatOnSave": true,

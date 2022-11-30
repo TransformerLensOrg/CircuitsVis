@@ -1,12 +1,11 @@
 from typing import List, Optional
-from circuitsvis.render import RenderedHTML, render
+from circuitsvis.utils.render import RenderedHTML, render
 import numpy as np
 
 
 def text_neuron_activations(
     tokens: List[str],
     activations: np.ndarray,
-    development_mode: Optional[bool] = None
 ) -> RenderedHTML:
     """Show activations (colored by intensity) for each token in some text
 
@@ -24,5 +23,4 @@ def text_neuron_activations(
         "TextNeuronActivations",
         tokens=tokens,
         activations=activationsList,
-        development_mode=development_mode
     )
