@@ -7,17 +7,18 @@ license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.7"
-numpy = "^1.20"
 importlib-metadata = "^5.1.0"
+numpy = "^1.20"
+python = "^3.7"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^7.2.0"
-snapshottest = "^0.6.0"
-twine = "^4.0.1"
+autopep8 = "^2.0.0"
 jupyterlab = "^3.5.0"
 mypy = "^0.990"
 poethepoet = "^0.16.5"
+pytest = "^7.2.0"
+snapshottest = "^0.6.0"
+twine = "^4.0.1"
 
 [build-system]
 requires = ["poetry-core"]
@@ -27,5 +28,5 @@ build-backend = "poetry.core.masonry.api"
 pre_build  = "bundle-js"
 
 [tool.poe.tasks.bundle-js]
-script = "circuitsvis.utils.render:bundle_source"
+script = "circuitsvis.utils.build_js:build"
 help   = "Bundle up the latest version of the react library as a single script file."

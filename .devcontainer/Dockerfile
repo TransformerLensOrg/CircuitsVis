@@ -8,10 +8,14 @@ FROM mcr.microsoft.com/vscode/devcontainers/python:0-${VARIANT}
 ARG NODE_VERSION="none"
 RUN if [ "${NODE_VERSION}" != "none" ]; then su vscode -c "umask 0002 && . /usr/local/share/nvm/nvm.sh && nvm install ${NODE_VERSION} 2>&1"; fi
 
-# Install autopep8 for formatting
+# Install Autopep8 for formatting
 RUN pip3 --disable-pip-version-check --no-cache-dir install \
-   autopep8 \
-   poetry
+   autopep8
+
+# Poetry for Python package management
+USER vscode
+RUN curl -sSL https://install.python-poetry.org | python3 -
+ENV PATH "/home/vscode/.poetry/bin:$PATH"
 
 # [Optional] Uncomment this section to install additional OS packages.
 # RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
@@ -20,6 +24,3 @@ RUN pip3 --disable-pip-version-check --no-cache-dir install \
 # [Optional] Uncomment this line to install global node packages.
 # RUN su vscode -c "source /usr/local/share/nvm/nvm.sh && npm install -g
 # <your-package-here>" 2>&1
-
-#  Enable poetry virtual environment in VS Code
-RUN poetry config virtualenvs.in-project true

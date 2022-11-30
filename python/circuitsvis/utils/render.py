@@ -64,18 +64,23 @@ def install_if_necessary() -> None:
         )
 
 
-def bundle_source() -> None:
+def bundle_source(dev_mode: bool = True) -> None:
     """Bundle up the JavaScript/TypeScript source files"""
     # Build
-    subprocess.run([
+    build_command = [
         "yarn",
-        "buildBrowser"
-    ],
-        cwd=REACT_DIR,
-        capture_output=True,
-        text=True,
-        check=True
-    )
+        "buildBrowser",
+    ]
+
+    if (dev_mode):
+        build_command.append("--dev")
+
+    subprocess.run(build_command,
+                   cwd=REACT_DIR,
+                   capture_output=True,
+                   text=True,
+                   check=True
+                   )
 
     # Copy files to python dist directory
     react_dist = REACT_DIR / "dist"
