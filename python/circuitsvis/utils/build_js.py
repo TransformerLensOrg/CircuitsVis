@@ -9,4 +9,4 @@ def build() -> None:
     install_if_necessary()
 
     # Bundle
-    bundle_source(False)
+    bundle_source()

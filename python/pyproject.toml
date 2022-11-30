@@ -5,6 +5,7 @@ description = "Mechanistic Interpretability Visualizations"
 authors = ["Your Name <you@example.com>"]
 license = "MIT"
 readme = "README.md"
+include = ["circuitsvis/dist/cdn/iife.js", "circuitsvis/dist/cdn/iife.js.map"]
 
 [tool.poetry.dependencies]
 importlib-metadata = "^5.1.0"
