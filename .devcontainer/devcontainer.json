@@ -57,12 +57,7 @@
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": [
-		"poetry config virtualenvs.in-project true",
-		"&&sudo poetry self add 'poethepoet[poetry_plugin]'",
-		"&& cd python && poetry install --with dev",
-		"&& cd ../react && yarn"
-	],
+	"postCreateCommand": "cd python && poetry config virtualenvs.in-project true && poetry self add 'poethepoet[poetry_plugin]' && poetry install --with dev && cd ../react && yarn",
 	// Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
 	"remoteUser": "vscode"
 }
