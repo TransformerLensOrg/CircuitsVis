@@ -82,7 +82,7 @@ jobs:
         uses:  'phips28/gh-action-bump-version@master'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PACKAGEJSON_DIR:  ${{env.working-directory}}
+          PACKAGEJSON_DIR:  react
         with:
           default: minor
           skip-tag: true
