@@ -1,5 +1,5 @@
 from typing import List, Optional
-from circuitsvis.render import RenderedHTML, render
+from circuitsvis.utils.render import RenderedHTML, render
 import numpy as np
 
 

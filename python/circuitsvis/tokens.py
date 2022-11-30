@@ -1,5 +1,5 @@
 from typing import List, Optional
-from circuitsvis.render import RenderedHTML, render
+from circuitsvis.utils.render import RenderedHTML, render
 
 
 def colored_tokens(
@@ -32,10 +32,10 @@ def colored_tokens(
         "negativeColor": negative_color,
         "positiveColor": positive_color,
     }
-    
+
     # Remove kwargs that are None
     kwargs = {k: v for k, v in kwargs.items() if v is not None}
-    
+
     return render(
         "ColoredTokens",
         development_mode,

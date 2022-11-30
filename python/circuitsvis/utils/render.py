@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Optional
 from uuid import uuid4
 
-REACT_DIR = Path(__file__).parent.parent.parent / "react"
+REACT_DIR = Path(__file__).parent.parent.parent.parent / "react"
 
 
 class RenderedHTML:
@@ -93,7 +93,7 @@ def render_dev(react_element_name: str, **kwargs) -> RenderedHTML:
     <script crossorigin type="module">
     {inline_js}
     
-    CircuitsVis.render(
+    circuitsvis.utils.render(
       "{uuid}",
       CircuitsVis.{react_element_name},
       {props}

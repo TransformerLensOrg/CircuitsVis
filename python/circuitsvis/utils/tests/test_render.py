@@ -1,6 +1,6 @@
-from circuitsvis.render import (RenderedHTML, bundle_source, install_if_necessary,
-                                render, render_dev, render_prod)
-import circuitsvis.render
+from circuitsvis.utils.render import (RenderedHTML, bundle_source, install_if_necessary,
+                                      render, render_dev, render_prod)
+import circuitsvis.utils.render
 
 
 class TestRenderedHTML:
@@ -40,7 +40,7 @@ class TestRenderDev:
 class TestRenderProd:
     def test_example_element(self, snapshot, monkeypatch):
         # Monkeypatch uuid4 to always return the same uuid
-        monkeypatch.setattr(circuitsvis.render, "uuid4", lambda: "mock")
+        monkeypatch.setattr(circuitsvis.utils.render, "uuid4", lambda: "mock")
 
         res = render_prod("Hello", name="Bob")
         snapshot.assert_match(str(res))
@@ -49,7 +49,7 @@ class TestRenderProd:
 class TestRender:
     def test_default_production_mode(self, monkeypatch):
         # Monkeypatch uuid4 to always return the same uuid
-        monkeypatch.setattr(circuitsvis.render, "uuid4", lambda: "mock")
+        monkeypatch.setattr(circuitsvis.utils.render, "uuid4", lambda: "mock")
 
         prod = render_prod("Hello",  name="Bob")
         res = render("Hello", name="Bob")
@@ -57,7 +57,7 @@ class TestRender:
 
     def test_development_mode(self, monkeypatch):
         # Monkeypatch uuid4 to always return the same uuid
-        monkeypatch.setattr(circuitsvis.render, "uuid4", lambda: "mock")
+        monkeypatch.setattr(circuitsvis.utils.render, "uuid4", lambda: "mock")
 
         dev = render_dev("Hello", name="Bob")
         res = render("Hello",
