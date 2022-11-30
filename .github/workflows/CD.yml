@@ -113,6 +113,9 @@ jobs:
           cache: 'poetry'
       - name: Install dependencies
         run: poetry install --with dev
+      - name: Build react
+        run: yarn build
+        working-directory: react
       - name: Build
         run: poetry build
       - name: Publish
