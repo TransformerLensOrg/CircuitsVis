@@ -16,7 +16,15 @@ snapshottest = "^0.6.0"
 twine = "^4.0.1"
 jupyterlab = "^3.5.0"
 mypy = "^0.990"
+poethepoet = "^0.16.5"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poe.poetry_hooks]
+pre_build  = "bundle-js"
+
+[tool.poe.tasks.bundle-js]
+script = "circuitsvis.utils.render:bundle_source"
+help   = "Bundle up the latest version of the react library as a single script file."
