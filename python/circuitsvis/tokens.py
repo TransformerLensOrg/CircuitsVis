@@ -9,7 +9,6 @@ def colored_tokens(
     max_value: Optional[float] = None,
     negative_color: Optional[str] = None,
     positive_color: Optional[str] = None,
-    development_mode: Optional[bool] = None
 ) -> RenderedHTML:
     """Show tokens (colored by values) for each token in some text
 
@@ -38,6 +37,5 @@ def colored_tokens(
 
     return render(
         "ColoredTokens",
-        development_mode,
         **kwargs
     )

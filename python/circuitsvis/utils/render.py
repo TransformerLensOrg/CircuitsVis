@@ -2,8 +2,8 @@
 import json
 import subprocess
 from pathlib import Path
-from typing import Optional
 from uuid import uuid4
+import shutil
 
 REACT_DIR = Path(__file__).parent.parent.parent.parent / "react"
 
@@ -14,8 +14,9 @@ class RenderedHTML:
     Enables rendering HTML in a variety of situations (e.g. Jupyter Lab)
     """
 
-    def __init__(self, src: str):
-        self.src = src
+    def __init__(self, local_src: str, cdn_src: str):
+        self.local_src = local_src
+        self.cdn_src = cdn_src
 
     def _repr_html_(self) -> str:
         """Jupyter/Colab HTML Representation
@@ -23,25 +24,31 @@ class RenderedHTML:
         When Jupyter sees this method, it renders the HTML.
 
         Returns:
-            str: HTML for Jupyter/Colab
+            str: HTML for Jupyter/Colab (works offline)
         """
-        return self.src
+        return self.local_src
 
     def __html__(self) -> str:
         """Used by some tooling as an alternative to _repr_html_"""
-        return self.src
+        return self.local_src
 
     def show_code(self) -> str:
-        """Show the code as source-code
+        """Show the code as HTML source code
+
+        This loads JavaScript from the CDN, so it will not work offline.
 
         Returns:
-            str: HTML source code
+            str: HTML source code (with JavaScript from CDN)
         """
-        return self.src
+        return self.cdn_src
 
     def __str__(self):
-        """String type conversion handler"""
-        return self.src
+        """String type conversion handler
+
+        Returns:
+            str: HTML source code (with JavaScript from CDN)
+        """
+        return self.cdn_src
 
 
 def install_if_necessary() -> None:
@@ -59,6 +66,7 @@ def install_if_necessary() -> None:
 
 def bundle_source() -> None:
     """Bundle up the JavaScript/TypeScript source files"""
+    # Build
     subprocess.run([
         "yarn",
         "buildBrowser"
@@ -69,9 +77,14 @@ def bundle_source() -> None:
         check=True
     )
 
+    # Copy files to python dist directory
+    react_dist = REACT_DIR / "dist"
+    python_dist = Path(__file__).parent.parent / "dist"
+    shutil.copytree(react_dist, python_dist, dirs_exist_ok=True)
 
-def render_dev(react_element_name: str, **kwargs) -> RenderedHTML:
-    """Render (during development)"""
+
+def render_local(react_element_name: str, **kwargs) -> str:
+    """Render (using local JavaScript files)"""
     # Create a random ID for the div (that we render into)
     # This is done to avoid name clashes on a page with many rendered
     # CircuitsVis elements. Note we shorten the UUID to be a reasonable length
@@ -80,12 +93,13 @@ def render_dev(react_element_name: str, **kwargs) -> RenderedHTML:
     # Stringify keyword args
     props = json.dumps(kwargs)
 
-    # Build
-    install_if_necessary()
-    bundle_source()
+    # Build if in dev mode (detected by the react directory existing)
+    if REACT_DIR.exists():
+        install_if_necessary()
+        bundle_source()
 
     # Load the JS
-    filename = REACT_DIR / "dist" / "cdn" / "iife.js"
+    filename = Path(__file__).parent.parent / "dist" / "cdn" / "iife.js"
     with open(filename, encoding="utf-8") as file:
         inline_js = file.read()
 
@@ -100,11 +114,18 @@ def render_dev(react_element_name: str, **kwargs) -> RenderedHTML:
     )
     </script>"""
 
-    return RenderedHTML(html)
+    return html
 
 
-def render_prod(react_element_name: str, **kwargs) -> RenderedHTML:
-    """Render (for production)"""
+def render_cdn(react_element_name: str, **kwargs) -> str:
+    """Render (from the CDN)
+
+    Args:
+        react_element_name (str): Name of the React element to render
+
+    Returns:
+        RenderedHTML: HTML for the visualization
+    """
     # Create a random ID for the div (that we render into)
     # This is done to avoid name clashes on a page with many rendered
     # CircuitsVis elements. Note we shorten the UUID to be a reasonable length
@@ -123,12 +144,11 @@ def render_prod(react_element_name: str, **kwargs) -> RenderedHTML:
     )
     </script>"""
 
-    return RenderedHTML(html)
+    return html
 
 
 def render(
     react_element_name: str,
-    development_mode: Optional[bool] = False,
     **kwargs
 ) -> RenderedHTML:
     """Render a visualization to HTML
@@ -138,13 +158,11 @@ def render(
 
     Args:
         react_element_name (str): Visualization element name from React codebase
-        development_mode (bool, optional): Flag to run in development mode (only
         use this if directly developing this library). Defaults to False.
 
     Returns:
         Html: HTML for the visualization
     """
-    if development_mode:
-        return render_dev(react_element_name, **kwargs)
-    else:
-        return render_prod(react_element_name, **kwargs)
+    local_src = render_local(react_element_name, **kwargs)
+    cdn_src = render_cdn(react_element_name, **kwargs)
+    return RenderedHTML(local_src, cdn_src)

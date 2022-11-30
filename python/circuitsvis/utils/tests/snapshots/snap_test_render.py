@@ -7,7 +7,7 @@ from snapshottest import Snapshot
 
 snapshots = Snapshot()
 
-snapshots['TestRenderProd.test_example_element 1'] = '''<div id="circuits-vis-mock" style="margin: 15px 0;"/>
+snapshots['TestRenderDev.test_example_element 1'] = '''<div id="circuits-vis-mock" style="margin: 15px 0;"/>
     <script crossorigin type="module">
     import { render, Hello } from "https://unpkg.com/circuitsvis/dist/cdn/esm.js";
     render(

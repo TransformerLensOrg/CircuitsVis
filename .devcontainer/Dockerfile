@@ -20,3 +20,6 @@ RUN pip3 --disable-pip-version-check --no-cache-dir install \
 # [Optional] Uncomment this line to install global node packages.
 # RUN su vscode -c "source /usr/local/share/nvm/nvm.sh && npm install -g
 # <your-package-here>" 2>&1
+
+#  Enable poetry virtual environment in VS Code
+RUN poetry config virtualenvs.in-project true
