@@ -107,7 +107,7 @@ def render_local(react_element_name: str, **kwargs) -> str:
     <script crossorigin type="module">
     {inline_js}
     
-    circuitsvis.utils.render(
+    CircuitsVis.render(
       "{uuid}",
       CircuitsVis.{react_element_name},
       {props}
