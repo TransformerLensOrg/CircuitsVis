@@ -27,5 +27,5 @@ build-backend = "poetry.core.masonry.api"
 pre_build  = "bundle-js"
 
 [tool.poe.tasks.bundle-js]
-script = "circuitsvis.utils.render:bundle_source"
+script = "circuitsvis.utils.build_js:build"
 help   = "Bundle up the latest version of the react library as a single script file."
