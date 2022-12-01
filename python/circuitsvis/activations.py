@@ -1,11 +1,14 @@
-from typing import List, Optional
-from circuitsvis.utils.render import RenderedHTML, render
+"""Activations visualizations"""
+from typing import List, Union
+
 import numpy as np
+import torch
+from circuitsvis.utils.render import RenderedHTML, render
 
 
 def text_neuron_activations(
     tokens: List[str],
-    activations: np.ndarray,
+    activations: Union[List[List[List[float]]], np.ndarray, torch.Tensor],
 ) -> RenderedHTML:
     """Show activations (colored by intensity) for each token in some text
 
@@ -18,9 +21,8 @@ def text_neuron_activations(
     Returns:
         Html: Text neuron activations visualization
     """
-    activationsList = activations.tolist()
     return render(
         "TextNeuronActivations",
         tokens=tokens,
-        activations=activationsList,
+        activations=activations,
     )

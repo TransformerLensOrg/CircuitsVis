@@ -1,9 +1,10 @@
 """Helper functions to build visualizations using HTML/web frameworks."""
-import json
+import shutil
 import subprocess
 from pathlib import Path
 from uuid import uuid4
-import shutil
+
+from circuitsvis.utils.convert_props import convert_props, PythonProperty
 
 REACT_DIR = Path(__file__).parent.parent.parent.parent / "react"
 
@@ -96,7 +97,7 @@ def render_local(react_element_name: str, **kwargs) -> str:
     uuid = "circuits-vis-" + str(uuid4())[:13]
 
     # Stringify keyword args
-    props = json.dumps(kwargs)
+    props = convert_props(kwargs)
 
     # Build if in dev mode (detected by the react directory existing)
     if REACT_DIR.exists():
@@ -122,7 +123,7 @@ def render_local(react_element_name: str, **kwargs) -> str:
     return html
 
 
-def render_cdn(react_element_name: str, **kwargs) -> str:
+def render_cdn(react_element_name: str, **kwargs: PythonProperty) -> str:
     """Render (from the CDN)
 
     Args:
@@ -137,7 +138,7 @@ def render_cdn(react_element_name: str, **kwargs) -> str:
     uuid = "circuits-vis-" + str(uuid4())[:13]
 
     # Stringify keyword args
-    props = json.dumps(kwargs)
+    props = convert_props(kwargs)
 
     html = f"""<div id="{uuid}" style="margin: 15px 0;"/>
     <script crossorigin type="module">
@@ -154,7 +155,7 @@ def render_cdn(react_element_name: str, **kwargs) -> str:
 
 def render(
     react_element_name: str,
-    **kwargs
+    **kwargs: PythonProperty
 ) -> RenderedHTML:
     """Render a visualization to HTML
 

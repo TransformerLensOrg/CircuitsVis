@@ -1,12 +1,14 @@
 """Attention visualisations"""
-from typing import List, Optional
-from circuitsvis.utils.render import RenderedHTML, render
+from typing import List, Optional, Union
+
 import numpy as np
+import torch
+from circuitsvis.utils.render import RenderedHTML, render
 
 
 def attention_patterns(
     tokens: List[str],
-    attention: np.ndarray,
+    attention: Union[list, np.ndarray, torch.Tensor],
 ) -> RenderedHTML:
     """Attention Patterns
 
@@ -20,17 +22,16 @@ def attention_patterns(
     Returns:
         Html: Attention patterns visualization
     """
-    attention_list = attention.tolist()
     return render(
         "AttentionPatterns",
         tokens=tokens,
-        attention=attention_list,
+        attention=attention,
     )
 
 
 def attention_pattern(
     tokens: List[str],
-    attention: np.ndarray,
+    attention: Union[list, np.ndarray, torch.Tensor],
     max_value: Optional[float] = None,
     min_value: Optional[float] = None,
     negative_color: Optional[str] = None,
@@ -62,20 +63,15 @@ def attention_pattern(
     Returns:
         Html: Attention pattern visualization
     """
-    attention_list = attention.tolist()
-
     kwargs = {
         "tokens": tokens,
-        "attention": attention_list,
+        "attention": attention,
         "minValue": min_value,
         "maxValue": max_value,
         "negativeColor": negative_color,
         "positiveColor": positive_color,
         "showAxisLabels": show_axis_labels,
     }
-
-    # Remove kwargs that are None
-    kwargs = {k: v for k, v in kwargs.items() if v is not None}
 
     return render(
         "AttentionPattern",

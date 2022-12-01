@@ -11,6 +11,7 @@ include = ["circuitsvis/dist/cdn/iife.js", "circuitsvis/dist/cdn/iife.js.map"]
 importlib-metadata = "^5.1.0"
 numpy = "^1.20"
 python = "^3.7"
+torch = "^1"
 
 [tool.poetry.group.dev.dependencies]
 autopep8 = "^2.0.0"
