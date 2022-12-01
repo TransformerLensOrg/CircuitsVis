@@ -24,6 +24,7 @@ JavaScriptProperty = Union[
     int,  # Number
     list,  # Array
     str,  # String
+    None,  # Undefined
 ]
 
 
