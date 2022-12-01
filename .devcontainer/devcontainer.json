@@ -20,7 +20,7 @@
 		"vscode": {
 			// Set *default* container specific settings.json values on container create.
 			"settings": {
-				"python.defaultInterpreterPath": "/usr/local/bin/python",
+				"python.defaultInterpreterPath": "/workspaces/CircuitsVis/python/.venv/bin/python",
 				"python.formatting.autopep8Path": "autopep8",
 				"python.linting.mypyPath": "mypy"
 			},
@@ -54,10 +54,8 @@
 			]
 		}
 	},
-	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [],
-	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "cd python && poetry config virtualenvs.in-project true && poetry self add 'poethepoet[poetry_plugin]' && poetry install --with dev && cd ../react && yarn",
+	// Run commands after the container is created:
+	"updateContentCommand": "cd python && poetry config virtualenvs.in-project true && poetry self add 'poethepoet[poetry_plugin]' && poetry install --with dev && cd ../react && yarn",
 	// Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
 	"remoteUser": "vscode"
 }
