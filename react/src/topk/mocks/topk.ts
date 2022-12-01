@@ -70,7 +70,6 @@ function createRandom3DActivationMatrix(shape: number[]): number[][][] {
   );
 }
 
-export const k: number = 7;
 export const mockTokens: string[][] = chunkText(text.split(/(?=\s)/));
 
 export const mockActivations: number[][][][] = mockTokens.map((tokens) => {
