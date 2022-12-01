@@ -8,7 +8,8 @@ import {
 } from "@tensorflow/tfjs";
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col } from "react-grid-system";
-import { ColoredTokens } from "../tokens/ColoredTokens";
+import { usePopperTooltip } from "react-popper-tooltip";
+import { colord, AnyColor } from "colord";
 import { getTokenBackgroundColor } from "../utils/getTokenBackgroundColor";
 import {
   rangeArrToString,
@@ -118,6 +119,97 @@ export function NumberSelector({
 }
 
 /**
+ * Create a grid cell containing the token coloured by its activation value.
+ *
+ * @param {string} tdKey - The td key.
+ * @param {string} token - The token to display.
+ * @param {number} value - The value to use for the token's background color and
+ * tooltip display
+ * @param {number} minValue - The minimum value for setting the colour scheme.
+ * @param {number} maxValue - The maximum value for setting the colour scheme.
+ * @param {number} negativeColor - The color to use for negative values.
+ * @param {number} positiveColor - The color to use for positive values.
+ * @returns A td element.
+ */
+export function TokenCell({
+  tdKey,
+  token,
+  value,
+  minValue,
+  maxValue,
+  negativeColor,
+  positiveColor
+}: {
+  tdKey: number;
+  token: string;
+  value: number;
+  minValue: number;
+  maxValue: number;
+  maxTokenLength: number;
+  negativeColor?: AnyColor;
+  positiveColor?: AnyColor;
+}): JSX.Element {
+  // Hover state
+  const { getTooltipProps, setTooltipRef, setTriggerRef, visible } =
+    usePopperTooltip({
+      followCursor: true
+    });
+  // Get the background color
+  const backgroundColor: string = getTokenBackgroundColor(
+    value,
+    minValue,
+    maxValue,
+    negativeColor,
+    positiveColor
+  ).toRgbString();
+
+  const textColor: string =
+    colord(backgroundColor).brightness() < 0.6 ? "white" : "black";
+
+  const tokenReplaceSpaces = token.replace(/\s/g, "&nbsp;");
+  const tokenReplaceLineBreaks = tokenReplaceSpaces.replace(/\n/g, "¶");
+
+  return (
+    <td
+      key={tdKey}
+      style={{
+        backgroundColor,
+        borderWidth: 1,
+        borderStyle: "solid",
+        borderColor: "black"
+      }}
+    >
+      <span
+        ref={setTriggerRef}
+        style={{ display: "block", color: textColor }}
+        dangerouslySetInnerHTML={{ __html: tokenReplaceLineBreaks }}
+      ></span>
+      {visible && (
+        <div
+          ref={setTooltipRef}
+          {...getTooltipProps({
+            style: {
+              background: "#333",
+              color: "white",
+              textAlign: "center",
+              padding: 10,
+              borderRadius: 5,
+              boxShadow: "5px 5px rgba(0, 0, 0, 0.03)",
+              marginTop: 15,
+              zIndex: 1
+            }
+          })}
+        >
+          <strong>{token}</strong>
+          <br />
+          {value}
+        </div>
+      )}
+    </td>
+  );
+}
+
+/**
  * Get the selected activations
  *
  * @param {Tensor3D} activations - Activations for the selected sample [ tokens x layers x neurons ]
@@ -141,17 +233,6 @@ export function getSelectedActivations(
     .squeeze<Tensor2D>([1]) // squeeze out the layer dimension
     .transpose(); // transpose so that the tokens are the last dimension (needed for tfjs's topk)
   return currentActivations; // [neurons x tokens]
-}
-
-function tdStyle(value: number, maxTokenLength: number): React.CSSProperties {
-  // Styling for each cell in the table
-  // The background color is determined by the activation value
-  const backgroundColor = getTokenBackgroundColor(value, 0, 1).toRgbString();
-  return {
-    backgroundColor,
-    border: "1px solid black",
-    width: `${maxTokenLength + 2}ch`
-  };
 }
 
 /**
@@ -183,9 +264,6 @@ export function TopBottomKTable({
   neuronNumbers: number[];
   filter: string;
 }) {
-  // Create a table of size [topkActivations.shape with each column
-  // corresponding to the topk activations coloured by their activation value
-  // for a specific neuron
   return (
     <table style={{ marginTop: 15, marginLeft: 15 }}>
       <thead>
@@ -203,19 +281,17 @@ export function TopBottomKTable({
         {filter.includes("topk") &&
           topkActivations.map((activations, tokenIdx) => (
             <tr key={tokenIdx}>
-              {/* Show the coloured token for each activation */}
+              {/* Show the coloured token for each topk activation */}
               {activations.map((activation, neuronIdx) => (
-                /** TODO; move this + style to react component */
-                <td key={neuronIdx} style={tdStyle(activation, maxTokenLength)}>
-                  <ColoredTokens
-                    tokens={[topkTokens[tokenIdx][neuronIdx]]}
-                    values={[activation]}
-                    maxValue={1}
-                    minValue={0}
-                    paddingBottom={0}
-                    border={false}
-                  />
-                </td>
+                <TokenCell
+                  key={neuronIdx}
+                  tdKey={neuronIdx}
+                  token={topkTokens[tokenIdx][neuronIdx]}
+                  value={activation}
+                  minValue={0}
+                  maxValue={1}
+                  maxTokenLength={maxTokenLength}
+                />
               ))}
             </tr>
           ))}
@@ -235,18 +311,17 @@ export function TopBottomKTable({
         {filter.includes("bottomk") &&
           bottomkActivations.map((activations, tokenIdx) => (
             <tr key={tokenIdx}>
-              {/* Show the coloured token for each activation */}
+              {/* Show the coloured token for each bottomk activation */}
               {activations.map((activation, neuronIdx) => (
-                <td key={neuronIdx} style={tdStyle(activation, maxTokenLength)}>
-                  <ColoredTokens
-                    tokens={[bottomkTokens[tokenIdx][neuronIdx]]}
-                    values={[activation]}
-                    maxValue={1}
-                    minValue={0}
-                    paddingBottom={0}
-                    border={false}
-                  />
-                </td>
+                <TokenCell
+                  key={neuronIdx}
+                  tdKey={neuronIdx}
+                  token={bottomkTokens[tokenIdx][neuronIdx]}
+                  value={activation}
+                  minValue={0}
+                  maxValue={1}
+                  maxTokenLength={maxTokenLength}
+                />
               ))}
             </tr>
           ))}
