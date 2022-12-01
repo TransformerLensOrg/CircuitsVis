@@ -1,3 +1,4 @@
+"""Examples"""
 from circuitsvis.utils.render import RenderedHTML, render
 
 
