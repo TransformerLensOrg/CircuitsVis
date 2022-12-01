@@ -186,71 +186,72 @@ export function TopBottomKTable({
   // Create a table of size [topkActivations.shape with each column
   // corresponding to the topk activations coloured by their activation value
   // for a specific neuron
-
-  // TODO; Try using HTML Table
   return (
-    <Container fluid>
-      {/* The first header row just shows the current neuron idx */}
-      <Row>
-        {neuronNumbers.map((neuronNumber) => (
-          <Col key={neuronNumber} style={{ textAlign: "center" }}>
-            {neuronNumber}
-          </Col>
-        ))}
-      </Row>
-      {/* Only show the top activations if the filter contains the substring "topk" */}
-      {filter.includes("topk") &&
-        topkActivations.map((activations, tokenIdx) => (
-          <Row key={tokenIdx}>
-            {/* Show the coloured token for each activation */}
-            {activations.map((activation, neuronIdx) => (
-              /** TODO; move this + style to react component */
-              /** TODO: split to own component */
-              <Col key={neuronIdx} style={tdStyle(activation, maxTokenLength)}>
-                <ColoredTokens
-                  tokens={[topkTokens[tokenIdx][neuronIdx]]}
-                  values={[activation]}
-                  maxValue={1}
-                  minValue={0}
-                  paddingBottom={0}
-                  border={false}
-                />
-              </Col>
-            ))}
-          </Row>
-        ))}
-      {/* Only show the ellipse if filter === "topk+bottomk" */}
-      {filter === "topk+bottomk" && (
-        <Row>
-          {/* Add an ellipse for each column */}
-          {Array(topkActivations[0].length)
-            .fill(0)
-            .map((_, idx) => (
-              <Col key={idx}>
-                <div style={{ textAlign: "center" }}>...</div>
-              </Col>
-            ))}
-        </Row>
-      )}
-      {filter.includes("bottomk") &&
-        bottomkActivations.map((activations, tokenIdx) => (
-          <Row key={tokenIdx}>
-            {/* Show the coloured token for each activation */}
-            {activations.map((activation, neuronIdx) => (
-              <Col key={neuronIdx} style={tdStyle(activation, maxTokenLength)}>
-                <ColoredTokens
-                  tokens={[bottomkTokens[tokenIdx][neuronIdx]]}
-                  values={[activation]}
-                  maxValue={1}
-                  minValue={0}
-                  paddingBottom={0}
-                  border={false}
-                />
-              </Col>
-            ))}
-          </Row>
-        ))}
-    </Container>
+    <table style={{ marginTop: 15, marginLeft: 15 }}>
+      <thead>
+        {/* The first header row just shows the current neuron idx */}
+        <tr>
+          {neuronNumbers.map((neuronNumber) => (
+            <th key={neuronNumber} style={{ textAlign: "center" }}>
+              {neuronNumber}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {/* Only show the top activations if the filter contains the substring "topk" */}
+        {filter.includes("topk") &&
+          topkActivations.map((activations, tokenIdx) => (
+            <tr key={tokenIdx}>
+              {/* Show the coloured token for each activation */}
+              {activations.map((activation, neuronIdx) => (
+                /** TODO; move this + style to react component */
+                <td key={neuronIdx} style={tdStyle(activation, maxTokenLength)}>
+                  <ColoredTokens
+                    tokens={[topkTokens[tokenIdx][neuronIdx]]}
+                    values={[activation]}
+                    maxValue={1}
+                    minValue={0}
+                    paddingBottom={0}
+                    border={false}
+                  />
+                </td>
+              ))}
+            </tr>
+          ))}
+        {/* Only show the ellipse if filter === "topk+bottomk" */}
+        {filter === "topk+bottomk" && (
+          <tr>
+            {/* Add an ellipse for each column */}
+            {Array(topkActivations[0].length)
+              .fill(0)
+              .map((_, idx) => (
+                <td key={idx}>
+                  <div style={{ textAlign: "center" }}>...</div>
+                </td>
+              ))}
+          </tr>
+        )}
+        {filter.includes("bottomk") &&
+          bottomkActivations.map((activations, tokenIdx) => (
+            <tr key={tokenIdx}>
+              {/* Show the coloured token for each activation */}
+              {activations.map((activation, neuronIdx) => (
+                <td key={neuronIdx} style={tdStyle(activation, maxTokenLength)}>
+                  <ColoredTokens
+                    tokens={[bottomkTokens[tokenIdx][neuronIdx]]}
+                    values={[activation]}
+                    maxValue={1}
+                    minValue={0}
+                    paddingBottom={0}
+                    border={false}
+                  />
+                </td>
+              ))}
+            </tr>
+          ))}
+      </tbody>
+    </table>
   );
 }
 
@@ -341,114 +342,113 @@ export function Topk({
   );
 
   return (
-    <Container fluid>
-      <Row>
-        <Col>
-          <Row style={{ paddingTop: 5, paddingBottom: 5 }}>
-            <Col>
-              <label htmlFor="sample-selector" style={{ marginRight: 15 }}>
-                {firstDimensionName}:
-              </label>
-              <NumberSelector
-                id="sample-selector"
-                smallestNumber={0}
-                largestNumber={numberOfSamples - 1}
-                currentValue={sampleNumber}
-                setCurrentValue={setSampleNumber}
-              />
-            </Col>
-          </Row>
-          <Row style={{ paddingTop: 5, paddingBottom: 5 }}>
-            <Col>
-              <label htmlFor="layer-selector" style={{ marginRight: 15 }}>
-                {secondDimensionName}:
-              </label>
-              <NumberSelector
-                id="layer-selector"
-                largestNumber={numberOfLayers - 1}
-                currentValue={layerNumber}
-                setCurrentValue={setLayerNumber}
-              />
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-              <label htmlFor="neuron-selector" style={{ marginRight: 15 }}>
-                {thirdDimensionName}:
-              </label>
-              <RangeSelector
-                id="neuron-selector"
-                largestNumber={numberOfNeurons - 1}
-                currentRangeArr={neuronNumbers}
-                setCurrentValue={setNeuronNumbers}
-                numValsInRange={colsToShow}
-              />
-            </Col>
-          </Row>
-        </Col>
-        <Col>
-          <Row>
-            <label htmlFor="filter-select" style={{ marginRight: 15 }}>
-              Filter:
-            </label>
-            <select
-              value={filter}
-              onChange={(event) => setFilter(event.target.value)}
-              id="filter-select"
-            >
-              <option value={undefined} selected>
-                topk+bottomk
-              </option>
-              <option value="topk" selected>
-                topk
-              </option>
-              <option value="bottomk" selected>
-                bottomk
-              </option>
-            </select>
-          </Row>
-          <Row>
-            <Col>
-              <label htmlFor="visibleCols-selector" style={{ marginRight: 15 }}>
-                {thirdDimensionName}s to show:
-              </label>
-              <NumberSelector
-                id="visible-cols-selector"
-                smallestNumber={1}
-                largestNumber={numberOfNeurons}
-                currentValue={colsToShow}
-                setCurrentValue={setColsToShow}
-              />
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-              <label htmlFor="k-selector" style={{ marginRight: 15 }}>
-                k:
-              </label>
-              <NumberSelector
-                id="k-selector"
-                smallestNumber={1}
-                largestNumber={20}
-                currentValue={k}
-                setCurrentValue={setK}
-              />
-            </Col>
-          </Row>
-        </Col>
-      </Row>
-      <Row style={{ marginTop: 15 }}>
-        <TopBottomKTable
-          topkActivations={topkVals}
-          bottomkActivations={bottomkVals}
-          topkTokens={topkTokens}
-          bottomkTokens={bottomkTokens}
-          maxTokenLength={maxTokenLength}
-          neuronNumbers={neuronNumbers}
-          filter={filter}
-        />
-      </Row>
-    </Container>
+    <div>
+      <Container fluid>
+        <Row>
+          <Col>
+            <Row style={{ paddingTop: 5, paddingBottom: 5 }}>
+              <Col>
+                <label htmlFor="sample-selector" style={{ marginRight: 15 }}>
+                  {firstDimensionName}:
+                </label>
+                <NumberSelector
+                  id="sample-selector"
+                  smallestNumber={0}
+                  largestNumber={numberOfSamples - 1}
+                  currentValue={sampleNumber}
+                  setCurrentValue={setSampleNumber}
+                />
+              </Col>
+            </Row>
+            <Row style={{ paddingTop: 5, paddingBottom: 5 }}>
+              <Col>
+                <label htmlFor="layer-selector" style={{ marginRight: 15 }}>
+                  {secondDimensionName}:
+                </label>
+                <NumberSelector
+                  id="layer-selector"
+                  largestNumber={numberOfLayers - 1}
+                  currentValue={layerNumber}
+                  setCurrentValue={setLayerNumber}
+                />
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <label htmlFor="neuron-selector" style={{ marginRight: 15 }}>
+                  {thirdDimensionName}:
+                </label>
+                <RangeSelector
+                  id="neuron-selector"
+                  largestNumber={numberOfNeurons - 1}
+                  currentRangeArr={neuronNumbers}
+                  setCurrentValue={setNeuronNumbers}
+                  numValsInRange={colsToShow}
+                />
+              </Col>
+            </Row>
+          </Col>
+          <Col>
+            <Row>
+              <Col>
+                <label htmlFor="filter-select" style={{ marginRight: 15 }}>
+                  Filter:
+                </label>
+                <select
+                  value={filter}
+                  onChange={(event) => setFilter(event.target.value)}
+                  id="filter-select"
+                >
+                  <option value={undefined}>topk+bottomk</option>
+                  <option value="topk">topk</option>
+                  <option value="bottomk">bottomk</option>
+                </select>
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <label
+                  htmlFor="visibleCols-selector"
+                  style={{ marginRight: 15 }}
+                >
+                  {thirdDimensionName}s to show:
+                </label>
+                <NumberSelector
+                  id="visible-cols-selector"
+                  smallestNumber={1}
+                  largestNumber={numberOfNeurons}
+                  currentValue={colsToShow}
+                  setCurrentValue={setColsToShow}
+                />
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <label htmlFor="k-selector" style={{ marginRight: 15 }}>
+                  k:
+                </label>
+                <NumberSelector
+                  id="k-selector"
+                  smallestNumber={1}
+                  largestNumber={20}
+                  currentValue={k}
+                  setCurrentValue={setK}
+                />
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+      </Container>
+      <TopBottomKTable
+        topkActivations={topkVals}
+        bottomkActivations={bottomkVals}
+        topkTokens={topkTokens}
+        bottomkTokens={bottomkTokens}
+        maxTokenLength={maxTokenLength}
+        neuronNumbers={neuronNumbers}
+        filter={filter}
+      />
+    </div>
   );
 }
 
