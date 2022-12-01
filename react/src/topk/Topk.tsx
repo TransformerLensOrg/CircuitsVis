@@ -160,8 +160,9 @@ function tdStyle(value: number, maxTokenLength: number): React.CSSProperties {
  * @param {string[][]} topktokens - Topk tokens for the selected sample and neuron numbers [ tokens x neurons ]
  * @param {string[][]} bottomktokens - Bottomk tokens
  * @param {number} maxTokenLength - The number of chars in the longest token
- * @param {numberp[]} neuronNumbers - The neuron numbers we wish to display
+ * @param {number[]} neuronNumbers - The neuron numbers we wish to display
  * (each will have its own column)
+ * @param {string} filter - Indicates whether to show topk, bottomk or both.
  * @returns {JSX.Element} A react-grid-system Container element containing the table.
  */
 export function TopBottomKTable({
@@ -170,7 +171,8 @@ export function TopBottomKTable({
   topkTokens,
   bottomkTokens,
   maxTokenLength,
-  neuronNumbers
+  neuronNumbers,
+  filter
 }: {
   /** Topk activations for the selected sample and neuron numbers [ tokens x neurons ] */
   topkActivations: number[][];
@@ -179,13 +181,13 @@ export function TopBottomKTable({
   bottomkTokens: string[][]; // [tokens x neurons]
   maxTokenLength: number;
   neuronNumbers: number[];
+  filter: string;
 }) {
   // Create a table of size [topkActivations.shape with each column
   // corresponding to the topk activations coloured by their activation value
   // for a specific neuron
 
   // TODO; Try using HTML Table
-
   return (
     <Container fluid>
       {/* The first header row just shows the current neuron idx */}
@@ -196,52 +198,58 @@ export function TopBottomKTable({
           </Col>
         ))}
       </Row>
-      {topkActivations.map((activations, tokenIdx) => (
-        <Row key={tokenIdx}>
-          {/* Show the coloured token for each activation */}
-          {activations.map((activation, neuronIdx) => (
-            /** TODO; move this + style to react component */
-            /** TODO: split to own component */
-            <Col key={neuronIdx} style={tdStyle(activation, maxTokenLength)}>
-              <ColoredTokens
-                tokens={[topkTokens[tokenIdx][neuronIdx]]}
-                values={[activation]}
-                maxValue={1}
-                minValue={0}
-                paddingBottom={0}
-                border={false}
-              />
-            </Col>
-          ))}
+      {/* Only show the top activations if the filter contains the substring "topk" */}
+      {filter.includes("topk") &&
+        topkActivations.map((activations, tokenIdx) => (
+          <Row key={tokenIdx}>
+            {/* Show the coloured token for each activation */}
+            {activations.map((activation, neuronIdx) => (
+              /** TODO; move this + style to react component */
+              /** TODO: split to own component */
+              <Col key={neuronIdx} style={tdStyle(activation, maxTokenLength)}>
+                <ColoredTokens
+                  tokens={[topkTokens[tokenIdx][neuronIdx]]}
+                  values={[activation]}
+                  maxValue={1}
+                  minValue={0}
+                  paddingBottom={0}
+                  border={false}
+                />
+              </Col>
+            ))}
+          </Row>
+        ))}
+      {/* Only show the ellipse if filter === "topk+bottomk" */}
+      {filter === "topk+bottomk" && (
+        <Row>
+          {/* Add an ellipse for each column */}
+          {Array(topkActivations[0].length)
+            .fill(0)
+            .map((_, idx) => (
+              <Col key={idx}>
+                <div style={{ textAlign: "center" }}>...</div>
+              </Col>
+            ))}
         </Row>
-      ))}
-      <Row>
-        {/* Add an ellipse for each column */}
-        {Array(topkActivations[0].length)
-          .fill(0)
-          .map((_, idx) => (
-            <Col key={idx}>
-              <div style={{ textAlign: "center" }}>...</div>
-            </Col>
-          ))}
-      </Row>
-      {bottomkActivations.map((activations, tokenIdx) => (
-        <Row key={tokenIdx}>
-          {/* Show the coloured token for each activation */}
-          {activations.map((activation, neuronIdx) => (
-            <Col key={neuronIdx} style={tdStyle(activation, maxTokenLength)}>
-              <ColoredTokens
-                tokens={[bottomkTokens[tokenIdx][neuronIdx]]}
-                values={[activation]}
-                maxValue={1}
-                minValue={0}
-                paddingBottom={0}
-                border={false}
-              />
-            </Col>
-          ))}
-        </Row>
-      ))}
+      )}
+      {filter.includes("bottomk") &&
+        bottomkActivations.map((activations, tokenIdx) => (
+          <Row key={tokenIdx}>
+            {/* Show the coloured token for each activation */}
+            {activations.map((activation, neuronIdx) => (
+              <Col key={neuronIdx} style={tdStyle(activation, maxTokenLength)}>
+                <ColoredTokens
+                  tokens={[bottomkTokens[tokenIdx][neuronIdx]]}
+                  values={[activation]}
+                  maxValue={1}
+                  minValue={0}
+                  paddingBottom={0}
+                  border={false}
+                />
+              </Col>
+            ))}
+          </Row>
+        ))}
     </Container>
   );
 }
@@ -275,6 +283,8 @@ export function Topk({
   const [neuronNumbers, setNeuronNumbers] = useState<number[]>(
     numberOfSamples > 1 ? [...Array(colsToShow).keys()] : [0]
   );
+  // Filter for whether to show the topk, bottomk or both (written as "bottomk+topk")
+  const [filter, setFilter] = useState<string>("topk+bottomk");
 
   useEffect(() => {
     // When the user changes the colsToShow, update the neuronNumbers
@@ -378,6 +388,26 @@ export function Topk({
         </Col>
         <Col>
           <Row>
+            <label htmlFor="filter-select" style={{ marginRight: 15 }}>
+              Filter:
+            </label>
+            <select
+              value={filter}
+              onChange={(event) => setFilter(event.target.value)}
+              id="filter-select"
+            >
+              <option value={undefined} selected>
+                topk+bottomk
+              </option>
+              <option value="topk" selected>
+                topk
+              </option>
+              <option value="bottomk" selected>
+                bottomk
+              </option>
+            </select>
+          </Row>
+          <Row>
             <Col>
               <label htmlFor="visibleCols-selector" style={{ marginRight: 15 }}>
                 {thirdDimensionName}s to show:
@@ -415,6 +445,7 @@ export function Topk({
           bottomkTokens={bottomkTokens}
           maxTokenLength={maxTokenLength}
           neuronNumbers={neuronNumbers}
+          filter={filter}
         />
       </Row>
     </Container>
