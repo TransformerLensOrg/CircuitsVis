@@ -73,7 +73,7 @@ def bundle_source(dev_mode: bool = True) -> None:
         "buildBrowser",
     ]
 
-    if (dev_mode):
+    if dev_mode:
         build_command.append("--dev")
 
     subprocess.run(build_command,
