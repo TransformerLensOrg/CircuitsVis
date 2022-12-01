@@ -41,7 +41,7 @@ def convert_prop_type(prop: PythonProperty) -> JavaScriptProperty:
     """
     if isinstance(prop, torch.Tensor):
         return prop.tolist()
-    elif isinstance(prop, np.ndarray):
+    if isinstance(prop, np.ndarray):
         return prop.tolist()
 
     return prop

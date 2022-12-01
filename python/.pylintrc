@@ -1,2 +1,6 @@
 [MAIN]
-ignore=tests
+
+# Ignore test files
+ignore-patterns=(.)*_test\.py,test_(.)*\.py,(.)*snap_test_(.)*\.py
+
+disable=import-error, too-many-arguments
