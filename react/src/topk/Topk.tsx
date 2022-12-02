@@ -387,7 +387,6 @@ export function Topk({
     true
   );
 
-  /** TODO: Split "business logic" into its own function & add unit tests */
   // The topk and bottomk values, indices and tokens will be tensors of shape
   // [tokens x neurons]. This form makes it easier to display the table
   const topkVals: number[][] = topkValsRaw
