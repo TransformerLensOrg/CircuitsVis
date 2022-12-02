@@ -350,7 +350,7 @@ export function Topk({
   const [sampleNumber, setSampleNumber] = useState<number>(0);
   const [layerNumber, setLayerNumber] = useState<number>(0);
   const [colsToShow, setColsToShow] = useState<number>(5);
-  const [k, setK] = useState<number>(5);
+  const [k, setK] = useState<number>(Math.min(5, tokens[0].length));
   const [neuronNumbers, setNeuronNumbers] = useState<number[]>(
     numberOfSamples > 1 ? [...Array(colsToShow).keys()] : [0]
   );
@@ -494,7 +494,7 @@ export function Topk({
                 <NumberSelector
                   id="k-selector"
                   smallestNumber={1}
-                  largestNumber={20}
+                  largestNumber={currentTokens.length}
                   currentValue={k}
                   setCurrentValue={setK}
                 />
