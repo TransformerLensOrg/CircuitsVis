@@ -243,7 +243,6 @@ export function TopBottomKTable({
   bottomkActivations,
   topkTokens,
   bottomkTokens,
-  maxTokenLength,
   neuronNumbers,
   filter
 }: {
@@ -255,8 +254,6 @@ export function TopBottomKTable({
   topkTokens: string[][];
   /** Bottomk tokens for the selected sample and neuron numbers [ tokens x neurons ] */
   bottomkTokens: string[][];
-  /** The number of chars in the longest token */
-  maxTokenLength: number;
   /** The neuron numbers we wish to display (each will have its own column) */
   neuronNumbers: number[];
   /** Indicates whether to show topk, bottomk or both. */
@@ -408,11 +405,6 @@ export function Topk({
     outerArr.map((token_idx) => currentTokens[token_idx])
   );
 
-  // Calculate the max token length for use in the table column width
-  const maxTokenLength: number = Math.max(
-    ...currentTokens.map((token) => token.length)
-  );
-
   return (
     <div>
       <Container fluid>
@@ -516,7 +508,6 @@ export function Topk({
         bottomkActivations={bottomkVals}
         topkTokens={topkTokens}
         bottomkTokens={bottomkTokens}
-        maxTokenLength={maxTokenLength}
         neuronNumbers={neuronNumbers}
         filter={filter}
       />
