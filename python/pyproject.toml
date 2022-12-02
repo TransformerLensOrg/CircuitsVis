@@ -11,7 +11,9 @@ include = ["circuitsvis/dist/cdn/iife.js", "circuitsvis/dist/cdn/iife.js.map"]
 importlib-metadata = "^5.1.0"
 numpy = "^1.20"
 python = "^3.7"
-torch = "^1"
+# Fix for M1 issue with torch 1.13.0 (expected to be resolved in 1.13.1)
+torch = [{ version = ">=1 <1.13", markers = "sys_platform != 'linux'" },
+         { version = "^1", markers = "sys_platform == 'linux'" }]
 
 [tool.poetry.group.dev.dependencies]
 autopep8 = "^2.0.0"
