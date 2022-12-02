@@ -6,7 +6,8 @@ import {
   Tooltip,
   ScriptableContext,
   TooltipItem,
-  ChartData
+  ChartData,
+  LinearScale
 } from "chart.js";
 import { Chart, ChartProps } from "react-chartjs-2";
 import { getTokenBackgroundColor } from "../utils/getTokenBackgroundColor";
@@ -14,7 +15,13 @@ import { getTokenBackgroundColor } from "../utils/getTokenBackgroundColor";
 /**
  * Register ChartJS plugins
  */
-ChartJS.register(CategoryScale, Tooltip, MatrixElement, MatrixController);
+ChartJS.register(
+  CategoryScale,
+  Tooltip,
+  MatrixElement,
+  MatrixController,
+  LinearScale
+);
 
 /**
  * Block data point

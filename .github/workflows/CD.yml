@@ -1,0 +1,196 @@
+name: CD
+
+on:
+  push:
+    branches: 
+      - master
+    paths-ignore:
+      - '.devcontainer/**'
+      - '.github/**'
+      - '.vscode/**'
+  pull_request:
+    branches: 
+      - master
+    paths-ignore:
+      - '.devcontainer/**'
+      - '.github/**'
+      - '.vscode/**'
+
+jobs:
+  python-checks:
+    name: Python Checks
+    runs-on: ubuntu-latest
+    env:
+      working-directory: python
+    defaults:
+      run:
+        working-directory: python
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        cache: 'poetry'
+    - name: Install dependencies
+      run: poetry install --with dev
+    - name: Pytest
+      run: poetry run pytest
+    - name: Type check
+      run: poetry run mypy circuitsvis
+    - name: Build check
+      run: poetry build
+
+  react-checks:
+    name: React checks
+    runs-on: ubuntu-latest
+    env:
+      working-directory: react
+    defaults:
+      run:
+        working-directory: react
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install dependencies
+      run: yarn
+    - name: Jest
+      run: yarn test
+    - name: Lint
+      run: yarn lint
+    - name: Check types
+      run: yarn typeCheck
+    - name: Build check
+      run: yarn build
+
+  bump-versions:
+    name: "Bump Python & Node package versions"
+    if: github.event_name == 'push' # Push/merge only, not on PR
+    needs:
+      - python-checks
+      - react-checks
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          cache: 'poetry'
+      - name: Bump Python package version
+        run: poetry version minor
+        working-directory: python
+      - name: Bump package version
+        uses:  'phips28/gh-action-bump-version@master'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PACKAGEJSON_DIR:  react
+        with:
+          default: minor
+          skip-tag: true
+          skip-commit: true
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v4.14.1
+        with:
+          commit_message: Release latest package versions to PyPi and NPMJS
+          
+  release-python:
+    name: "Release Python package to PyPi"
+    needs:
+      - bump-versions
+    runs-on: ubuntu-latest
+    env:
+      working-directory: python
+    defaults:
+      run:
+        working-directory: python
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+      - name: Poetry config
+        run: poetry self add 'poethepoet[poetry_plugin]'
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          cache: 'poetry'
+      - name: Install dependencies
+        run: poetry install --with dev
+      - name: Build
+        run: poetry build
+      - name: Publish
+        run: poetry publish
+        env:
+          POETRY_PYPI_TOKEN_PYPI: ${{ secrets.POETRY_PYPI_TOKEN_PYPI }}
+
+  release-react:
+    name: "Release React Node JS package to NPMJS"
+    needs:
+      - bump-versions
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: write
+    env:
+      working-directory: react
+    defaults:
+      run:
+        working-directory: react
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install dependencies
+        run: yarn
+      - name: Build
+        run: yarn build
+      - name: Publish to NPMJS
+        id: publish
+        uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ${{env.working-directory}}/package.json
+          check-version: true
+
+  publish-storybook:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    name: "Publish Storybook Docs"
+    needs:
+      - release-react
+    runs-on: ubuntu-latest
+    env:
+      working-directory: react
+    defaults:
+      run:
+        working-directory: react
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Pages
+        uses: actions/configure-pages@v2
+      - uses: actions/checkout@v3
+      - name: Install dependencies
+        run: yarn
+      - name: Build
+        run: yarn build
+      - name: Build storybook
+        run: yarn build-storybook
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          # Upload entire repository
+          path: 'react/storybook-static'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1

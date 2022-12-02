@@ -20,14 +20,13 @@
 		"vscode": {
 			// Set *default* container specific settings.json values on container create.
 			"settings": {
-				"python.defaultInterpreterPath": "/usr/local/bin/python",
+				"python.defaultInterpreterPath": "/workspaces/CircuitsVis/python/.venv/bin/python",
 				"python.formatting.autopep8Path": "autopep8",
 				"python.linting.mypyPath": "mypy"
 			},
 			// Add the IDs of extensions you want installed when the container is created.
 			"extensions": [
 				"2gua.rainbow-brackets",
-				"ardenivanov.svelte-intellisense",
 				"christian-kohler.npm-intellisense",
 				"christian-kohler.path-intellisense",
 				"davidanson.vscode-markdownlint",
@@ -50,17 +49,13 @@
 				"rvest.vs-code-prettier-eslint",
 				"stkb.rewrap",
 				"streetsidesoftware.code-spell-checker",
-				"svelte.svelte-vscode",
 				"tushortz.python-extended-snippets",
-				"yzhang.markdown-all-in-one",
-				"pivaszbs.svelte-autoimport"
+				"yzhang.markdown-all-in-one"
 			]
 		}
 	},
-	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [],
-	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "cd python && poetry install --with dev && cd ../react && yarn",
+	// Run commands after the container is created:
+	"postCreateCommand": "cd python && poetry config virtualenvs.in-project true && poetry self add 'poethepoet[poetry_plugin]' && poetry install --with dev && cd ../react && yarn",
 	// Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
 	"remoteUser": "vscode"
 }
