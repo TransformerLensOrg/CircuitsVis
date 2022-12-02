@@ -1,5 +1,5 @@
 from circuitsvis.topk import topk
-import circuitsvis.render
+import circuitsvis.utils.render
 import numpy as np
 
 
