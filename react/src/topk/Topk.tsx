@@ -22,13 +22,7 @@ import {
  * number in the range and end is the last number in the range. E.g. if
  * largestNumber=4, smallestNumber=0, and numValsInRange=2, then the ranges array
  * will be ["0-1", "2-3", "4"].
- * @param {number} smallestNumber - Smallest number in the range.
- * @param {number} largestNumber - Largest number included in the ranges.
- * @param {number[]} currentRangeArr - Current range selected represented as an array of numbers.
- * @param {function(number[]): void} setCurrentValue - Function for setting
- * the selected range.
- * @param {number} numValsInRange - The max number of values in each range.
- * @param {number} id - The id of the select.
+ *
  * @returns Select element.
  */
 export function RangeSelector({
@@ -39,11 +33,17 @@ export function RangeSelector({
   numValsInRange,
   id
 }: {
+  /** Smallest number included in the range */
   smallestNumber?: number;
+  /** Largest number included in the range */
   largestNumber: number;
+  /** Current range selected represented as an array of numbers */
   currentRangeArr: number[];
+  /** Function for setting the selected range */
   setCurrentValue: (rangeArr: number[]) => void;
+  /** The max number of values in each range */
   numValsInRange: number;
+  /** The id of the select */
   id: string;
 }): JSX.Element {
   // Convert the current range to a string.
@@ -79,12 +79,7 @@ export function RangeSelector({
 /**
  * Create an html select with each option corresponding to a single number in a
  * range of numbers.
- * @param {number} smallestNumber - Smallest number in the range.
- * @param {number} largestNumber - Largest number included in the ranges.
- * @param {number} currentValue - Current value selected.
- * @param {function(number): void} setCurrentValue - Function for setting
- * the selected value.
- * @param {number} id - The id of the select.
+ *
  * @returns Select element.
  */
 export function NumberSelector({
@@ -94,10 +89,15 @@ export function NumberSelector({
   setCurrentValue,
   id
 }: {
+  /** Smallest number included in the range */
   smallestNumber?: number;
+  /** Largest number included in the range */
   largestNumber: number;
+  /** Current value selected */
   currentValue: number;
+  /** Function for setting the selected value */
   setCurrentValue: (num: number) => void;
+  /** The id of the select */
   id: string;
 }) {
   // Initialize an array of numbers smallestNumber-largestNumber
@@ -121,14 +121,6 @@ export function NumberSelector({
 /**
  * Create a grid cell containing the token coloured by its activation value.
  *
- * @param {string} tdKey - The td key.
- * @param {string} token - The token to display.
- * @param {number} value - The value to use for the token's background color and
- * tooltip display
- * @param {number} minValue - The minimum value for setting the colour scheme.
- * @param {number} maxValue - The maximum value for setting the colour scheme.
- * @param {number} negativeColor - The color to use for negative values.
- * @param {number} positiveColor - The color to use for positive values.
  * @returns A td element.
  */
 export function TokenCell({
@@ -140,13 +132,19 @@ export function TokenCell({
   negativeColor,
   positiveColor
 }: {
+  /** The td key */
   tdKey: number;
+  /** The token to display */
   token: string;
+  /** The value to use for the token's background color and tooltip display */
   value: number;
+  /** The minimum value for setting the colour scheme */
   minValue: number;
+  /** The maximum value for setting the colour scheme */
   maxValue: number;
-  maxTokenLength: number;
+  /** The color to use for negative values */
   negativeColor?: AnyColor;
+  /** The color to use for positive values */
   positiveColor?: AnyColor;
 }): JSX.Element {
   // Hover state
@@ -154,7 +152,7 @@ export function TokenCell({
     usePopperTooltip({
       followCursor: true
     });
-  // Get the background color
+
   const backgroundColor: string = getTokenBackgroundColor(
     value,
     minValue,
@@ -216,7 +214,7 @@ export function TokenCell({
  * @param {number} layerNumber - Selected layer number
  * @param {number} neuronStartNumber - First selected neuron number
  * @param {number} neuronEndNumber - Last selected neuron number
- * @returns Selected activations [ neurons x tokens ]. This form is required for
+ * @returns Tensor2D of selected activations [ neurons x tokens ]. This form is required for
  * topk which can only calculate the topk over the final dimension
  */
 export function getSelectedActivations(
@@ -237,14 +235,8 @@ export function getSelectedActivations(
 
 /**
  * Create a table with the topk and bottomk tokens for each neuron in the selected range.
- * @param {number[][]} bottomkActivations - Bottomk activations
- * @param {string[][]} topktokens - Topk tokens for the selected sample and neuron numbers [ tokens x neurons ]
- * @param {string[][]} bottomktokens - Bottomk tokens
- * @param {number} maxTokenLength - The number of chars in the longest token
- * @param {number[]} neuronNumbers - The neuron numbers we wish to display
- * (each will have its own column)
- * @param {string} filter - Indicates whether to show topk, bottomk or both.
- * @returns {JSX.Element} A react-grid-system Container element containing the table.
+ *
+ * @returns A html table element containing the topk table.
  */
 export function TopBottomKTable({
   topkActivations,
@@ -257,13 +249,19 @@ export function TopBottomKTable({
 }: {
   /** Topk activations for the selected sample and neuron numbers [ tokens x neurons ] */
   topkActivations: number[][];
-  bottomkActivations: number[][]; // [tokens x neurons]
-  topkTokens: string[][]; // [tokens x neurons]
-  bottomkTokens: string[][]; // [tokens x neurons]
+  /** Bottomk activations for the selected sample and neuron numbers [ tokens x neurons ] */
+  bottomkActivations: number[][];
+  /** Topk tokens for the selected sample and neuron numbers [ tokens x neurons ] */
+  topkTokens: string[][];
+  /** Bottomk tokens for the selected sample and neuron numbers [ tokens x neurons ] */
+  bottomkTokens: string[][];
+  /** The number of chars in the longest token */
   maxTokenLength: number;
+  /** The neuron numbers we wish to display (each will have its own column) */
   neuronNumbers: number[];
+  /** Indicates whether to show topk, bottomk or both. */
   filter: string;
-}) {
+}): JSX.Element {
   return (
     <table style={{ marginTop: 15, marginLeft: 15 }}>
       <thead>
@@ -290,7 +288,7 @@ export function TopBottomKTable({
                   value={activation}
                   minValue={0}
                   maxValue={1}
-                  maxTokenLength={maxTokenLength}
+                  // maxTokenLength={maxTokenLength}
                 />
               ))}
             </tr>
@@ -320,7 +318,7 @@ export function TopBottomKTable({
                   value={activation}
                   minValue={0}
                   maxValue={1}
-                  maxTokenLength={maxTokenLength}
+                  // maxTokenLength={maxTokenLength}
                 />
               ))}
             </tr>
