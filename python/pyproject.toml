@@ -2,7 +2,7 @@
 name = "circuitsvis"
 version = "1.23.0"
 description = "Mechanistic Interpretability Visualizations"
-authors = ["Your Name <you@example.com>"]
+authors = ["Alan Cooney <41682961+alan-cooney@users.noreply.github.com>"]
 license = "MIT"
 readme = "README.md"
 include = ["circuitsvis/dist/cdn/iife.js", "circuitsvis/dist/cdn/iife.js.map"]
@@ -20,6 +20,10 @@ poethepoet = "^0.16.5"
 pytest = "^7.2.0"
 snapshottest = "^0.6.0"
 twine = "^4.0.1"
+
+
+[tool.poetry.group.jupyter.dependencies]
+jupyterlab = "^3.5.0"
 
 [build-system]
 requires = ["poetry-core"]
