@@ -45,7 +45,7 @@ export function RangeSelector({
   numValsInRange: number;
   /** The id of the select */
   id: string;
-}): JSX.Element {
+}) {
   // Convert the current range to a string.
   const currentRange: string = rangeArrToString(currentRangeArr);
 
@@ -146,7 +146,7 @@ export function TokenCell({
   negativeColor?: AnyColor;
   /** The color to use for positive values */
   positiveColor?: AnyColor;
-}): JSX.Element {
+}) {
   // Hover state
   const { getTooltipProps, setTooltipRef, setTriggerRef, visible } =
     usePopperTooltip({
@@ -258,7 +258,7 @@ export function TopBottomKTable({
   neuronNumbers: number[];
   /** Indicates whether to show topk, bottomk or both. */
   filter: string;
-}): JSX.Element {
+}) {
   return (
     <table style={{ marginTop: 15, marginLeft: 15 }}>
       <thead>
@@ -337,7 +337,7 @@ export function Topk({
   firstDimensionName = "Sample",
   secondDimensionName = "Layer",
   thirdDimensionName = "Neuron" // Note that we simply use neuron as variable names throughout this file
-}: TopkProps): JSX.Element {
+}: TopkProps) {
   const activationsTensors = activations.map((sampleActivations) => {
     return tensor<Rank.R3>(sampleActivations);
   });
@@ -351,9 +351,9 @@ export function Topk({
   const [layerNumber, setLayerNumber] = useState<number>(0);
   const [colsToShow, setColsToShow] = useState<number>(5);
   const [k, setK] = useState<number>(Math.min(5, tokens[0].length));
-  const [neuronNumbers, setNeuronNumbers] = useState<number[]>(
-    numberOfSamples > 1 ? [...Array(colsToShow).keys()] : [0]
-  );
+  const [neuronNumbers, setNeuronNumbers] = useState<number[]>([
+    ...Array(colsToShow).keys()
+  ]);
   // Filter for whether to show the topk, bottomk or both (written as "bottomk+topk")
   const [filter, setFilter] = useState<string>("topk+bottomk");
 
@@ -363,7 +363,7 @@ export function Topk({
   }, [colsToShow, numberOfSamples]);
 
   const currentTokens: string[] = tokens[sampleNumber];
-  // Get the relevant activations for the selected samples, layer, and neuron.
+  // Get the relevant activations for the selected sample, layer, and neurons.
   const currentActivations: Tensor2D = getSelectedActivations(
     activationsTensors[sampleNumber],
     layerNumber,
@@ -405,12 +405,17 @@ export function Topk({
     outerArr.map((token_idx) => currentTokens[token_idx])
   );
 
+  const selectRowStyle = {
+    paddingTop: 5,
+    paddingBottom: 5
+  };
+
   return (
     <div>
       <Container fluid>
         <Row>
           <Col>
-            <Row style={{ paddingTop: 5, paddingBottom: 5 }}>
+            <Row style={selectRowStyle}>
               <Col>
                 <label htmlFor="sample-selector" style={{ marginRight: 15 }}>
                   {firstDimensionName}:
@@ -424,7 +429,7 @@ export function Topk({
                 />
               </Col>
             </Row>
-            <Row style={{ paddingTop: 5, paddingBottom: 5 }}>
+            <Row style={selectRowStyle}>
               <Col>
                 <label htmlFor="layer-selector" style={{ marginRight: 15 }}>
                   {secondDimensionName}:
@@ -437,7 +442,7 @@ export function Topk({
                 />
               </Col>
             </Row>
-            <Row>
+            <Row style={selectRowStyle}>
               <Col>
                 <label htmlFor="neuron-selector" style={{ marginRight: 15 }}>
                   {thirdDimensionName}:
@@ -453,7 +458,7 @@ export function Topk({
             </Row>
           </Col>
           <Col>
-            <Row>
+            <Row style={selectRowStyle}>
               <Col>
                 <label htmlFor="filter-select" style={{ marginRight: 15 }}>
                   Filter:
@@ -469,7 +474,7 @@ export function Topk({
                 </select>
               </Col>
             </Row>
-            <Row>
+            <Row style={selectRowStyle}>
               <Col>
                 <label
                   htmlFor="visibleCols-selector"
@@ -486,7 +491,7 @@ export function Topk({
                 />
               </Col>
             </Row>
-            <Row>
+            <Row style={selectRowStyle}>
               <Col>
                 <label htmlFor="k-selector" style={{ marginRight: 15 }}>
                   k:
