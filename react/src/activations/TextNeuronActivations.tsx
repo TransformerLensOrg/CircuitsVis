@@ -23,39 +23,51 @@ export function getSelectedActivations(
   return relevantActivations.arraySync();
 }
 
-// Styling for the background of the samples
-const boxedSampleStyle = {
-  border: "1px solid black",
-  borderRadius: 5,
-  padding: 10,
-  marginTop: 10,
-  marginBottom: 10,
-  backgroundColor: "#f5f5f5"
-};
-
+/**
+ * Show the lists of tokens, colored by their activation value.
+ * Each sample is displayed in a separate box, unless there is only one sample.
+ *
+ * @returns A div element
+ */
 export function Items({
-  selectedActivations,
-  selectedTokens
+  activationsList,
+  tokensList
 }: {
-  selectedActivations: number[][] | null;
-  selectedTokens: string[][] | null;
+  /**  */
+  activationsList: number[][] | null;
+  tokensList: string[][] | null;
 }) {
-  // For each set of activations in selectedActivations, show the
+  // Styling for the background of the samples
+  const boxedSampleStyle = {
+    border: "1px solid black",
+    borderRadius: 5,
+    padding: 10,
+    marginTop: 10,
+    marginBottom: 10,
+    backgroundColor: "#f5f5f5"
+  };
+  // For each set of activations in activationsList, show the
   // corresponding ColoredTokens objects in separate raised boxes
+  // If there is only a single set of activations don't show the box.
   return (
     <div>
-      {selectedActivations &&
-        selectedTokens &&
-        selectedActivations.map((sampleActivations, index) => (
+      {activationsList &&
+        tokensList &&
+        activationsList.length > 1 &&
+        activationsList.map((activations, index) => (
           <Row key={index}>
             <Col style={boxedSampleStyle}>
-              <ColoredTokens
-                tokens={selectedTokens[index]}
-                values={sampleActivations}
-              />
+              <ColoredTokens tokens={tokensList[index]} values={activations} />
             </Col>
           </Row>
         ))}
+      {activationsList && tokensList && activationsList.length === 1 && (
+        <Row key={0}>
+          <Col>
+            <ColoredTokens tokens={tokensList[0]} values={activationsList[0]} />
+          </Col>
+        </Row>
+      )}
     </div>
   );
 }
@@ -71,8 +83,19 @@ export function TextNeuronActivations({
   firstDimensionName = "Layer",
   secondDimensionName = "Neuron"
 }: TextNeuronActivationsProps) {
+  // If there is only one sample (i.e. if tokens is an array of strings), cast tokens and activations to an array with
+  // a single element
+  const tokensList: string[][] =
+    typeof tokens[0] === "string"
+      ? ([tokens] as string[][])
+      : (tokens as string[][]);
+  const activationsList: number[][][][] =
+    typeof activations[0][0][0] === "number"
+      ? ([activations] as number[][][][])
+      : (activations as number[][][][]);
+
   // Convert the activations to a tensor
-  const activationsTensors = activations.map((sampleActivations) => {
+  const activationsTensors = activationsList.map((sampleActivations) => {
     return tensor<Rank.R3>(sampleActivations);
   });
 
@@ -105,7 +128,7 @@ export function TextNeuronActivations({
   });
 
   const selectedTokens: string[][] = sampleNumbers.map((sampleNumber) => {
-    return tokens[sampleNumber];
+    return tokensList[sampleNumber];
   });
 
   const selectRowStyle = {
@@ -143,65 +166,76 @@ export function TextNeuronActivations({
               />
             </Col>
           </Row>
-          <Row style={selectRowStyle}>
-            <Col>
-              <label htmlFor="sample-selector" style={{ marginRight: 15 }}>
-                Samples:
-              </label>
-              <RangeSelector
-                id="sample-selector"
-                largestNumber={numberOfSamples - 1}
-                currentRangeArr={sampleNumbers}
-                setCurrentValue={setSampleNumbers}
-                numValsInRange={samplesPerPage}
-              />
-            </Col>
-          </Row>
+          {/* Only show the sample selector if there is more than one sample */}
+          {numberOfSamples > 1 && (
+            <Row style={selectRowStyle}>
+              <Col>
+                <label htmlFor="sample-selector" style={{ marginRight: 15 }}>
+                  Samples:
+                </label>
+                <RangeSelector
+                  id="sample-selector"
+                  largestNumber={numberOfSamples - 1}
+                  currentRangeArr={sampleNumbers}
+                  setCurrentValue={setSampleNumbers}
+                  numValsInRange={samplesPerPage}
+                />
+              </Col>
+            </Row>
+          )}
         </Col>
         <Col>
-          <Row style={selectRowStyle}>
-            <Col>
-              <label
-                htmlFor="samples-per-page-selector"
-                style={{ marginRight: 15 }}
-              >
-                Samples per page:
-              </label>
-              <NumberSelector
-                id="samples-per-page-selector"
-                smallestNumber={1}
-                largestNumber={numberOfSamples}
-                currentValue={samplesPerPage}
-                setCurrentValue={setSamplesPerPage}
-              />
-            </Col>
-          </Row>
+          {/* Only show the sample per page selector if there is more than one sample */}
+          {numberOfSamples > 1 && (
+            <Row style={selectRowStyle}>
+              <Col>
+                <label
+                  htmlFor="samples-per-page-selector"
+                  style={{ marginRight: 15 }}
+                >
+                  Samples per page:
+                </label>
+                <NumberSelector
+                  id="samples-per-page-selector"
+                  smallestNumber={1}
+                  largestNumber={numberOfSamples}
+                  currentValue={samplesPerPage}
+                  setCurrentValue={setSamplesPerPage}
+                />
+              </Col>
+            </Row>
+          )}
         </Col>
       </Row>
-      <Items
-        selectedActivations={selectedActivations}
-        selectedTokens={selectedTokens}
-      />
+      <Row>
+        <Col>
+          <Items
+            activationsList={selectedActivations}
+            tokensList={selectedTokens}
+          />
+        </Col>
+      </Row>
     </Container>
   );
 }
 
 export interface TextNeuronActivationsProps {
   /**
-   * List of lists of tokens
+   * List of lists of tokens (if multiple samples) or a list of tokens (if
+   * single sample)
    *
-   * Each list must be the same length as the number of activations in the
+   * If multiple samples, each list must be the same length as the number of activations in the
    * corresponding activations list.
    */
-  tokens: string[][];
+  tokens: string[][] | string[];
 
   /**
    * Activations
    *
-   * Should be a nested list of numbers, of the form [ sample x tokens x layers x neurons
-   * ].
+   * If multiple samples, will be a nested list of numbers, of the form [ sample x tokens x layers x neurons
+   * ]. If a single sample, will be a list of numbers of the form [ tokens x layers x neurons ].
    */
-  activations: number[][][][];
+  activations: number[][][][] | number[][][];
 
   /**
    * Name of the first dimension
