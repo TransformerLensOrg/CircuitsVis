@@ -24,6 +24,14 @@ jobs:
   python-checks:
     name: Python Checks
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version:
+          - "3.7"
+          - "3.8"
+          - "3.9"
+          - "3.10"
+          - "3.11"
     env:
       working-directory: python
     defaults:
@@ -36,7 +44,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.9'
+        python-version: ${{ matrix.python-version }}
         cache: 'poetry'
     - name: Install dependencies
       run: poetry install --with dev
