@@ -57,5 +57,8 @@
 	// Run commands after the container is created:
 	"postCreateCommand": "cd python && poetry config virtualenvs.in-project true && poetry self add 'poethepoet[poetry_plugin]' && poetry install --with dev && cd ../react && yarn",
 	// Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
-	"remoteUser": "vscode"
+	"remoteUser": "vscode",
+	"hostRequirements": {
+		"memory": "6gb"
+	}
 }

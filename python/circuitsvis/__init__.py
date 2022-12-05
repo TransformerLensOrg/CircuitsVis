@@ -1,4 +1,4 @@
 """CircuitsVis"""
-import importlib.metadata
+from importlib_metadata import version
 
-__version__ = importlib.metadata.version("circuitsvis")
+__version__ = version("circuitsvis")

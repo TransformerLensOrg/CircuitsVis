@@ -63,15 +63,23 @@ To create new visualizations you need [Node](https://nodejs.org/en/) (including
 [yarn](https://classic.yarnpkg.com/lang/en/docs/install/#mac-stable)) and Python
 (with [Poetry](https://python-poetry.org/)).
 
-Once you have these, you need to install both the Python and Node packages.
+Once you have these, you need to install both the Node & Python packages (note
+that for Python we use the
+[Poetry](https://python-poetry.org/docs/#installation) package management
+system).
 
 ```bash
 cd react && yarn
 ```
 
 ```bash
-cd python && poetry install
+cd python && poetry install --with dev
 ```
+
+#### Jupyter install
+
+If you want Jupyter as well, run `poetry install --with jupyter` or, if this
+fails due to a PyTorch bug on M1 MacBooks, run `poetry run pip install jupyter`.
 
 ### Creating visualizations
 
@@ -86,6 +94,9 @@ yarn storybook
 ```
 
 #### Python
+
+This project uses [Poetry](https://python-poetry.org/docs/#installation) for
+package management. To install all rew
 
 Once you've created your visualization in React, you can then create a short
 function in the Python library to render it. You can see an example in
