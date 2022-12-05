@@ -2,102 +2,8 @@ import { Rank, tensor, Tensor1D, Tensor3D } from "@tensorflow/tfjs";
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col } from "react-grid-system";
 import { ColoredTokens } from "../tokens/ColoredTokens";
-import {
-  rangeArrToString,
-  rangeStringToArr
-} from "../utils/rangeStrArrConversion";
-
-/**
- * Create an html select with each option being a string representation of a
- * range of numbers that takes the form "start-end", where start is the first
- * number in the range and end is the last number in the range. E.g. if
- * largestNumber=4, smallestNumber=0, and numValsInRange=2, then the ranges array
- * will be ["0-1", "2-3", "4"].
- *
- * @returns Select element.
- */
-export function RangeSelector({
-  smallestNumber = 0,
-  largestNumber,
-  currentRangeArr,
-  setCurrentValue,
-  numValsInRange,
-  id
-}: {
-  /** Smallest number included in the range */
-  smallestNumber?: number;
-  /** Largest number included in the range */
-  largestNumber: number;
-  /** Current range selected represented as an array of numbers */
-  currentRangeArr: number[];
-  /** Function for setting the selected range */
-  setCurrentValue: (rangeArr: number[]) => void;
-  /** The max number of values in each range */
-  numValsInRange: number;
-  /** The id of the select */
-  id: string;
-}) {
-  // Convert the current range to a string.
-  const currentRange: string = rangeArrToString(currentRangeArr);
-
-  // Create an array of ranges to display in the select.
-  const ranges: string[] = [];
-  for (let i = smallestNumber; i <= largestNumber; i += numValsInRange) {
-    const start = i;
-    const end = Math.min(i + numValsInRange - 1, largestNumber);
-    if (start === end) {
-      ranges.push(`${start}`);
-    } else {
-      ranges.push(`${start}-${end}`);
-    }
-  }
-
-  return (
-    <select
-      value={currentRange}
-      onChange={(event) =>
-        setCurrentValue(rangeStringToArr(event.target.value))
-      }
-      id={id}
-    >
-      {ranges.map((range) => (
-        <option key={range}>{range}</option>
-      ))}
-    </select>
-  );
-}
-
-export function NumberSelector({
-  smallestNumber = 0,
-  largestNumber,
-  currentValue,
-  setCurrentValue,
-  id
-}: {
-  smallestNumber?: number;
-  largestNumber: number;
-  currentValue: number;
-  setCurrentValue: (num: number) => void;
-  id: string;
-}) {
-  // Initialize an array of numbers smallestNumber-largestNumber
-  const options = [...Array(largestNumber - smallestNumber + 1).keys()].map(
-    (i) => i + smallestNumber
-  );
-  // const options = [...Array(largestNumber).keys()];
-
-  return (
-    <select
-      value={currentValue}
-      onChange={(event) => setCurrentValue(Number(event.target.value))}
-      id={id}
-    >
-      {options.map((value) => (
-        <option key={value}>{value}</option>
-      ))}
-    </select>
-  );
-}
+import { RangeSelector } from "../shared/RangeSelector";
+import { NumberSelector } from "../shared/NumberSelector";
 
 /**
  * Get the selected activations
@@ -110,11 +16,11 @@ export function getSelectedActivations(
   activations: Tensor3D,
   layerNumber: number,
   neuronNumber: number
-): Tensor1D {
+): number[] {
   const relevantActivations = activations
     .slice([0, layerNumber, neuronNumber], [-1, 1, 1])
     .squeeze<Tensor1D>([1, 2]);
-  return relevantActivations;
+  return relevantActivations.arraySync();
 }
 
 // Styling for the background of the samples
@@ -195,7 +101,7 @@ export function TextNeuronActivations({
       activationsTensors[sampleNumber],
       layerNumber,
       neuronNumber
-    ).arraySync();
+    );
   });
 
   const selectedTokens: string[][] = sampleNumbers.map((sampleNumber) => {
