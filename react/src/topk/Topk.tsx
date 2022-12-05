@@ -11,112 +11,8 @@ import { Container, Row, Col } from "react-grid-system";
 import { usePopperTooltip } from "react-popper-tooltip";
 import { colord, AnyColor } from "colord";
 import { getTokenBackgroundColor } from "../utils/getTokenBackgroundColor";
-import {
-  rangeArrToString,
-  rangeStringToArr
-} from "../utils/rangeStrArrConversion";
-
-/**
- * Create an html select with each option being a string representation of a
- * range of numbers that takes the form "start-end", where start is the first
- * number in the range and end is the last number in the range. E.g. if
- * largestNumber=4, smallestNumber=0, and numValsInRange=2, then the ranges array
- * will be ["0-1", "2-3", "4"].
- *
- * @returns Select element.
- */
-export function RangeSelector({
-  smallestNumber = 0,
-  largestNumber,
-  currentRangeArr,
-  setCurrentValue,
-  numValsInRange,
-  id
-}: {
-  /** Smallest number included in the range */
-  smallestNumber?: number;
-  /** Largest number included in the range */
-  largestNumber: number;
-  /** Current range selected represented as an array of numbers */
-  currentRangeArr: number[];
-  /** Function for setting the selected range */
-  setCurrentValue: (rangeArr: number[]) => void;
-  /** The max number of values in each range */
-  numValsInRange: number;
-  /** The id of the select */
-  id: string;
-}): JSX.Element {
-  // Convert the current range to a string.
-  const currentRange: string = rangeArrToString(currentRangeArr);
-
-  // Create an array of ranges to display in the select.
-  const ranges: string[] = [];
-  for (let i = smallestNumber; i <= largestNumber; i += numValsInRange) {
-    const start = i;
-    const end = Math.min(i + numValsInRange - 1, largestNumber);
-    if (start === end) {
-      ranges.push(`${start}`);
-    } else {
-      ranges.push(`${start}-${end}`);
-    }
-  }
-
-  return (
-    <select
-      value={currentRange}
-      onChange={(event) =>
-        setCurrentValue(rangeStringToArr(event.target.value))
-      }
-      id={id}
-    >
-      {ranges.map((range) => (
-        <option key={range}>{range}</option>
-      ))}
-    </select>
-  );
-}
-
-/**
- * Create an html select with each option corresponding to a single number in a
- * range of numbers.
- *
- * @returns Select element.
- */
-export function NumberSelector({
-  smallestNumber = 0,
-  largestNumber,
-  currentValue,
-  setCurrentValue,
-  id
-}: {
-  /** Smallest number included in the range */
-  smallestNumber?: number;
-  /** Largest number included in the range */
-  largestNumber: number;
-  /** Current value selected */
-  currentValue: number;
-  /** Function for setting the selected value */
-  setCurrentValue: (num: number) => void;
-  /** The id of the select */
-  id: string;
-}) {
-  // Initialize an array of numbers smallestNumber-largestNumber
-  const options = [...Array(largestNumber - smallestNumber + 1).keys()].map(
-    (i) => i + smallestNumber
-  );
-
-  return (
-    <select
-      value={currentValue}
-      onChange={(event) => setCurrentValue(Number(event.target.value))}
-      id={id}
-    >
-      {options.map((value) => (
-        <option key={value}>{value}</option>
-      ))}
-    </select>
-  );
-}
+import { RangeSelector } from "../shared/RangeSelector";
+import { NumberSelector } from "../shared/NumberSelector";
 
 /**
  * Create a grid cell containing the token coloured by its activation value.
@@ -146,7 +42,7 @@ export function TokenCell({
   negativeColor?: AnyColor;
   /** The color to use for positive values */
   positiveColor?: AnyColor;
-}): JSX.Element {
+}) {
   // Hover state
   const { getTooltipProps, setTooltipRef, setTriggerRef, visible } =
     usePopperTooltip({
@@ -258,7 +154,7 @@ export function TopBottomKTable({
   neuronNumbers: number[];
   /** Indicates whether to show topk, bottomk or both. */
   filter: string;
-}): JSX.Element {
+}) {
   return (
     <table style={{ marginTop: 15, marginLeft: 15 }}>
       <thead>
@@ -337,7 +233,7 @@ export function Topk({
   firstDimensionName = "Sample",
   secondDimensionName = "Layer",
   thirdDimensionName = "Neuron" // Note that we simply use neuron as variable names throughout this file
-}: TopkProps): JSX.Element {
+}: TopkProps) {
   const activationsTensors = activations.map((sampleActivations) => {
     return tensor<Rank.R3>(sampleActivations);
   });
@@ -351,9 +247,9 @@ export function Topk({
   const [layerNumber, setLayerNumber] = useState<number>(0);
   const [colsToShow, setColsToShow] = useState<number>(5);
   const [k, setK] = useState<number>(Math.min(5, tokens[0].length));
-  const [neuronNumbers, setNeuronNumbers] = useState<number[]>(
-    numberOfSamples > 1 ? [...Array(colsToShow).keys()] : [0]
-  );
+  const [neuronNumbers, setNeuronNumbers] = useState<number[]>([
+    ...Array(colsToShow).keys()
+  ]);
   // Filter for whether to show the topk, bottomk or both (written as "bottomk+topk")
   const [filter, setFilter] = useState<string>("topk+bottomk");
 
@@ -363,7 +259,7 @@ export function Topk({
   }, [colsToShow, numberOfSamples]);
 
   const currentTokens: string[] = tokens[sampleNumber];
-  // Get the relevant activations for the selected samples, layer, and neuron.
+  // Get the relevant activations for the selected sample, layer, and neurons.
   const currentActivations: Tensor2D = getSelectedActivations(
     activationsTensors[sampleNumber],
     layerNumber,
@@ -405,12 +301,17 @@ export function Topk({
     outerArr.map((token_idx) => currentTokens[token_idx])
   );
 
+  const selectRowStyle = {
+    paddingTop: 5,
+    paddingBottom: 5
+  };
+
   return (
     <div>
       <Container fluid>
         <Row>
           <Col>
-            <Row style={{ paddingTop: 5, paddingBottom: 5 }}>
+            <Row style={selectRowStyle}>
               <Col>
                 <label htmlFor="sample-selector" style={{ marginRight: 15 }}>
                   {firstDimensionName}:
@@ -424,7 +325,7 @@ export function Topk({
                 />
               </Col>
             </Row>
-            <Row style={{ paddingTop: 5, paddingBottom: 5 }}>
+            <Row style={selectRowStyle}>
               <Col>
                 <label htmlFor="layer-selector" style={{ marginRight: 15 }}>
                   {secondDimensionName}:
@@ -437,7 +338,7 @@ export function Topk({
                 />
               </Col>
             </Row>
-            <Row>
+            <Row style={selectRowStyle}>
               <Col>
                 <label htmlFor="neuron-selector" style={{ marginRight: 15 }}>
                   {thirdDimensionName}:
@@ -453,7 +354,7 @@ export function Topk({
             </Row>
           </Col>
           <Col>
-            <Row>
+            <Row style={selectRowStyle}>
               <Col>
                 <label htmlFor="filter-select" style={{ marginRight: 15 }}>
                   Filter:
@@ -469,7 +370,7 @@ export function Topk({
                 </select>
               </Col>
             </Row>
-            <Row>
+            <Row style={selectRowStyle}>
               <Col>
                 <label
                   htmlFor="visibleCols-selector"
@@ -486,7 +387,7 @@ export function Topk({
                 />
               </Col>
             </Row>
-            <Row>
+            <Row style={selectRowStyle}>
               <Col>
                 <label htmlFor="k-selector" style={{ marginRight: 15 }}>
                   k:

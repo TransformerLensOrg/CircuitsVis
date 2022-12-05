@@ -1,4 +1,4 @@
-import { rangeArrToString, rangeStringToArr } from "../rangeStrArrConversion";
+import { rangeArrToString, rangeStringToArr } from "../RangeSelector";
 
 describe("convertRangeArrToString", () => {
   it("converts a single number range array to a string", () => {
