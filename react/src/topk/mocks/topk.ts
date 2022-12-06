@@ -1,4 +1,4 @@
-const text: string = `
+const mockPrompt: string = `
   A goose (PL: geese) is a bird of any of several waterfowl species in the family Anatidae. This group comprises the genera Anser (the grey geese and white geese) and Branta (the black geese). Some other birds, mostly related to the shelducks, have "goose" as part of their names. More distantly related members of the family Anatidae are swans, most of which are larger than true geese, and ducks, which are smaller.
 
   The term "goose" may refer to either a male or female bird, but when paired with "gander", refers specifically to a female one (the latter referring to a male). Young birds before fledging are called goslings.[1] The collective noun for a group of geese on the ground is a gaggle; when in flight, they are called a skein, a team, or a wedge; when flying close together, they are called a plump.[2]
@@ -48,8 +48,10 @@ const text: string = `
   Preparation
 `;
 
+/**
+ * Split textArr into chunks of random size between 50 and 100 words
+ */
 function chunkText(textArr: string[]): string[][] {
-  // Split textArr into chunks of random size between 50 and 100 words
   const chunks: string[][] = [];
   let i = 0;
   while (i < textArr.length) {
@@ -61,7 +63,12 @@ function chunkText(textArr: string[]): string[][] {
 }
 
 const numLayers: number = 2;
+
 const numSVDDirs: number = 30;
+
+/**
+ * Create a 3D matrix of random activations
+ */
 function createRandom3DActivationMatrix(shape: number[]): number[][][] {
   return Array.from(Array(shape[0]), () =>
     Array.from(Array(shape[1]), () =>
@@ -70,7 +77,7 @@ function createRandom3DActivationMatrix(shape: number[]): number[][][] {
   );
 }
 
-export const mockTokens: string[][] = chunkText(text.split(/(?=\s)/));
+export const mockTokens: string[][] = chunkText(mockPrompt.split(/(?=\s)/));
 
 export const mockActivations: number[][][][] = mockTokens.map((tokens) => {
   return createRandom3DActivationMatrix([tokens.length, numLayers, numSVDDirs]);
