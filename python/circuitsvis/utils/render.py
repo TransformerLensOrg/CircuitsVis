@@ -101,6 +101,7 @@ def render_local(react_element_name: str, **kwargs) -> str:
 
     # Build if in dev mode (detected by the react directory existing)
     if REACT_DIR.exists():
+        print("building")
         install_if_necessary()
         bundle_source()
 

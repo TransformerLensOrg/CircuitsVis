@@ -23,6 +23,7 @@
     "crossorigin",
     "devcontainer",
     "Interpretability",
+    "Logit",
     "ndarray",
     "NPMJS"
   ],
