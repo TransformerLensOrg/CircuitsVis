@@ -10,7 +10,9 @@ def topk(
     second_dimension_name: str = "Layer",
     third_dimension_name: str = "Neuron",
 ) -> RenderedHTML:
-    """Show a table of the topk and bottomk activationsThe columns correspond to the given third_dimension_name.
+    """Show a table of the topk and bottomk activations.
+    
+    The columns correspond to the given third_dimension_name.
 
     Includes drop-downs for all dimensions as well as options to choose the
     number of columns to show.
