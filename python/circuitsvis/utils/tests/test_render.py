@@ -30,6 +30,8 @@ class TestInstallIfNecessary:
 class TestBundleSource:
     def test_runs_without_errors(self):
         bundle_source()
+        # Run twice, to check it doesn't fail if the directory already exists
+        bundle_source()
 
 
 class TestRenderLocal:
