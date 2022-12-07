@@ -1,6 +1,7 @@
 """Helper functions to build visualizations using HTML/web frameworks."""
 import shutil
 import subprocess
+import os
 from pathlib import Path
 from uuid import uuid4
 
@@ -66,7 +67,11 @@ def install_if_necessary() -> None:
 
 
 def bundle_source(dev_mode: bool = True) -> None:
-    """Bundle up the JavaScript/TypeScript source files"""
+    """Bundle up the JavaScript/TypeScript source files
+
+    Bundles the files together and then also copies them to the Python dist/
+    directory. This allows the Python package to also include these files when
+    it is installed."""
     # Build
     build_command = [
         "yarn",
@@ -83,10 +88,14 @@ def bundle_source(dev_mode: bool = True) -> None:
                    check=True
                    )
 
-    # Copy files to python dist directory
+    # Copy files to python dist directory (overwriting any existing files)
     react_dist = REACT_DIR / "dist"
     python_dist = Path(__file__).parent.parent / "dist"
-    shutil.copytree(react_dist, python_dist, dirs_exist_ok=True)
+    if os.path.exists(python_dist):
+        # Python 3.7 doesn't support the exist_ok argument, so we have to delete
+        # the destination directory first
+        shutil.rmtree(python_dist)
+    shutil.copytree(react_dist, python_dist)
 
 
 def render_local(react_element_name: str, **kwargs) -> str:
