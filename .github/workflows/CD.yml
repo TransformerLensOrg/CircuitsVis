@@ -86,6 +86,9 @@ jobs:
     permissions:
       actions: write
       contents: write
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      PACKAGEJSON_DIR: react
     steps:
       - uses: actions/checkout@v3
       - name: Install Poetry
@@ -95,18 +98,42 @@ jobs:
         with:
           python-version: '3.9'
           cache: 'poetry'
-      - name: Bump Python package version
-        run: poetry version minor
+      # Bump Python/PyPi version (depending on tag)
+      - name: Bump Python package version (major)
+        run: poetry version major
+        if: github.event.label.name == 'major'
         working-directory: python
-      - name: Bump package version
+      - name: Bump Python package version (minor)
+        run: poetry version minor
+        if: github.event.label.name == 'minor'
+        working-directory: python
+      - name: Bump Python package version (patch)
+        run: poetry version patch
+        if: github.event.label.name == 'patch'
+        working-directory: python
+      # Bump React/NPMJS version (depending on tag)
+      - name: Bump package version (major)
+        if: github.event.label.name == 'major'
         uses:  'phips28/gh-action-bump-version@master'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PACKAGEJSON_DIR:  react
+        with:
+          default: major
+          skip-tag: true
+          skip-commit: true
+      - name: Bump package version (minor)
+        if: github.event.label.name == 'minor'
+        uses:  'phips28/gh-action-bump-version@master'
         with:
           default: minor
           skip-tag: true
           skip-commit: true
+      - name: Bump package version (patch)
+        if: github.event.label.name == 'patch'
+        uses:  'phips28/gh-action-bump-version@master'
+        with:
+          default: patch
+          skip-tag: true
+          skip-commit: true
+      # Commit changes
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v4.14.1
         with:
@@ -114,6 +141,7 @@ jobs:
           
   release-python:
     name: "Release Python package to PyPi"
+    if: github.event_name == 'push' # Push/merge only, not on PR
     needs:
       - bump-versions
     runs-on: ubuntu-latest
@@ -144,6 +172,7 @@ jobs:
 
   release-react:
     name: "Release React Node JS package to NPMJS"
+    if: github.event_name == 'push' # Push/merge only, not on PR
     needs:
       - bump-versions
     runs-on: ubuntu-latest
@@ -174,8 +203,9 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     name: "Publish Storybook Docs"
+    if: github.event_name == 'push' # Push/merge only, not on PR
     needs:
-      - release-react
+      - bump-versions
     runs-on: ubuntu-latest
     env:
       working-directory: react
