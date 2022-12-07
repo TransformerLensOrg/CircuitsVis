@@ -37,6 +37,7 @@
     "@tensorflow/tfjs": "^4.0.0",
     "chart.js": "^4.0.1",
     "chartjs-chart-matrix": "^1.3.0",
+    "circuitsvis": "^1.26.0",
     "colord": "^2.9.3",
     "react-chartjs-2": "^5.0.1",
     "react-grid-system": "^8.1.6",
