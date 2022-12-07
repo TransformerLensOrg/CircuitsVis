@@ -86,7 +86,10 @@ def bundle_source(dev_mode: bool = True) -> None:
     # Copy files to python dist directory
     react_dist = REACT_DIR / "dist"
     python_dist = Path(__file__).parent.parent / "dist"
-    shutil.copytree(react_dist, python_dist, dirs_exist_ok=True)
+    try:
+        shutil.copytree(react_dist, python_dist)
+    except FileExistsError:
+        pass
 
 
 def render_local(react_element_name: str, **kwargs) -> str:
