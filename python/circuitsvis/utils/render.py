@@ -2,11 +2,33 @@
 import shutil
 import subprocess
 from pathlib import Path
+from urllib import request
 from uuid import uuid4
 
-from circuitsvis.utils.convert_props import convert_props, PythonProperty
+import circuitsvis
+from circuitsvis.utils.convert_props import PythonProperty, convert_props
 
 REACT_DIR = Path(__file__).parent.parent.parent.parent / "react"
+
+
+def is_in_dev_mode(dir_to_check: Path = REACT_DIR) -> bool:
+    """Detect if we're in dev mode (running in the CircuitsVis repo)
+
+    Returns:
+        bool: True if we're in dev mode
+    """
+    return dir_to_check.exists()
+
+
+def internet_on() -> bool:
+    """Detect if we're online"""
+    try:
+        request.urlopen("http://google.com", timeout=1)
+        return True
+    except:
+        pass
+
+    return False
 
 
 class RenderedHTML:
@@ -25,13 +47,22 @@ class RenderedHTML:
         When Jupyter sees this method, it renders the HTML.
 
         Returns:
-            str: HTML for Jupyter/Colab (works offline)
+            str: HTML for Jupyter/Colab
         """
-        return self.local_src
+        # Use local source if we're in dev mode
+        if is_in_dev_mode():
+            return self.local_src
+
+        # Use local source if we're offline
+        if internet_on():
+            return self.local_src
+
+        # Otherwise use the CDN
+        return self.cdn_src
 
     def __html__(self) -> str:
         """Used by some tooling as an alternative to _repr_html_"""
-        return self.local_src
+        return self._repr_html_()
 
     def show_code(self) -> str:
         """Show the code as HTML source code
@@ -99,8 +130,8 @@ def render_local(react_element_name: str, **kwargs) -> str:
     # Stringify keyword args
     props = convert_props(kwargs)
 
-    # Build if in dev mode (detected by the react directory existing)
-    if REACT_DIR.exists():
+    # Build if in dev mode
+    if is_in_dev_mode():
         install_if_necessary()
         bundle_source()
 
@@ -142,7 +173,7 @@ def render_cdn(react_element_name: str, **kwargs: PythonProperty) -> str:
 
     html = f"""<div id="{uuid}" style="margin: 15px 0;"/>
     <script crossorigin type="module">
-    import {"{ render, "+ react_element_name + " }"} from "https://unpkg.com/circuitsvis/dist/cdn/esm.js";
+    import {"{ render, "+ react_element_name + " }"} from "https://unpkg.com/circuitsvis@{circuitsvis.__version__}/dist/cdn/esm.js";
     render(
       "{uuid}",
       {react_element_name},

@@ -1,6 +1,34 @@
-from circuitsvis.utils.render import (RenderedHTML, bundle_source, install_if_necessary,
-                                      render, render_local, render_cdn)
+from pathlib import Path
+from urllib import request
+
 import circuitsvis.utils.render
+from circuitsvis.utils.render import (RenderedHTML, bundle_source,
+                                      install_if_necessary, internet_on,
+                                      is_in_dev_mode, render, render_cdn,
+                                      render_local)
+
+
+class TestIsInDevMode:
+    def test_is_in_dev_mode(self):
+        assert is_in_dev_mode()
+
+    def test_is_not_in_dev_mode(self):
+        does_not_exist_dir = Path(__file__) / "does_not_exist"
+        assert not is_in_dev_mode(does_not_exist_dir)
+
+
+class TestInternetOn:
+    def test_internet_on(self, monkeypatch):
+        def mock_urlopen(url, timeout):
+            return True
+        monkeypatch.setattr(request, "urlopen", mock_urlopen)
+        assert internet_on()
+
+    def test_internet_off(self, monkeypatch):
+        def mock_urlopen(url, timeout):
+            raise Exception()
+        monkeypatch.setattr(request, "urlopen", mock_urlopen)
+        assert not internet_on()
 
 
 class TestRenderedHTML:

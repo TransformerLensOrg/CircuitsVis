@@ -1,11 +1,12 @@
-from circuitsvis.tokens import colored_tokens
+import circuitsvis
 import circuitsvis.utils.render
+from circuitsvis.tokens import colored_tokens
 
 
 class TestAttention:
     def test_matches_snapshot(self, snapshot, monkeypatch):
-        # Monkeypatch uuid4 to always return the same uuid
         monkeypatch.setattr(circuitsvis.utils.render, "uuid4", lambda: "mock")
+        monkeypatch.setattr(circuitsvis, "__version__", "1.0.0")
 
         res = colored_tokens(
             tokens=["a", "b"],
