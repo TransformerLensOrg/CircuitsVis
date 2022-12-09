@@ -148,6 +148,8 @@ def render_local(react_element_name: str, **kwargs) -> str:
     filename = Path(__file__).parent.parent / "dist" / "cdn" / "iife.js"
     with open(filename, encoding="utf-8") as file:
         inline_js = file.read()
+        # Remove any closing script tags (as this breaks inline code)
+        inline_js = inline_js.replace("</script>", "")
 
     html = f"""<div id="{uuid}" style="margin: 15px 0;"/>
     <script crossorigin type="module">
