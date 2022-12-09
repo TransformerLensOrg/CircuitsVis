@@ -55,7 +55,7 @@ class RenderedHTML:
             return self.local_src
 
         # Use local source if we're offline
-        if internet_on():
+        if not internet_on():
             return self.local_src
 
         # Otherwise use the CDN
