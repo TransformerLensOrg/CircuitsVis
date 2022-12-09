@@ -116,6 +116,7 @@ jobs:
     name: "Release Python package to PyPi"
     needs:
       - bump-versions
+      - release-react # Needed as it will use the new React version from the CDN
     runs-on: ubuntu-latest
     env:
       working-directory: python
