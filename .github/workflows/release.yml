@@ -45,10 +45,8 @@ jobs:
         run: yarn
       - name: Build
         run: yarn build
-      - name: Disable yarn version git auto-tagging
-        run: yarn config set version-commit-hooks false
       - name: Set the version
-        run: yarn version --new-version ${{needs.semver-parser.outputs.semver}}
+        run: yarn version --new-version ${{needs.semver-parser.outputs.semver}} --no-git-tag-version --no-commit-hooks
       - name: Publish to NPMJS
         id: publish
         uses: JS-DevTools/npm-publish@v1
@@ -114,7 +112,7 @@ jobs:
         run: poetry version ${{needs.semver-parser.outputs.semver}}
         working-directory: python
       - name: Bump Node package version
-        run: yarn version --new-version ${{needs.semver-parser.outputs.semver}}
+        run: yarn version --new-version ${{needs.semver-parser.outputs.semver}} --no-git-tag-version --no-commit-hooks
         working-directory: react
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v4.14.1
