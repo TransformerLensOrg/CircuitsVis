@@ -28,7 +28,7 @@ jobs:
   release-react:
     name: Release React Node JS package to NPMJS
     needs:
-      - checks
+      # - checks
       - semver-parser
     runs-on: ubuntu-latest
     permissions:
@@ -60,7 +60,7 @@ jobs:
   release-python:
     name: Release Python package to PyPi
     needs:
-      - checks
+      # - checks
       - semver-parser
       - release-react
     runs-on: ubuntu-latest
