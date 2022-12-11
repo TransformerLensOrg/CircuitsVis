@@ -62,6 +62,8 @@ jobs:
       - semver-parser
       - release-react
     runs-on: ubuntu-latest
+    env:
+      working-directory: python
     defaults:
       run:
         working-directory: python
