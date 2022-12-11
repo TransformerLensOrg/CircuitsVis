@@ -1,12 +1,35 @@
 """Helper functions to build visualizations using HTML/web frameworks."""
 import shutil
 import subprocess
+import os
 from pathlib import Path
+from urllib import request
 from uuid import uuid4
 
-from circuitsvis.utils.convert_props import convert_props, PythonProperty
+import circuitsvis
+from circuitsvis.utils.convert_props import PythonProperty, convert_props
 
 REACT_DIR = Path(__file__).parent.parent.parent.parent / "react"
+
+
+def is_in_dev_mode(dir_to_check: Path = REACT_DIR) -> bool:
+    """Detect if we're in dev mode (running in the CircuitsVis repo)
+
+    Returns:
+        bool: True if we're in dev mode
+    """
+    return dir_to_check.exists()
+
+
+def internet_on() -> bool:
+    """Detect if we're online"""
+    try:
+        request.urlopen("http://google.com", timeout=1)
+        return True
+    except:
+        pass
+
+    return False
 
 
 class RenderedHTML:
@@ -25,13 +48,22 @@ class RenderedHTML:
         When Jupyter sees this method, it renders the HTML.
 
         Returns:
-            str: HTML for Jupyter/Colab (works offline)
+            str: HTML for Jupyter/Colab
         """
-        return self.local_src
+        # Use local source if we're in dev mode
+        if is_in_dev_mode():
+            return self.local_src
+
+        # Use local source if we're offline
+        if not internet_on():
+            return self.local_src
+
+        # Otherwise use the CDN
+        return self.cdn_src
 
     def __html__(self) -> str:
         """Used by some tooling as an alternative to _repr_html_"""
-        return self.local_src
+        return self._repr_html_()
 
     def show_code(self) -> str:
         """Show the code as HTML source code
@@ -66,7 +98,11 @@ def install_if_necessary() -> None:
 
 
 def bundle_source(dev_mode: bool = True) -> None:
-    """Bundle up the JavaScript/TypeScript source files"""
+    """Bundle up the JavaScript/TypeScript source files
+
+    Bundles the files together and then also copies them to the Python dist/
+    directory. This allows the Python package to also include these files when
+    it is installed."""
     # Build
     build_command = [
         "yarn",
@@ -83,10 +119,14 @@ def bundle_source(dev_mode: bool = True) -> None:
                    check=True
                    )
 
-    # Copy files to python dist directory
+    # Copy files to python dist directory (overwriting any existing files)
     react_dist = REACT_DIR / "dist"
     python_dist = Path(__file__).parent.parent / "dist"
-    shutil.copytree(react_dist, python_dist, dirs_exist_ok=True)
+    if os.path.exists(python_dist):
+        # Python 3.7 doesn't support the exist_ok argument, so we have to delete
+        # the destination directory first
+        shutil.rmtree(python_dist)
+    shutil.copytree(react_dist, python_dist)
 
 
 def render_local(react_element_name: str, **kwargs) -> str:
@@ -99,8 +139,8 @@ def render_local(react_element_name: str, **kwargs) -> str:
     # Stringify keyword args
     props = convert_props(kwargs)
 
-    # Build if in dev mode (detected by the react directory existing)
-    if REACT_DIR.exists():
+    # Build if in dev mode
+    if is_in_dev_mode():
         install_if_necessary()
         bundle_source()
 
@@ -108,6 +148,8 @@ def render_local(react_element_name: str, **kwargs) -> str:
     filename = Path(__file__).parent.parent / "dist" / "cdn" / "iife.js"
     with open(filename, encoding="utf-8") as file:
         inline_js = file.read()
+        # Remove any closing script tags (as this breaks inline code)
+        inline_js = inline_js.replace("</script>", "")
 
     html = f"""<div id="{uuid}" style="margin: 15px 0;"/>
     <script crossorigin type="module">
@@ -142,7 +184,7 @@ def render_cdn(react_element_name: str, **kwargs: PythonProperty) -> str:
 
     html = f"""<div id="{uuid}" style="margin: 15px 0;"/>
     <script crossorigin type="module">
-    import {"{ render, "+ react_element_name + " }"} from "https://unpkg.com/circuitsvis/dist/cdn/esm.js";
+    import {"{ render, "+ react_element_name + " }"} from "https://unpkg.com/circuitsvis@{circuitsvis.__version__}/dist/cdn/esm.js";
     render(
       "{uuid}",
       {react_element_name},

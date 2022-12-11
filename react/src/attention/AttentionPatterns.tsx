@@ -39,7 +39,7 @@ export function colorAttentionTensors(attentionInput: number[][][]): Tensor4D {
         const attentionColor = tinycolor({
           h: (headNumber / attention.length) * 360, // Hue (degrees 0-360)
           s: 0.8, // Saturation (slightly off 100% to make less glaring)
-          l: 1 - sourceAttention // Luminance (shows amount of attention)
+          l: 1 - 0.75 * sourceAttention // Luminance (shows amount of attention)
         });
 
         // Return as a nested list in the format [red, green, blue]

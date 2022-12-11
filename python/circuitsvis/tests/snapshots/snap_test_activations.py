@@ -9,7 +9,7 @@ snapshots = Snapshot()
 
 snapshots['TestTextNeuronActivations.test_matches_snapshot 1'] = '''<div id="circuits-vis-mock" style="margin: 15px 0;"/>
     <script crossorigin type="module">
-    import { render, TextNeuronActivations } from "https://unpkg.com/circuitsvis/dist/cdn/esm.js";
+    import { render, TextNeuronActivations } from "https://unpkg.com/circuitsvis@1.0.0/dist/cdn/esm.js";
     render(
       "circuits-vis-mock",
       TextNeuronActivations,
