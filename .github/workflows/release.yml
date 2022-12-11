@@ -115,7 +115,7 @@ jobs:
         run: yarn version --new-version ${{needs.semver-parser.outputs.semver}} --no-git-tag-version --no-commit-hooks
         working-directory: react
       - name: Commit changes
-        uses: stefanzweifel/git-auto-commit-action@v4.16
+        uses: stefanzweifel/git-auto-commit-action@v4.16.0
         with:
           commit_message: Release version ${{needs.semver-parser.outputs.semver}}
           branch: main
