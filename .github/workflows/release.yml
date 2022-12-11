@@ -1,0 +1,160 @@
+name: Release
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  # checks:
+  #   name: Run checks workflow
+  #   uses: alan-cooney/CircuitsVis/.github/workflows/checks.yml@main
+
+  semver-parser:
+    name: Parse the semantic version from the release
+    runs-on: ubuntu-latest
+    steps:
+     - name: Parse semver string
+       id: semver_parser 
+       uses: booxmedialtd/ws-action-parse-semver@v1.4.6
+       with:
+         input_string: ${{ github.event.release.tag_name }}
+    outputs:
+      major: "${{ steps.semver_parser.outputs.major }}"
+      minor: "${{ steps.semver_parser.outputs.minor }}"
+      patch: "${{ steps.semver_parser.outputs.patch }}"
+      semver: "${{ steps.semver_parser.outputs.fullversion }}"
+
+  release-react:
+    name: Release React Node JS package to NPMJS
+    needs:
+      - checks
+      - semver-parser
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: write
+    env:
+      working-directory: react
+    defaults:
+      run:
+        working-directory: react
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install dependencies
+        run: yarn
+      - name: Build
+        run: yarn build
+      - name: Disable yarn version git auto-tagging
+        run: yarn config set version-commit-hooks false
+      - name: Set the version
+        run: yarn version --new-version ${{needs.semver-parser.outputs.semver}}
+      - name: Publish to NPMJS
+        id: publish
+        uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ${{env.working-directory}}/package.json
+          check-version: true
+
+  release-python:
+    name: Release Python package to PyPi
+    needs:
+      - checks
+      - semver-parser
+      - release-react
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: python
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+      - name: Poetry config
+        run: poetry self add 'poethepoet[poetry_plugin]'
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          cache: 'poetry'
+      - name: Install dependencies
+        run: poetry install --with dev
+      - name: Build
+        run: poetry build
+      - name: Set the version
+        run: poetry version ${{needs.semver-parser.outputs.semver}}
+      - name: Publish
+        run: poetry publish
+        env:
+          POETRY_PYPI_TOKEN_PYPI: ${{ secrets.POETRY_PYPI_TOKEN_PYPI }}
+
+  commit-version-updates:
+    name: Bump Python & Node package versions
+    needs:
+      - semver-parser
+      - release-react
+      - release-python
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: write
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          cache: 'poetry'
+      - name: Bump Python package version
+        run: poetry version ${{needs.semver-parser.outputs.semver}}
+        working-directory: python
+      - name: Bump Node package version
+        run: yarn version --new-version ${{needs.semver-parser.outputs.semver}}
+        working-directory: react
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v4.14.1
+        with:
+          commit_message: Release version ${{needs.semver-parser.outputs.semver}}
+
+  publish-storybook:
+    name: Publish docs to GitHub Pages
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    needs:
+      - commit-version-updates
+    runs-on: ubuntu-latest
+    env:
+      working-directory: react
+    defaults:
+      run:
+        working-directory: react
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Pages
+        uses: actions/configure-pages@v2
+      - uses: actions/checkout@v3
+      - name: Install dependencies
+        run: yarn
+      - name: Build
+        run: yarn build
+      - name: Build storybook
+        run: yarn build-storybook
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          # Upload entire repository
+          path: 'react/storybook-static'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
