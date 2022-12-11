@@ -65,6 +65,7 @@
     "@types/tinycolor2": "^1.4.3",
     "@typescript-eslint/eslint-plugin": "5.45.1",
     "@typescript-eslint/parser": "^5.45.1",
+    "chromatic": "^6.12.0",
     "esbuild": "^0.16.1",
     "esbuild-plugin-external-global": "^1.0.1",
     "eslint": "8.29.0",

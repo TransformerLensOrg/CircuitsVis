@@ -17,7 +17,7 @@ def attention_heads(
     """Attention Heads
 
     Attention patterns from destination to source tokens, for a group of heads.
-    
+
     Displays a small heatmap for each attention head. When one is selected, it
     is then shown in full size.
 
@@ -55,7 +55,6 @@ def attention_heads(
     )
 
 
-
 def attention_patterns(
     tokens: List[str],
     attention: Union[list, np.ndarray, torch.Tensor],
@@ -63,6 +62,8 @@ def attention_patterns(
     """Attention Patterns
 
     Visualization of attention head patterns.
+
+    @deprecated Use `attention_heads` instead.
 
     Args:
         tokens: List of tokens (e.g. `["A", "person"]`)
