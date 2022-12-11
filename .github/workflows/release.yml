@@ -62,8 +62,6 @@ jobs:
       - semver-parser
       # - release-react
     runs-on: ubuntu-latest
-    env:
-      working-directory: python
     defaults:
       run:
         working-directory: python
@@ -80,10 +78,10 @@ jobs:
           cache: 'poetry'
       - name: Install dependencies
         run: poetry install --with dev
-      - name: Build
-        run: poetry build
       - name: Set the version
         run: poetry version ${{needs.semver-parser.outputs.semver}}
+      - name: Build
+        run: poetry build
       - name: Publish
         run: poetry publish
         env:
