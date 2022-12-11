@@ -18,20 +18,6 @@ describe("click", () => {
 
     expect(result.current.focused).toBe(1);
   });
-
-  it("removes focus if clicked twice", () => {
-    const { result } = renderHook(() => useHoverLock());
-
-    act(() => {
-      result.current.onClick(1);
-    });
-
-    act(() => {
-      result.current.onClick(1);
-    });
-
-    expect(result.current.focused).toBe(null);
-  });
 });
 
 describe("hover", () => {
@@ -58,7 +44,7 @@ describe("hover", () => {
 });
 
 describe("prioritization", () => {
-  it("prioritizes lock (click) over hover", () => {
+  it("prioritizes hover over lock (click)", () => {
     const { result } = renderHook(() => useHoverLock());
 
     act(() => {
@@ -67,6 +53,6 @@ describe("prioritization", () => {
       result.current.onMouseEnter(3);
     });
 
-    expect(result.current.focused).toBe(2);
+    expect(result.current.focused).toBe(3);
   });
 });

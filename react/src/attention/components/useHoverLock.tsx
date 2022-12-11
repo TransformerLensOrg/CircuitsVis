@@ -1,25 +1,27 @@
 import { useState } from "react";
 
+export interface UseHoverLockState {
+  focused: number;
+  onClick: (element: number) => void;
+  onMouseEnter: (element: number) => void;
+  onMouseLeave: () => void;
+}
+
 /**
  * Track which element from a set is focussed
  *
  * Prioritizes an element being locked (clicked) rather than hovered.
  */
-export function useHoverLock(): {
-  focused: number;
-  onClick: (element: number) => void;
-  onMouseEnter: (element: number) => void;
-  onMouseLeave: () => void;
-} {
+export function useHoverLock(
+  default_locked: number | null = null
+): UseHoverLockState {
   const [hoveredElement, setHoveredElement] = useState<number | null>(null);
-  const [lockedElement, setLockedElement] = useState<number | null>(null);
+  const [lockedElement, setLockedElement] = useState<number | null>(
+    default_locked
+  );
 
   function onClick(element: number): void {
-    if (lockedElement === element) {
-      setLockedElement(null);
-    } else {
-      setLockedElement(element);
-    }
+    setLockedElement(element);
   }
 
   function onMouseEnter(element: number): void {
@@ -30,7 +32,7 @@ export function useHoverLock(): {
     setHoveredElement(null);
   }
 
-  const focused = lockedElement ?? hoveredElement;
+  const focused = hoveredElement ?? lockedElement;
 
   return {
     focused: focused as number,
