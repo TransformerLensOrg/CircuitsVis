@@ -1,8 +1,10 @@
-name: Storybook Publish
+name: Storybook Publish to Chromatic
 
 on: push
 
 jobs:
+  # Note this is designed primarily for testing. We also publish the Storybook
+  # in the release workflow to GitHub Pages (which is then used for docs).
   storybook:
     runs-on: ubuntu-latest
     defaults:
