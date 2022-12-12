@@ -9,6 +9,7 @@ from circuitsvis.utils.render import RenderedHTML, render
 def attention_heads(
     attention: Union[list, np.ndarray, torch.Tensor],
     tokens: List[str],
+    attention_head_names: Optional[List[str]] = None,
     max_value: Optional[float] = None,
     min_value: Optional[float] = None,
     negative_color: Optional[str] = None,
@@ -41,12 +42,13 @@ def attention_heads(
         Html: Attention pattern visualization
     """
     kwargs = {
-        "tokens": tokens,
         "attention": attention,
-        "minValue": min_value,
+        "attentionHeadNames": attention_head_names,
         "maxValue": max_value,
+        "minValue": min_value,
         "negativeColor": negative_color,
         "positiveColor": positive_color,
+        "tokens": tokens,
     }
 
     return render(
