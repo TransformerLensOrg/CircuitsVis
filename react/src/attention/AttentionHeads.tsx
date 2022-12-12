@@ -59,10 +59,10 @@ export function AttentionHeadsSelector({
                   borderColor: attentionHeadColor(idx, attention.length),
                   boxShadow: isFocused
                     ? `0px 0px 4px 3px ${attentionHeadColor(
-                        idx,
-                        attention.length,
-                        "60%"
-                      )}`
+                      idx,
+                      attention.length,
+                      "60%"
+                    )}`
                     : undefined
                 }}
               >
@@ -147,7 +147,11 @@ export function AttentionHeads({
           <div
             style={{
               position: "relative",
-              maxWidth: `${tokens.length * 4}em`
+              // Set the maximum width such that a head with just a few tokens
+              // doesn't have crazy large boxes per token. Note this is the
+              // width of the full chart (including axis labels) so it also
+              // needs a sensible lowest maximum.
+              maxWidth: `${Math.max(Math.round(tokens.length * 2.4), 20)}em`
             }}
           >
             <h2

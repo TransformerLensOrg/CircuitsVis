@@ -9,8 +9,6 @@ export default {
   argTypes: {
     negativeColor: { control: "color" },
     positiveColor: { control: "color" },
-    tokens: { control: { type: "object", raw: true } },
-    values: { control: { type: "object", raw: true } }
   }
 } as ComponentMeta<typeof AttentionHeads>;
 
