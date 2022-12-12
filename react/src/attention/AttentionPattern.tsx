@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { MatrixController, MatrixElement } from "chartjs-chart-matrix";
 import {
   Chart as ChartJS,
@@ -10,6 +10,7 @@ import {
   LinearScale
 } from "chart.js";
 import { Chart, ChartProps } from "react-chartjs-2";
+import { Col, Row } from "react-grid-system";
 import { getTokenBackgroundColor } from "../utils/getTokenBackgroundColor";
 
 /**
@@ -51,24 +52,30 @@ export function AttentionPattern({
   tokens
 }: AttentionPatternProps) {
   // Tokens must be unique (for the categories), so we add an index prefix
-  const uniqueTokens = tokens.map(
-    (token, idx) => `(${idx}) ${token.replace(/\s/g, "")}`
+  const uniqueTokens = useMemo(
+    () => tokens.map((token, idx) => `(${idx}) ${token.replace(/\s/g, "")}`),
+    [tokens]
   );
+
+  // Memoize the chart data
+  const chartData = useMemo(() => {
+    return attention
+      .map((src, destIdx) =>
+        src.map((value, srcIdx) => ({
+          x: uniqueTokens[srcIdx],
+          y: uniqueTokens[destIdx],
+          v: value
+        }))
+      )
+      .flat();
+  }, [attention, uniqueTokens]);
 
   // Format the chart data
   const data: ChartData<"matrix", Block[], unknown> = {
     datasets: [
       {
         // Data must be given in the form {x: xCategory, y: yCategory, v: value}
-        data: attention
-          .map((src, destIdx) =>
-            src.map((value, srcIdx) => ({
-              x: uniqueTokens[srcIdx],
-              y: uniqueTokens[destIdx],
-              v: value
-            }))
-          )
-          .flat(),
+        data: chartData,
         // Set the background color for each block, based on the attention value
         backgroundColor(context: ScriptableContext<"matrix">) {
           const block = context.dataset.data[context.dataIndex] as any as Block;
@@ -90,9 +97,13 @@ export function AttentionPattern({
 
   // Chart options
   const options: ChartProps<"matrix", Block[], unknown>["options"] = {
+    animation: {
+      duration: 0 // general animation time
+    },
     plugins: {
       // Tooltip (hover) options
       tooltip: {
+        enabled: showAxisLabels,
         callbacks: {
           title: () => "", // Hide the title
           label({ raw }: TooltipItem<"matrix">) {
@@ -129,15 +140,18 @@ export function AttentionPattern({
   };
 
   return (
-    <div style={{ maxWidth: 600 }}>
-      <Chart
-        type="matrix"
-        options={options}
-        data={data}
-        width={600}
-        height={600}
-      />
-    </div>
+    <Col>
+      <Row style={{ aspectRatio: showAxisLabels ? undefined : "1/1" }}>
+        <Chart
+          type="matrix"
+          options={options}
+          data={data}
+          width={1000}
+          height={1000}
+          updateMode="none"
+        />
+      </Row>
+    </Col>
   );
 }
 

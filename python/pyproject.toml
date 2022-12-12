@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "circuitsvis"
-version = "1.26.0"
+version = "1.34.0"
 description = "Mechanistic Interpretability Visualizations"
 authors = ["Alan Cooney <41682961+alan-cooney@users.noreply.github.com>"]
 license = "MIT"
