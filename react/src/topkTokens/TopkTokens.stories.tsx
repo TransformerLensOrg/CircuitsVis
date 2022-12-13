@@ -7,14 +7,16 @@ import {
   bottomkVals,
   bottomkIdxs,
   objType
-} from "./mocks/topk";
-import { Topk } from "./Topk";
+} from "./mocks/topkTokens";
+import { TopkTokens } from "./TopkTokens";
 
 export default {
-  component: Topk
-} as ComponentMeta<typeof Topk>;
+  component: TopkTokens
+} as ComponentMeta<typeof TopkTokens>;
 
-const Template: ComponentStory<typeof Topk> = (args) => <Topk {...args} />;
+const Template: ComponentStory<typeof TopkTokens> = (args) => (
+  <TopkTokens {...args} />
+);
 
 export const SmallModelExample = Template.bind({});
 SmallModelExample.args = {

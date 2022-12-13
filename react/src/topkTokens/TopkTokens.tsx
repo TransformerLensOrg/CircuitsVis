@@ -225,7 +225,7 @@ export function TopBottomKTable({
  * Includes drop-downs for k, layer and neuron numbers, and the number of
  * columns to show (representing the neurons or directions).
  */
-export function Topk({
+export function TopkTokens({
   tokens,
   topkVals,
   topkIdxs,
