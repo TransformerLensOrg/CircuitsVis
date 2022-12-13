@@ -1,6 +1,13 @@
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 import React from "react";
-import { mockActivations, mockTokens, objType } from "./mocks/topk";
+import {
+  mockTokens,
+  topkVals,
+  topkIdxs,
+  bottomkVals,
+  bottomkIdxs,
+  objType
+} from "./mocks/topk";
 import { Topk } from "./Topk";
 
 export default {
@@ -12,6 +19,9 @@ const Template: ComponentStory<typeof Topk> = (args) => <Topk {...args} />;
 export const SmallModelExample = Template.bind({});
 SmallModelExample.args = {
   tokens: mockTokens,
-  activations: mockActivations,
+  topkVals,
+  topkIdxs,
+  bottomkVals,
+  bottomkIdxs,
   thirdDimensionName: objType
 };

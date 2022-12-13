@@ -1,16 +1,9 @@
-import {
-  Rank,
-  tensor,
-  Tensor2D,
-  Tensor3D,
-  reverse,
-  topk as tfTopk
-} from "@tensorflow/tfjs";
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col } from "react-grid-system";
 import { usePopperTooltip } from "react-popper-tooltip";
 import { colord, AnyColor } from "colord";
 import { getTokenBackgroundColor } from "../utils/getTokenBackgroundColor";
+import { arraySlice2D } from "../utils/arrayOps";
 import { RangeSelector } from "../shared/RangeSelector";
 import { NumberSelector } from "../shared/NumberSelector";
 
@@ -104,32 +97,6 @@ export function TokenCell({
 }
 
 /**
- * Get the selected activations
- *
- * @param {Tensor3D} activations - Activations for the selected sample [ tokens x layers x neurons ]
- * @param {number} layerNumber - Selected layer number
- * @param {number} neuronStartNumber - First selected neuron number
- * @param {number} neuronEndNumber - Last selected neuron number
- * @returns Tensor2D of selected activations [ neurons x tokens ]. This form is required for
- * topk which can only calculate the topk over the final dimension
- */
-export function getSelectedActivations(
-  activations: Tensor3D,
-  layerNumber: number,
-  neuronStartNumber: number,
-  neuronEndNumber: number
-): Tensor2D {
-  const currentActivations: Tensor2D = activations
-    .slice(
-      [0, layerNumber, neuronStartNumber],
-      [-1, 1, neuronEndNumber - neuronStartNumber + 1]
-    )
-    .squeeze<Tensor2D>([1]) // squeeze out the layer dimension
-    .transpose(); // transpose so that the tokens are the last dimension (needed for tfjs's topk)
-  return currentActivations; // [neurons x tokens]
-}
-
-/**
  * Create a table with the topk and bottomk tokens for each neuron in the selected range.
  *
  * @returns A html table element containing the topk table.
@@ -140,7 +107,8 @@ export function TopBottomKTable({
   topkTokens,
   bottomkTokens,
   neuronNumbers,
-  filter
+  filter,
+  colLabel
 }: {
   /** Topk activations for the selected sample and neuron numbers [ tokens x neurons ] */
   topkActivations: number[][];
@@ -154,12 +122,24 @@ export function TopBottomKTable({
   neuronNumbers: number[];
   /** Indicates whether to show topk, bottomk or both. */
   filter: string;
+  /** The column label to use for the table */
+  colLabel: string;
 }) {
   return (
     <table style={{ marginTop: 15, marginLeft: 15 }}>
       <thead>
-        {/* The first header row just shows the current neuron idx */}
         <tr>
+          {/* Label for all columns */}
+          <th
+            colSpan={neuronNumbers.length}
+            style={{ textAlign: "center", paddingLeft: "15ch" }}
+          >
+            {colLabel}
+          </th>
+        </tr>
+        {/* The header row just shows the current neuron idx */}
+        <tr>
+          <th key="default" style={{ textAlign: "center" }}></th>
           {neuronNumbers.map((neuronNumber) => (
             <th key={neuronNumber} style={{ textAlign: "center" }}>
               {neuronNumber}
@@ -172,6 +152,15 @@ export function TopBottomKTable({
         {filter.includes("topk") &&
           topkActivations.map((activations, tokenIdx) => (
             <tr key={tokenIdx}>
+              {tokenIdx === 0 && (
+                <td
+                  key="default"
+                  style={{ textAlign: "center", fontWeight: "bold" }}
+                  rowSpan={topkActivations.length}
+                >
+                  Topk &darr;
+                </td>
+              )}
               {/* Show the coloured token for each topk activation */}
               {activations.map((activation, neuronIdx) => (
                 <TokenCell
@@ -181,14 +170,15 @@ export function TopBottomKTable({
                   value={activation}
                   minValue={0}
                   maxValue={1}
-                  // maxTokenLength={maxTokenLength}
                 />
               ))}
             </tr>
           ))}
-        {/* Only show the ellipse if filter === "topk+bottomk" */}
+        {/* Only show the ellipses if filter === "topk+bottomk" */}
         {filter === "topk+bottomk" && (
           <tr>
+            {/* First add empty space for the label column */}
+            <td key="default" style={{ textAlign: "center" }}></td>
             {/* Add an ellipse for each column */}
             {Array(topkActivations[0].length)
               .fill(0)
@@ -202,6 +192,15 @@ export function TopBottomKTable({
         {filter.includes("bottomk") &&
           bottomkActivations.map((activations, tokenIdx) => (
             <tr key={tokenIdx}>
+              {tokenIdx === 0 && (
+                <td
+                  key="default"
+                  style={{ textAlign: "center", fontWeight: "bold" }}
+                  rowSpan={bottomkActivations.length}
+                >
+                  Bottomk &darr;
+                </td>
+              )}
               {/* Show the coloured token for each bottomk activation */}
               {activations.map((activation, neuronIdx) => (
                 <TokenCell
@@ -211,7 +210,6 @@ export function TopBottomKTable({
                   value={activation}
                   minValue={0}
                   maxValue={1}
-                  // maxTokenLength={maxTokenLength}
                 />
               ))}
             </tr>
@@ -229,24 +227,24 @@ export function TopBottomKTable({
  */
 export function Topk({
   tokens,
-  activations,
+  topkVals,
+  topkIdxs,
+  bottomkVals,
+  bottomkIdxs,
   firstDimensionName = "Sample",
   secondDimensionName = "Layer",
-  thirdDimensionName = "Neuron" // Note that we simply use neuron as variable names throughout this file
+  thirdDimensionName = "Neuron" // Note that we simply use neuron for variable names throughout this file
 }: TopkProps) {
-  const activationsTensors = activations.map((sampleActivations) => {
-    return tensor<Rank.R3>(sampleActivations);
-  });
-  // Get number of layers/neurons (Assumes all samples have the same number of layers/neurons)
-  const numberOfLayers = activationsTensors[0].shape[1];
-  const numberOfNeurons = activationsTensors[0].shape[2];
-  const numberOfSamples = activationsTensors.length;
+  const numberOfSamples = topkVals.length;
+  const numberOfLayers = topkVals[0].length;
+  const maxk = topkVals[0][0].length;
+  const numberOfNeurons = topkVals[0][0][0].length;
 
   /** TODO: reqct-hook-form <- investigate */
   const [sampleNumber, setSampleNumber] = useState<number>(0);
   const [layerNumber, setLayerNumber] = useState<number>(0);
   const [colsToShow, setColsToShow] = useState<number>(5);
-  const [k, setK] = useState<number>(Math.min(5, tokens[0].length));
+  const [k, setK] = useState<number>(maxk);
   const [neuronNumbers, setNeuronNumbers] = useState<number[]>([
     ...Array(colsToShow).keys()
   ]);
@@ -259,45 +257,32 @@ export function Topk({
   }, [colsToShow, numberOfSamples]);
 
   const currentTokens: string[] = tokens[sampleNumber];
-  // Get the relevant activations for the selected sample, layer, and neurons.
-  const currentActivations: Tensor2D = getSelectedActivations(
-    activationsTensors[sampleNumber],
-    layerNumber,
-    neuronNumbers[0],
-    neuronNumbers[neuronNumbers.length - 1]
-  ); // [neurons x tokens]
-
-  const { values: topkValsRaw, indices: topkIdxsRaw } = tfTopk(
-    currentActivations,
-    k,
-    true
+  // Start-end ranges for the slice of the topk/bottomk arrays
+  const dimRanges: [number, number][] = [
+    [0, k],
+    [neuronNumbers[0], neuronNumbers[neuronNumbers.length - 1] + 1]
+  ];
+  const currentTopkVals: number[][] = arraySlice2D(
+    topkVals[sampleNumber][layerNumber],
+    dimRanges
   );
-  const { values: bottomkValsRaw, indices: bottomkIdxsRaw } = tfTopk(
-    currentActivations.mul(-1),
-    k,
-    true
+  const currentTopkIdxs: number[][] = arraySlice2D(
+    topkIdxs[sampleNumber][layerNumber],
+    dimRanges
+  );
+  const currentBottomkVals: number[][] = arraySlice2D(
+    bottomkVals[sampleNumber][layerNumber],
+    dimRanges
+  );
+  const currentBottomkIdxs: number[][] = arraySlice2D(
+    bottomkIdxs[sampleNumber][layerNumber],
+    dimRanges
   );
 
-  // The topk and bottomk values, indices and tokens will be tensors of shape
-  // [tokens x neurons]. This form makes it easier to display the table
-  const topkVals: number[][] = topkValsRaw
-    .transpose()
-    .arraySync() as number[][];
-  const topkIdxs: number[][] = topkIdxsRaw
-    .transpose()
-    .arraySync() as number[][];
-  // Bottom vals are ordered from highest to lowest activations (just like top vals)
-  const bottomkVals: number[][] = reverse(bottomkValsRaw.mul(-1), -1)
-    .transpose()
-    .arraySync() as number[][];
-  const bottomkIdxs: number[][] = reverse(bottomkIdxsRaw, -1)
-    .transpose()
-    .arraySync() as number[][];
-
-  const topkTokens: string[][] = topkIdxs.map((outerArr) =>
+  const topkTokens: string[][] = currentTopkIdxs.map((outerArr) =>
     outerArr.map((token_idx) => currentTokens[token_idx])
   );
-  const bottomkTokens: string[][] = bottomkIdxs.map((outerArr) =>
+  const bottomkTokens: string[][] = currentBottomkIdxs.map((outerArr) =>
     outerArr.map((token_idx) => currentTokens[token_idx])
   );
 
@@ -395,7 +380,7 @@ export function Topk({
                 <NumberSelector
                   id="k-selector"
                   smallestNumber={1}
-                  largestNumber={currentTokens.length}
+                  largestNumber={maxk}
                   currentValue={k}
                   setCurrentValue={setK}
                 />
@@ -405,12 +390,13 @@ export function Topk({
         </Row>
       </Container>
       <TopBottomKTable
-        topkActivations={topkVals}
-        bottomkActivations={bottomkVals}
+        topkActivations={currentTopkVals}
+        bottomkActivations={currentBottomkVals}
         topkTokens={topkTokens}
         bottomkTokens={bottomkTokens}
         neuronNumbers={neuronNumbers}
         filter={filter}
+        colLabel={thirdDimensionName}
       />
     </div>
   );
@@ -426,11 +412,32 @@ export interface TopkProps {
   tokens: string[][];
 
   /**
-   * Activations
+   * Topk values
    *
-   * Should be a nested list of numbers of the form [ samples x tokens x layers x neurons ].
+   * Nested list of activation values of the form [ samples x layers x k x neurons].
    */
-  activations: number[][][][];
+  topkVals: number[][][][];
+
+  /**
+   * Topk indices
+   *
+   * Nested list of token indices of the form [ samples x layers x k x neurons].
+   */
+  topkIdxs: number[][][][];
+
+  /**
+   * Bottomk values
+   *
+   * Nested list of activation values of the form [ samples x layers x k x neurons].
+   */
+  bottomkVals: number[][][][];
+
+  /**
+   * Bottomk indices
+   *
+   * Nested list of token indices of the form [ samples x layers x k x neurons].
+   */
+  bottomkIdxs: number[][][][];
 
   /**
    * Name of the first dimension

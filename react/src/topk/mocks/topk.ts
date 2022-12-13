@@ -1,3 +1,11 @@
+import {
+  Rank,
+  tensor,
+  Tensor3D,
+  reverse,
+  topk as tfTopk
+} from "@tensorflow/tfjs";
+
 const text: string = `
   A goose (PL: geese) is a bird of any of several waterfowl species in the family Anatidae. This group comprises the genera Anser (the grey geese and white geese) and Branta (the black geese). Some other birds, mostly related to the shelducks, have "goose" as part of their names. More distantly related members of the family Anatidae are swans, most of which are larger than true geese, and ducks, which are smaller.
 
@@ -60,8 +68,6 @@ function chunkText(textArr: string[]): string[][] {
   return chunks;
 }
 
-const numLayers: number = 2;
-const numSVDDirs: number = 30;
 function createRandom3DActivationMatrix(shape: number[]): number[][][] {
   return Array.from(Array(shape[0]), () =>
     Array.from(Array(shape[1]), () =>
@@ -70,10 +76,51 @@ function createRandom3DActivationMatrix(shape: number[]): number[][][] {
   );
 }
 
+const numLayers: number = 2;
+const numSVDDirs: number = 30;
+const k: number = 5;
+
+// [samples x tokens]
 export const mockTokens: string[][] = chunkText(text.split(/(?=\s)/));
 
-export const mockActivations: number[][][][] = mockTokens.map((tokens) => {
-  return createRandom3DActivationMatrix([tokens.length, numLayers, numSVDDirs]);
+// [samples x layers x neurons x tokens]
+const mockActivations: Tensor3D[] = mockTokens.map((tokens) => {
+  return tensor<Rank.R3>(
+    createRandom3DActivationMatrix([numLayers, numSVDDirs, tokens.length])
+  );
 });
+
+// All have shape [samples x layers x k x neurons]
+export const topkVals: number[][][][] = [];
+export const topkIdxs: number[][][][] = [];
+export const bottomkVals: number[][][][] = [];
+export const bottomkIdxs: number[][][][] = [];
+
+for (let sampleNum = 0; sampleNum < mockActivations.length; sampleNum += 1) {
+  const { values: sampleTopkValsRaw, indices: sampleTopkIdxsRaw } = tfTopk(
+    mockActivations[sampleNum],
+    k,
+    true
+  ); // [layers x neurons x k]
+  const { values: sampleBottomkValsRaw, indices: sampleBottomkIdxsRaw } =
+    tfTopk(mockActivations[sampleNum].mul(-1), k, true); // [layers x neurons x k]
+  // Append the sample TopkValsRaw to the topkVals array
+  topkVals.push(
+    sampleTopkValsRaw.transpose([0, 2, 1]).arraySync() as number[][][]
+  ); // [layers x k x neurons]
+  topkIdxs.push(
+    sampleTopkIdxsRaw.transpose([0, 2, 1]).arraySync() as number[][][]
+  ); // [layers x k x neurons]
+  bottomkVals.push(
+    reverse(sampleBottomkValsRaw.mul(-1), -1)
+      .transpose([0, 2, 1])
+      .arraySync() as number[][][]
+  ); // [layers x k x neurons]
+  bottomkIdxs.push(
+    reverse(sampleBottomkIdxsRaw, -1)
+      .transpose([0, 2, 1])
+      .arraySync() as number[][][]
+  ); // [layers x k x neurons]
+}
 
 export const objType: string = "SVD Direction";
