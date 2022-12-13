@@ -231,8 +231,7 @@ export function TopkTokens({
   topkIdxs,
   bottomkVals,
   bottomkIdxs,
-  firstDimensionName = "Sample",
-  secondDimensionName = "Layer",
+  firstDimensionName = "Layer",
   thirdDimensionName = "Neuron" // Note that we simply use neuron for variable names throughout this file
 }: TopkProps) {
   const numberOfSamples = topkVals.length;
@@ -299,7 +298,7 @@ export function TopkTokens({
             <Row style={selectRowStyle}>
               <Col>
                 <label htmlFor="sample-selector" style={{ marginRight: 15 }}>
-                  {firstDimensionName}:
+                  Sample:
                 </label>
                 <NumberSelector
                   id="sample-selector"
@@ -313,7 +312,7 @@ export function TopkTokens({
             <Row style={selectRowStyle}>
               <Col>
                 <label htmlFor="layer-selector" style={{ marginRight: 15 }}>
-                  {secondDimensionName}:
+                  {firstDimensionName}:
                 </label>
                 <NumberSelector
                   id="layer-selector"
@@ -443,11 +442,6 @@ export interface TopkProps {
    * Name of the first dimension
    */
   firstDimensionName?: string;
-
-  /**
-   * Name of the second dimension
-   */
-  secondDimensionName?: string;
 
   /**
    * Name of the third dimension
