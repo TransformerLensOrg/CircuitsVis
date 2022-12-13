@@ -7,7 +7,7 @@
  */
 export function arraySlice2D(
   arr: number[][],
-  dims: Array<[number, number]>
+  dims: [number, number][]
 ): number[][] {
   // Recursively apply the slicing operation on each dimension
   return arr

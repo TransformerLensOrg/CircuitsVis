@@ -3,7 +3,7 @@ import React from "react";
 /**
  * Function for converting an array of numbers to a string representing the
  * range.
- * @param {Array<number>} rangeArr - Array of numbers representing a range.
+ * @param {number[]} rangeArr - Array of numbers representing a range.
  * @returns {string} - String representing the range.
  */
 export function rangeArrToString(rangeArr: number[]): string {
@@ -16,7 +16,7 @@ export function rangeArrToString(rangeArr: number[]): string {
  * Function for converting a string representing of a range to an array of
  * numbers.
  * @param {string} rangeStr - String representing a range.
- * @returns {Array<number>} - Array of numbers representing the range.
+ * @returns {number[]} - Array of numbers representing the range.
  */
 export function rangeStringToArr(rangeStr: string): number[] {
   const rangeArr = rangeStr.split("-");
