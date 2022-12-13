@@ -56,8 +56,10 @@ const text: string = `
   Preparation
 `;
 
+/**
+ * Split textArr into chunks of random size between 50 and 100 words
+ */
 function chunkText(textArr: string[]): string[][] {
-  // Split textArr into chunks of random size between 50 and 100 words
   const chunks: string[][] = [];
   let i = 0;
   while (i < textArr.length) {
