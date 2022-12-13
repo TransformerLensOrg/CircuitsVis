@@ -8,8 +8,7 @@ def topk_tokens(
     tokens: List[List[str]],
     activations: List[np.ndarray],  # np.ndarray: [n_layers, n_tokens, n_neurons]
     max_k: int = 10,
-    first_dimension_name: str = "Sample",
-    second_dimension_name: str = "Layer",
+    first_dimension_name: str = "Layer",
     third_dimension_name: str = "Neuron",
 ) -> RenderedHTML:
     """Show a table of the topk and bottomk activations.
@@ -35,11 +34,9 @@ def topk_tokens(
         Html: Topk activations visualization
     """
 
-    assert (
-        len(tokens) == activations.shape[0]
-    ), "tokens and activations must be same length"
-    assert (
-        activations.ndim == 3
+    assert len(tokens) == len(activations), "tokens and activations must be same length"
+    assert all(
+        act.ndim == 3 for act in activations
     ), "activations must be of the form [n_layers, n_tokens, n_neurons]"
 
     topk_vals = []
@@ -49,10 +46,13 @@ def topk_tokens(
     for sample_acts in activations:
         # get topk tokens for each object
         sample_acts_tensor = torch.from_numpy(sample_acts)
-        sample_topk_vals, sample_topk_idxs = sample_acts_tensor.topk(k=max_k, dim=1)
+        # Set max_k to the min of the number of tokens and the max_k
+        k = min(sample_acts_tensor.shape[1], max_k)
+
+        sample_topk_vals, sample_topk_idxs = sample_acts_tensor.topk(k=k, dim=1)
         # also get bottom k vals
         sample_bottomk_vals, sample_bottomk_idxs = sample_acts_tensor.topk(
-            k=max_k, dim=1, largest=False
+            k=k, dim=1, largest=False
         )
 
         # reverse sort order of bottomk vals and idxs
@@ -67,11 +67,10 @@ def topk_tokens(
     return render(
         "TopkTokens",
         tokens=tokens,
-        topk_vals=topk_vals,
-        topk_idxs=topk_idxs,
-        bottomk_vals=bottomk_vals,
-        topk_idxs=bottomk_idxs,
+        topkVals=topk_vals,
+        topkIdxs=topk_idxs,
+        bottomkVals=bottomk_vals,
+        bottomkIdxs=bottomk_idxs,
         firstDimensionName=first_dimension_name,
-        secondDimensionName=second_dimension_name,
         thirdDimensionName=third_dimension_name,
     )

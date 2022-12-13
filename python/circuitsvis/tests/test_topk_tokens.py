@@ -1,4 +1,4 @@
-from python.circuitsvis.topk_tokens import topk_tokens
+from circuitsvis.topk_tokens import topk_tokens
 import circuitsvis.utils.render
 import numpy as np
 
@@ -9,7 +9,10 @@ class TestTopk:
         monkeypatch.setattr(circuitsvis.utils.render, "uuid4", lambda: "mock")
 
         res = topk_tokens(
-            tokens=[["a", "b"]],
-            activations=np.random.random(size=(1, 2, 3, 4)),
+            tokens=[["a", "b", "c", "d", "e"], ["f", "g"]],
+            activations=[
+                np.random.random(size=(2, 5, 4)),
+                np.random.random(size=(2, 2, 4)),
+            ],  # each of shape (n_layers, n_tokens, n_neurons)
         )
         snapshot.assert_match(str(res))
