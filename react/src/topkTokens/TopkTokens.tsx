@@ -131,8 +131,8 @@ export function TopBottomKTable({
         <tr>
           {/* Label for all columns */}
           <th
-            colSpan={neuronNumbers.length}
-            style={{ textAlign: "center", paddingLeft: "15ch" }}
+            colSpan={neuronNumbers.length + 1}
+            style={{ textAlign: "center", paddingLeft: "9ch" }}
           >
             {colLabel}
           </th>
@@ -233,7 +233,7 @@ export function TopkTokens({
   bottomkIdxs,
   firstDimensionName = "Layer",
   thirdDimensionName = "Neuron" // Note that we simply use neuron for variable names throughout this file
-}: TopkProps) {
+}: TopkTokensProps) {
   const numberOfSamples = topkVals.length;
   const numberOfLayers = topkVals[0].length;
   const maxk = topkVals[0][0].length;
@@ -401,7 +401,7 @@ export function TopkTokens({
   );
 }
 
-export interface TopkProps {
+export interface TopkTokensProps {
   /**
    * List of lists of tokens [ samples x tokens ]
    *
