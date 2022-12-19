@@ -18,7 +18,7 @@ def text_neuron_activations(
     Args:
         tokens: List of tokens if single sample (e.g. `["A", "person"]`) or list of lists of tokens (e.g. `[[["A", "person"], ["is", "walking"]]]`)
         activations: Activations of the shape [tokens x layers x neurons] if
-        single sample or [samples x tokens x layers x neurons] if multiple samples
+        single sample or list of [tokens x layers x neurons] if multiple samples
 
     Returns:
         Html: Text neuron activations visualization
