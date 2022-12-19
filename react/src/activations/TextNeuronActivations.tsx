@@ -33,7 +33,6 @@ export function Items({
   activationsList,
   tokensList
 }: {
-  /**  */
   activationsList: number[][] | null;
   tokensList: string[][] | null;
 }) {
