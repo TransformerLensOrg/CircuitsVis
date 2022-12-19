@@ -18,8 +18,10 @@ const Template: ComponentStory<typeof TopkTokens> = (args) => (
   <TopkTokens {...args} />
 );
 
-export const SmallModelExample = Template.bind({});
-SmallModelExample.args = {
+export const ExampleTokens: ComponentStory<typeof TopkTokens> = Template.bind(
+  {}
+);
+ExampleTokens.args = {
   tokens: mockTokens,
   topkVals,
   topkIdxs,
