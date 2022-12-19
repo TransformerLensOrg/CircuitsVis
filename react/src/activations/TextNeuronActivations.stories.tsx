@@ -11,8 +11,14 @@ const Template: ComponentStory<typeof TextNeuronActivations> = (args) => (
   <TextNeuronActivations {...args} />
 );
 
-export const SmallModelExample = Template.bind({});
-SmallModelExample.args = {
+export const MultipleSamples = Template.bind({});
+MultipleSamples.args = {
   tokens: mockTokens,
   activations: mockActivations
+};
+
+export const SingleSample = Template.bind({});
+SingleSample.args = {
+  tokens: mockTokens[0],
+  activations: mockActivations[0]
 };
