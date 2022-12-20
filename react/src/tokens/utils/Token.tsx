@@ -82,7 +82,8 @@ export function Token({
               padding: 10,
               borderRadius: 5,
               boxShadow: "5px 5px rgba(0, 0, 0, 0.03)",
-              marginTop: 15
+              marginTop: 15,
+              zIndex: 1
             }
           })}
         >
