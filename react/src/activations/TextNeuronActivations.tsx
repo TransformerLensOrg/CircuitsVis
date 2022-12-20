@@ -1,7 +1,7 @@
 import { Rank, tensor, Tensor1D, Tensor3D } from "@tensorflow/tfjs";
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col } from "react-grid-system";
-import { ColoredTokens } from "../tokens/ColoredTokens";
+import { SampleItems } from "../shared/SampleItems";
 import { RangeSelector } from "../shared/RangeSelector";
 import { NumberSelector } from "../shared/NumberSelector";
 
@@ -21,58 +21,6 @@ export function getSelectedActivations(
     .slice([0, layerNumber, neuronNumber], [-1, 1, 1])
     .squeeze<Tensor1D>([1, 2]);
   return relevantActivations.arraySync();
-}
-
-/**
- * Show the lists of tokens, colored by their activation value.
- * Each sample is displayed in a separate box, unless there is only one sample.
- *
- * @returns A div element
- */
-export function Items({
-  activationsList,
-  tokensList
-}: {
-  activationsList: number[][] | null;
-  tokensList: string[][] | null;
-}) {
-  // Styling for the background of the samples
-  const boxedSampleStyle = {
-    border: "1px solid black",
-    borderRadius: 5,
-    padding: 10,
-    marginTop: 10,
-    marginBottom: 10,
-    backgroundColor: "#f5f5f5"
-  };
-  // For each set of activations in activationsList, show the
-  // corresponding ColoredTokens objects in separate raised boxes
-  // If there is only a single set of activations don't show the box.
-  return (
-    <div>
-      {activationsList &&
-        tokensList &&
-        activationsList.length > 1 &&
-        activationsList.map((activations, index) => (
-          <Row key={index}>
-            <Col style={boxedSampleStyle}>
-              <ColoredTokens
-                tokens={tokensList[index]}
-                values={activations}
-                paddingBottom={0}
-              />
-            </Col>
-          </Row>
-        ))}
-      {activationsList && tokensList && activationsList.length === 1 && (
-        <Row key={0}>
-          <Col>
-            <ColoredTokens tokens={tokensList[0]} values={activationsList[0]} />
-          </Col>
-        </Row>
-      )}
-    </div>
-  );
 }
 
 /**
@@ -212,7 +160,7 @@ export function TextNeuronActivations({
       </Row>
       <Row>
         <Col>
-          <Items
+          <SampleItems
             activationsList={selectedActivations}
             tokensList={selectedTokens}
           />

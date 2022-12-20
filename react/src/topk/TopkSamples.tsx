@@ -1,76 +1,8 @@
-// import { Rank, tensor, Tensor1D, Tensor3D } from "@tensorflow/tfjs";
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col } from "react-grid-system";
-import { ColoredTokens } from "../tokens/ColoredTokens";
+import { SampleItems } from "../shared/SampleItems";
 import { RangeSelector } from "../shared/RangeSelector";
 import { NumberSelector } from "../shared/NumberSelector";
-
-// /**
-//  * Get the selected activations
-//  *
-//  * @param activations All activations [ tokens x layers x neurons ]
-//  * @param layerNumber
-//  * @param neuronNumber
-//  */
-// export function getSelectedActivations(
-//   activations: Tensor3D,
-//   layerNumber: number,
-//   neuronNumber: number
-// ): number[] {
-//   const relevantActivations = activations
-//     .slice([0, layerNumber, neuronNumber], [-1, 1, 1])
-//     .squeeze<Tensor1D>([1, 2]);
-//   return relevantActivations.arraySync();
-// }
-
-/**
- * Show the lists of tokens, colored by their activation value.
- * Each sample is displayed in a separate box, unless there is only one sample.
- *
- * @returns A div element
- */
-export function Items({
-  activationsList,
-  tokensList
-}: {
-  /**  */
-  activationsList: number[][] | null;
-  tokensList: string[][] | null;
-}) {
-  // Styling for the background of the samples
-  const boxedSampleStyle = {
-    border: "1px solid black",
-    borderRadius: 5,
-    padding: 10,
-    marginTop: 10,
-    marginBottom: 10,
-    backgroundColor: "#f5f5f5"
-  };
-  // For each set of activations in activationsList, show the
-  // corresponding ColoredTokens objects in separate raised boxes
-  // If there is only a single set of activations don't show the box.
-  return (
-    <div>
-      {activationsList &&
-        tokensList &&
-        activationsList.length > 1 &&
-        activationsList.map((activations, index) => (
-          <Row key={index}>
-            <Col style={boxedSampleStyle}>
-              <ColoredTokens tokens={tokensList[index]} values={activations} />
-            </Col>
-          </Row>
-        ))}
-      {activationsList && tokensList && activationsList.length === 1 && (
-        <Row key={0}>
-          <Col>
-            <ColoredTokens tokens={tokensList[0]} values={activationsList[0]} />
-          </Col>
-        </Row>
-      )}
-    </div>
-  );
-}
 
 /**
  * Show activations (colored by intensity) for each token.
@@ -83,7 +15,6 @@ export function TopkSamples({
   firstDimensionName = "Neuron",
   secondDimensionName = "k"
 }: TopkSamplesProps) {
-  console.log("Inside Samples");
   const numberOfNeurons = activations.length;
   const numberOfSamples = activations[0].length;
   // // Convert the activations to a tensor
@@ -95,10 +26,10 @@ export function TopkSamples({
   // const numberOfLayers = activationsTensors[0].shape[1];
   // const numberOfNeurons = activationsTensors[0].shape[2];
   // const numberOfSamples = activationsTensors.length;
-  console.log(tokens);
-  console.log(activations);
-  console.log(numberOfNeurons);
-  console.log(numberOfSamples);
+  // console.log(tokens);
+  // console.log(activations);
+  // console.log(numberOfNeurons);
+  // console.log(numberOfSamples);
   const [samplesPerPage, setSamplesPerPage] = useState<number>(
     Math.min(5, numberOfSamples)
   );
@@ -213,7 +144,7 @@ export function TopkSamples({
       </Row>
       <Row>
         <Col>
-          <Items
+          <SampleItems
             activationsList={selectedActivations}
             tokensList={selectedTokens}
           />
