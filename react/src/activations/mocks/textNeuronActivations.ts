@@ -48,12 +48,12 @@ const text: string = `
   Preparation
 `;
 
-function chunkText(textArr: string[]) {
-  // Split textArr into chunks of random size between 50 and 100 words
+function chunkText(textArr: string[]): string[][] {
   const chunks: string[][] = [];
   let i = 0;
+  // Split textArr into 12 chunks of 75 tokens
+  const chunkSize = 75;
   while (i < textArr.length) {
-    const chunkSize = Math.floor(Math.random() * 50) + 50;
     chunks.push(textArr.slice(i, i + chunkSize));
     i += chunkSize;
   }

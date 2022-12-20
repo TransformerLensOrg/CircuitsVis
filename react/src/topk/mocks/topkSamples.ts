@@ -49,11 +49,11 @@ const text: string = `
 `;
 
 function chunkText(textArr: string[]): string[][] {
-  // Split textArr into chunks of random size between 50 and 100 words
   const chunks: string[][] = [];
   let i = 0;
+  // Split textArr into 12 chunks of 75 tokens
+  const chunkSize = 75;
   while (i < textArr.length) {
-    const chunkSize = Math.floor(Math.random() * 50) + 50;
     chunks.push(textArr.slice(i, i + chunkSize));
     i += chunkSize;
   }
@@ -62,11 +62,10 @@ function chunkText(textArr: string[]): string[][] {
 
 // This creates 12 samples
 const mockTokensFlat: string[][] = chunkText(text.split(/(?=\s)/));
-
 const numNeurons: number = 3;
 const numK: number = 4;
 
-// Convert mockTokensFlat to a nested array of size (numNuerons, numK,
+// Convert mockTokensFlat to a nested array of size (numNeurons, numK,
 // numTokens) where numTokens varies by sample
 let sampleIdx: number = 0;
 const mockTokens: string[][][] = [];
