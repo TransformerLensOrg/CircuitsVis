@@ -26,7 +26,8 @@ export function getSelectedActivations(
 /**
  * Show activations (colored by intensity) for each token.
  *
- * Includes drop-downs for layer and neuron numbers.
+ * Includes drop-downs for e.g. showing the activations for the selected layer
+ * and neuron the given samples.
  */
 export function TextNeuronActivations({
   tokens,

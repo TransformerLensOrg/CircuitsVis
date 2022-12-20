@@ -5,38 +5,26 @@ import { RangeSelector } from "../shared/RangeSelector";
 import { NumberSelector } from "../shared/NumberSelector";
 
 /**
- * Show activations (colored by intensity) for each token.
- *
- * Includes drop-downs for layer and neuron numbers.
+ * List of samples in descending order of max token activation value for the
+ * selected layer and neuron (or whatever other dimension names are specified).
  */
 export function TopkSamples({
   tokens,
   activations,
-  firstDimensionName = "Neuron",
-  secondDimensionName = "k"
+  firstDimensionName = "Layer",
+  secondDimensionName = "Neuron"
 }: TopkSamplesProps) {
-  const numberOfNeurons = activations.length;
-  const numberOfSamples = activations[0].length;
-  // // Convert the activations to a tensor
-  // const activationsTensors = activations.map((sampleActivations) => {
-  //   return tensor<Rank.R3>(sampleActivations);
-  // });
+  const numberOfLayers = activations.length;
+  const numberOfNeurons = activations[0].length;
+  const numberOfSamples = activations[0][0].length;
 
-  // // Get number of layers/neurons
-  // const numberOfLayers = activationsTensors[0].shape[1];
-  // const numberOfNeurons = activationsTensors[0].shape[2];
-  // const numberOfSamples = activationsTensors.length;
-  // console.log(tokens);
-  // console.log(activations);
-  // console.log(numberOfNeurons);
-  // console.log(numberOfSamples);
   const [samplesPerPage, setSamplesPerPage] = useState<number>(
     Math.min(5, numberOfSamples)
   );
   const [sampleNumbers, setSampleNumbers] = useState<number[]>([
     ...Array(samplesPerPage).keys()
   ]);
-  // const [layerNumber, setLayerNumber] = useState<number>(0);
+  const [layerNumber, setLayerNumber] = useState<number>(0);
   const [neuronNumber, setNeuronNumber] = useState<number>(0);
 
   useEffect(() => {
@@ -44,27 +32,13 @@ export function TopkSamples({
     setSampleNumbers([...Array(samplesPerPage).keys()]);
   }, [samplesPerPage]);
 
-  // Get the relevant activations for the selected neuron.
+  // Get the relevant activations for the selected layer and neuron.
   const selectedActivations: number[][] = sampleNumbers.map((sampleNumber) => {
-    return activations[neuronNumber][sampleNumber];
+    return activations[layerNumber][neuronNumber][sampleNumber];
   });
-  // const selectedActivations: number[][] = activations[neuronNumber]
-  // // const selectedActivations: number[][] = sampleNumbers.map((sampleNumber) => {
-  // //   return getSelectedActivations(
-  // //     activationsTensors[sampleNumber],
-  // //     layerNumber,
-  // //     neuronNumber
-  // //   );
-  // // });
-
   const selectedTokens: string[][] = sampleNumbers.map((sampleNumber) => {
-    return tokens[neuronNumber][sampleNumber];
+    return tokens[layerNumber][neuronNumber][sampleNumber];
   });
-  // const selectedTokens: string[][] = tokens[neuronNumber];
-
-  // const selectedTokens: string[][] = sampleNumbers.map((sampleNumber) => {
-  //   return tokens[sampleNumber];
-  // });
 
   const selectRowStyle = {
     paddingTop: 5,
@@ -75,7 +49,7 @@ export function TopkSamples({
     <Container fluid>
       <Row>
         <Col>
-          {/* <Row style={selectRowStyle}>
+          <Row style={selectRowStyle}>
             <Col>
               <label htmlFor="layer-selector" style={{ marginRight: 15 }}>
                 {firstDimensionName}:
@@ -87,11 +61,11 @@ export function TopkSamples({
                 setCurrentValue={setLayerNumber}
               />
             </Col>
-          </Row> */}
+          </Row>
           <Row style={selectRowStyle}>
             <Col>
               <label htmlFor="neuron-selector" style={{ marginRight: 15 }}>
-                {firstDimensionName}:
+                {secondDimensionName}:
               </label>
               <NumberSelector
                 id="neuron-selector"
@@ -106,7 +80,7 @@ export function TopkSamples({
             <Row style={selectRowStyle}>
               <Col>
                 <label htmlFor="sample-selector" style={{ marginRight: 15 }}>
-                  {secondDimensionName}:
+                  Samples (descending):
                 </label>
                 <RangeSelector
                   id="sample-selector"
@@ -128,7 +102,7 @@ export function TopkSamples({
                   htmlFor="samples-per-page-selector"
                   style={{ marginRight: 15 }}
                 >
-                  {secondDimensionName}s per page:
+                  Samples per page:
                 </label>
                 <NumberSelector
                   id="samples-per-page-selector"
@@ -156,20 +130,20 @@ export function TopkSamples({
 
 export interface TopkSamplesProps {
   /**
-   * Nested list of tokens
+   * Nested list of tokens of shape [layers x neurons x samples x tokens]
    *
    * The inner most dimension must be the same size as the inner most dimension of activations.
    *
    * For example, the first and second dimensisons (1-indexed) may correspond to
-   * neurons and topk indices.
+   * layers and neurons.
    */
-  tokens: string[][][];
+  tokens: string[][][][];
 
   /**
-   * Activations for the tokens above.
+   * Activations for the tokens with shape [layers x neurons x samples x tokens]
    *
    */
-  activations: number[][][];
+  activations: number[][][][];
 
   /**
    * Name of the first dimension

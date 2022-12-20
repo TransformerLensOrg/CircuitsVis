@@ -62,26 +62,33 @@ function chunkText(textArr: string[]): string[][] {
 
 // This creates 12 samples
 const mockTokensFlat: string[][] = chunkText(text.split(/(?=\s)/));
-const numNeurons: number = 3;
-const numK: number = 4;
+const numLayers: number = 2;
+const numNeurons: number = 2;
+const numK: number = 3;
 
-// Convert mockTokensFlat to a nested array of size (numNeurons, numK,
+// Convert mockTokensFlat to a nested array of size (n_layers, n_neurons, numK,
 // numTokens) where numTokens varies by sample
 let sampleIdx: number = 0;
-const mockTokens: string[][][] = [];
-const mockActivations: number[][][] = [];
-for (let i = 0; i < numNeurons; i += 1) {
-  const neuronTokens: string[][] = [];
-  const neuronActivations: number[][] = [];
-  for (let k = 0; k < numK; k += 1) {
-    neuronTokens.push(mockTokensFlat[sampleIdx]);
-    neuronActivations.push(
-      Array.from(Array(mockTokensFlat[sampleIdx].length), () => Math.random())
-    );
-    sampleIdx += 1;
+const mockTokens: string[][][][] = [];
+const mockActivations: number[][][][] = [];
+for (let l = 0; l < numLayers; l += 1) {
+  const layerTokens: string[][][] = [];
+  const layerActivations: number[][][] = [];
+  for (let n = 0; n < numNeurons; n += 1) {
+    const neuronTokens: string[][] = [];
+    const neuronActivations: number[][] = [];
+    for (let k = 0; k < numK; k += 1) {
+      neuronTokens.push(mockTokensFlat[sampleIdx]);
+      neuronActivations.push(
+        Array.from(Array(mockTokensFlat[sampleIdx].length), () => Math.random())
+      );
+      sampleIdx += 1;
+    }
+    layerTokens.push(neuronTokens);
+    layerActivations.push(neuronActivations);
   }
-  mockTokens.push(neuronTokens);
-  mockActivations.push(neuronActivations);
+  mockTokens.push(layerTokens);
+  mockActivations.push(layerActivations);
 }
 
 export { mockTokens, mockActivations };
