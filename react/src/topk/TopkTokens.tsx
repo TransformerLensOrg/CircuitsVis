@@ -232,7 +232,9 @@ export function TopkTokens({
   bottomkVals,
   bottomkIdxs,
   firstDimensionName = "Layer",
-  thirdDimensionName = "Neuron" // Note that we simply use neuron for variable names throughout this file
+  thirdDimensionName = "Neuron", // Note that we simply use neuron for variable names throughout this file
+  sampleLabels,
+  firstDimensionLabels
 }: TopkTokensProps) {
   const numberOfSamples = topkVals.length;
   const numberOfLayers = topkVals[0].length;
@@ -306,6 +308,7 @@ export function TopkTokens({
                   largestNumber={numberOfSamples - 1}
                   currentValue={sampleNumber}
                   setCurrentValue={setSampleNumber}
+                  labels={sampleLabels}
                 />
               </Col>
             </Row>
@@ -319,6 +322,7 @@ export function TopkTokens({
                   largestNumber={numberOfLayers - 1}
                   currentValue={layerNumber}
                   setCurrentValue={setLayerNumber}
+                  labels={firstDimensionLabels}
                 />
               </Col>
             </Row>
@@ -439,12 +443,23 @@ export interface TopkTokensProps {
   bottomkIdxs: number[][][][];
 
   /**
-   * Name of the first dimension
+   * Name of the first dimension (e.g. "Layer")
+   *
    */
   firstDimensionName?: string;
 
   /**
-   * Name of the third dimension
+   * Name of the third dimension (e.g. "Neuron"). Cannot have labels for this dimension as we use a range selector for pagination.
    */
   thirdDimensionName?: string;
+
+  /**
+   * Labels for the samples (i.e. the zeroth dimension)
+   */
+  sampleLabels?: string[];
+
+  /**
+   * Labels for the first dimension
+   */
+  firstDimensionLabels?: string[];
 }

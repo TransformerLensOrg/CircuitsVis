@@ -124,3 +124,5 @@ for (let sampleNum = 0; sampleNum < mockActivations.length; sampleNum += 1) {
 }
 
 export const objType: string = "SVD Direction";
+
+export const layerLabels: string[] = ["10", "12"];

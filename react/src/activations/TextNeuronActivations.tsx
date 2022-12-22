@@ -33,7 +33,9 @@ export function TextNeuronActivations({
   tokens,
   activations,
   firstDimensionName = "Layer",
-  secondDimensionName = "Neuron"
+  secondDimensionName = "Neuron",
+  firstDimensionLabels,
+  secondDimensionLabels
 }: TextNeuronActivationsProps) {
   // If there is only one sample (i.e. if tokens is an array of strings), cast tokens and activations to an array with
   // a single element
@@ -102,6 +104,7 @@ export function TextNeuronActivations({
                 largestNumber={numberOfLayers! - 1}
                 currentValue={layerNumber}
                 setCurrentValue={setLayerNumber}
+                labels={firstDimensionLabels}
               />
             </Col>
           </Row>
@@ -115,6 +118,7 @@ export function TextNeuronActivations({
                 largestNumber={numberOfNeurons! - 1}
                 currentValue={neuronNumber}
                 setCurrentValue={setNeuronNumber}
+                labels={secondDimensionLabels}
               />
             </Col>
           </Row>
@@ -198,4 +202,14 @@ export interface TextNeuronActivationsProps {
    * Name of the second dimension
    */
   secondDimensionName?: string;
+
+  /**
+   * Labels for the first dimension
+   */
+  firstDimensionLabels?: string[];
+
+  /**
+   * Labels for the second dimension
+   */
+  secondDimensionLabels?: string[];
 }

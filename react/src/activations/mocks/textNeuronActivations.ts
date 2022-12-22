@@ -74,3 +74,5 @@ function createRandom3DActivationMatrix(shape: number[]) {
 export const mockActivations: number[][][][] = mockTokens.map((tokens) => {
   return createRandom3DActivationMatrix([tokens.length, numLayers, numNeurons]);
 });
+
+export const neuronLabels: string[] = ["3", "9", "42"];

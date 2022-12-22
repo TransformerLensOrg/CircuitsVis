@@ -6,7 +6,8 @@ import {
   topkIdxs,
   bottomkVals,
   bottomkIdxs,
-  objType
+  objType,
+  layerLabels
 } from "./mocks/topkTokens";
 import { TopkTokens } from "./TopkTokens";
 
@@ -27,5 +28,6 @@ ExampleTokens.args = {
   topkIdxs,
   bottomkVals,
   bottomkIdxs,
-  thirdDimensionName: objType
+  thirdDimensionName: objType,
+  firstDimensionLabels: layerLabels
 };

@@ -13,7 +13,7 @@ snapshots['TestTextNeuronActivations.test_multi_matches_snapshot 1'] = '''<div i
     render(
       "circuits-vis-mock",
       TextNeuronActivations,
-      {"tokens": [["a", "b"], ["c", "d", "e"]], "activations": [[[[0, 1, 0], [0, 1, 1]], [[0, 1, 1], [1, 1, 1]]], [[[0, 1, 0], [0, 1, 1]], [[0, 1, 1], [1, 1, 1]], [[0, 1, 1], [1, 1, 1]]]]}
+      {"tokens": [["a", "b"], ["c", "d", "e"]], "activations": [[[[0, 1, 0], [0, 1, 1]], [[0, 1, 1], [1, 1, 1]]], [[[0, 1, 0], [0, 1, 1]], [[0, 1, 1], [1, 1, 1]], [[0, 1, 1], [1, 1, 1]]]], "firstDimensionName": "Layer", "secondDimensionName": "Neuron"}
     )
     </script>'''
 
@@ -23,6 +23,6 @@ snapshots['TestTextNeuronActivations.test_single_matches_snapshot 1'] = '''<div 
     render(
       "circuits-vis-mock",
       TextNeuronActivations,
-      {"tokens": ["a", "b"], "activations": [[[0, 1, 0], [0, 1, 1]], [[0, 1, 1], [1, 1, 1]]]}
+      {"tokens": ["a", "b"], "activations": [[[0, 1, 0], [0, 1, 1]], [[0, 1, 1], [1, 1, 1]]], "firstDimensionName": "Layer", "secondDimensionName": "Neuron"}
     )
     </script>'''

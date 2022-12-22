@@ -1,5 +1,5 @@
 """Activations visualizations"""
-from typing import List, Union
+from typing import List, Union, Optional
 
 import numpy as np
 import torch
@@ -9,6 +9,10 @@ from circuitsvis.utils.render import RenderedHTML, render
 def text_neuron_activations(
     tokens: Union[List[str], List[List[str]]],
     activations: Union[np.ndarray, torch.Tensor, List[np.ndarray], List[torch.Tensor]],
+    first_dimension_name: Optional[str] = "Layer",
+    second_dimension_name: Optional[str] = "Neuron",
+    first_dimension_labels: Optional[List[str]] = None,
+    second_dimension_labels: Optional[List[str]] = None,
 ) -> RenderedHTML:
     """Show activations (colored by intensity) for each token in a text or set
     of texts.
@@ -46,4 +50,8 @@ def text_neuron_activations(
         "TextNeuronActivations",
         tokens=tokens,
         activations=activations_list,
+        firstDimensionName=first_dimension_name,
+        secondDimensionName=second_dimension_name,
+        firstDimensionLabels=first_dimension_labels,
+        secondDimensionLabels=second_dimension_labels,
     )
