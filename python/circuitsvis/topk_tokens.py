@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from circuitsvis.utils.render import RenderedHTML, render
 import numpy as np
 import torch
@@ -10,13 +10,16 @@ def topk_tokens(
     max_k: int = 10,
     first_dimension_name: str = "Layer",
     third_dimension_name: str = "Neuron",
+    sample_labels: Optional[List[str]] = None,
+    first_dimension_labels: Optional[List[str]] = None,
 ) -> RenderedHTML:
     """Show a table of the topk and bottomk activations.
 
     The columns correspond to the given third_dimension_name.
 
-    Includes drop-downs for all dimensions as well as options to choose the
-    number of columns to show.
+    Includes drop-downs for all dimensions as well as options to choose the number of columns to show.
+
+    Note that we can't set labels for the third dimension because the visualisation uses pagination on this dimension.
 
     Args:
         tokens: Nested list of tokens for each sample (e.g. `[["A", "person"],
@@ -26,9 +29,10 @@ def topk_tokens(
         n_neurons x n_tokens]
         max_k: Maximum number of top and bottom activations to show. This
         prevents us sending too much data to the react component.
-        first_dimension_name: Name of the first dimension (e.g. "Sample")
-        second_dimension_name: Name of the second dimension (e.g. "Layer")
+        first_dimension_name: Name of the first dimension (e.g. "Layer")
         third_dimension_name: Name of the third dimension (e.g. "Neuron")
+        sample_labels: Optional list of labels for each sample
+        first_dimension_labels: Optional list of labels for each value in the first dimension
 
     Returns:
         Html: Topk activations visualization
@@ -73,4 +77,6 @@ def topk_tokens(
         bottomkIdxs=bottomk_idxs,
         firstDimensionName=first_dimension_name,
         thirdDimensionName=third_dimension_name,
+        sampleLabels=sample_labels,
+        firstDimensionLabels=first_dimension_labels,
     )
