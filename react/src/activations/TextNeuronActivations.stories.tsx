@@ -1,6 +1,10 @@
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 import React from "react";
-import { mockActivations, mockTokens } from "./mocks/textNeuronActivations";
+import {
+  mockActivations,
+  mockTokens,
+  neuronLabels
+} from "./mocks/textNeuronActivations";
 import { TextNeuronActivations } from "./TextNeuronActivations";
 
 export default {
@@ -14,11 +18,13 @@ const Template: ComponentStory<typeof TextNeuronActivations> = (args) => (
 export const MultipleSamples = Template.bind({});
 MultipleSamples.args = {
   tokens: mockTokens,
-  activations: mockActivations
+  activations: mockActivations,
+  secondDimensionLabels: neuronLabels
 };
 
 export const SingleSample = Template.bind({});
 SingleSample.args = {
   tokens: mockTokens[0],
-  activations: mockActivations[0]
+  activations: mockActivations[0],
+  secondDimensionLabels: neuronLabels
 };

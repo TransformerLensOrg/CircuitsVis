@@ -32,7 +32,10 @@ export function NumberSelector({
     (i) => i + smallestNumber
   );
   // If no labels are provided or the length of labels is not equal to the length of options, use the numbers as the labels.
-  const resolvedLabels = (labels && labels.length === options.length) ? labels : options.map((i) => i.toString());
+  const resolvedLabels =
+    labels && labels.length === options.length
+      ? labels
+      : options.map((i) => i.toString());
   return (
     <select
       value={currentValue}
@@ -41,7 +44,9 @@ export function NumberSelector({
     >
       {/* If no labels are provided, use the numbers as the labels. */}
       {options.map((value, index) => (
-        <option key={value} value={value}>{resolvedLabels[index]}</option>
+        <option key={value} value={value}>
+          {resolvedLabels[index]}
+        </option>
       ))}
     </select>
   );
