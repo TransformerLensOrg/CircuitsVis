@@ -13,6 +13,6 @@ snapshots['TestTopkSamples.test_matches_snapshot 1'] = '''<div id="circuits-vis-
     render(
       "circuits-vis-mock",
       TopkSamples,
-      {"tokens": [[[["And", " here"], ["This", " is", " another"]], [["Another", " example"], ["Weee", " is", " another"]]]], "activations": [[[[0.2, 1], [1, 0.0, 0]], [[0, 1], [0.5, 1, 1]]]], "firstDimensionName": "Layer", "secondDimensionName": "Neuron"}
+      {"tokens": [[[["And", " here"], ["This", " is", " another"]], [["Another", " example"], ["Weee", " is", " another"]]]], "activations": [[[[0.2, 1], [1, 0.0, 0]], [[0, 1], [0.5, 1, 1]]]], "zerothDimensionName": "Layer", "firstDimensionName": "Neuron"}
     )
     </script>'''

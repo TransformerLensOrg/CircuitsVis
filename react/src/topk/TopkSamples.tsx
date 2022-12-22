@@ -11,8 +11,10 @@ import { NumberSelector } from "../shared/NumberSelector";
 export function TopkSamples({
   tokens,
   activations,
-  firstDimensionName = "Layer",
-  secondDimensionName = "Neuron"
+  zerothDimensionName = "Layer",
+  firstDimensionName = "Neuron",
+  zerothDimensionLabels,
+  firstDimensionLabels
 }: TopkSamplesProps) {
   const numberOfLayers = activations.length;
   const numberOfNeurons = activations[0].length;
@@ -52,26 +54,28 @@ export function TopkSamples({
           <Row style={selectRowStyle}>
             <Col>
               <label htmlFor="layer-selector" style={{ marginRight: 15 }}>
-                {firstDimensionName}:
+                {zerothDimensionName}:
               </label>
               <NumberSelector
                 id="layer-selector"
                 largestNumber={numberOfLayers! - 1}
                 currentValue={layerNumber}
                 setCurrentValue={setLayerNumber}
+                labels={zerothDimensionLabels}
               />
             </Col>
           </Row>
           <Row style={selectRowStyle}>
             <Col>
               <label htmlFor="neuron-selector" style={{ marginRight: 15 }}>
-                {secondDimensionName}:
+                {firstDimensionName}:
               </label>
               <NumberSelector
                 id="neuron-selector"
                 largestNumber={numberOfNeurons! - 1}
                 currentValue={neuronNumber}
                 setCurrentValue={setNeuronNumber}
+                labels={firstDimensionLabels}
               />
             </Col>
           </Row>
@@ -146,12 +150,22 @@ export interface TopkSamplesProps {
   activations: number[][][][];
 
   /**
+   * Name of the zeroth dimension
+   */
+  zerothDimensionName?: string;
+
+  /**
    * Name of the first dimension
    */
   firstDimensionName?: string;
 
   /**
-   * Name of the second dimension
+   * Labels for the zeroth dimension
    */
-  secondDimensionName?: string;
+  zerothDimensionLabels?: string[];
+
+  /**
+   * Labels for the first dimension
+   */
+  firstDimensionLabels?: string[];
 }

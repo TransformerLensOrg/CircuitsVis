@@ -1,6 +1,6 @@
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 import React from "react";
-import { mockActivations, mockTokens } from "./mocks/topkSamples";
+import { mockActivations, mockTokens, neuronLabels } from "./mocks/topkSamples";
 import { TopkSamples } from "./TopkSamples";
 
 export default {
@@ -16,5 +16,6 @@ export const ExampleSamples: ComponentStory<typeof TopkSamples> = Template.bind(
 );
 ExampleSamples.args = {
   tokens: mockTokens,
-  activations: mockActivations
+  activations: mockActivations,
+  firstDimensionLabels: neuronLabels
 };

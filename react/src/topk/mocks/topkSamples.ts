@@ -69,8 +69,8 @@ const numK: number = 3;
 // Convert mockTokensFlat to a nested array of size (n_layers, n_neurons, numK,
 // numTokens) where numTokens varies by sample
 let sampleIdx: number = 0;
-const mockTokens: string[][][][] = [];
-const mockActivations: number[][][][] = [];
+export const mockTokens: string[][][][] = [];
+export const mockActivations: number[][][][] = [];
 for (let l = 0; l < numLayers; l += 1) {
   const layerTokens: string[][][] = [];
   const layerActivations: number[][][] = [];
@@ -91,4 +91,4 @@ for (let l = 0; l < numLayers; l += 1) {
   mockActivations.push(layerActivations);
 }
 
-export { mockTokens, mockActivations };
+export const neuronLabels: string[] = ["3", "42"];
