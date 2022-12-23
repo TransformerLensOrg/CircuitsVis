@@ -21,8 +21,14 @@
     "Colab",
     "Colord",
     "crossorigin",
-    "Interpretability"
+    "devcontainer",
+    "Interpretability",
+    "ndarray",
+    "NPMJS"
   ],
   "rewrap.reformat": false,
   "editor.formatOnSave": true,
+  "python.linting.pylintArgs": [
+    "--rcfile=./python/.pylintrc"
+  ]
 }

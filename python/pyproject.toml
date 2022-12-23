@@ -1,22 +1,39 @@
 [tool.poetry]
 name = "circuitsvis"
-version = "1.8.0"
+version = "1.28.0"
 description = "Mechanistic Interpretability Visualizations"
-authors = ["Your Name <you@example.com>"]
+authors = ["Alan Cooney <41682961+alan-cooney@users.noreply.github.com>"]
 license = "MIT"
 readme = "README.md"
+include = ["circuitsvis/dist/cdn/iife.js", "circuitsvis/dist/cdn/iife.js.map"]
 
 [tool.poetry.dependencies]
-python = "^3.7"
+importlib-metadata = "^5.1.0"
 numpy = "^1.20"
+python = "^3.7"
+# Fix for M1 issue with torch 1.13.0 (expected to be resolved in 1.13.1)
+torch = [{ version = ">=1 <1.13", markers = "sys_platform != 'linux'" },
+         { version = "^1", markers = "sys_platform == 'linux'" }]
 
 [tool.poetry.group.dev.dependencies]
+autopep8 = "^2.0.0"
+mypy = "^0.990"
+poethepoet = "^0.16.5"
 pytest = "^7.2.0"
 snapshottest = "^0.6.0"
 twine = "^4.0.1"
+
+
+[tool.poetry.group.jupyter.dependencies]
 jupyterlab = "^3.5.0"
-mypy = "^0.990"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poe.poetry_hooks]
+pre_build  = "bundle-js"
+
+[tool.poe.tasks.bundle-js]
+script = "circuitsvis.utils.build_js:build"
+help   = "Bundle up the latest version of the react library as a single script file."
