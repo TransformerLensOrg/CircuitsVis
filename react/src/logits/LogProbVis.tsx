@@ -103,7 +103,7 @@ export function LogProbVis({
   correctTokenLogProb
 }: LogProbVisProps) {
   return (
-    // Padding to ensure that the tooltip is visible
+    // Padding to ensure that the tooltip is visible - pretty janky, sorry!
     <div style={{ paddingBottom: 350 }}>
       {prompt.slice(1).map((token, i) => (<TokenCustomTooltip
         key={i}
