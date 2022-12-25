@@ -34,6 +34,9 @@ export function TokenCustomTooltip({
       followCursor: true
     });
 
+  // Get the focus state, with a more sensible name.
+  const isFocus = visible;
+
   // Get the background color
   const backgroundColor = getTokenBackgroundColor(
     value,
@@ -58,7 +61,8 @@ export function TokenCustomTooltip({
     marginBottom: 1,
     borderWidth: 1,
     borderStyle: "solid",
-    borderColor: "#eee"
+    borderColor: isFocus ? "rgba(0,0,200,0.5)" : "#eee",
+    fontWeight: isFocus ? "bold" : "normal",
   };
 
   // Handle special tokens (e.g. spaces/line breaks)
@@ -77,7 +81,7 @@ export function TokenCustomTooltip({
         ))}
       </span>
 
-      {visible && (
+      {isFocus && (
         <div
           ref={setTooltipRef}
           {...getTooltipProps({

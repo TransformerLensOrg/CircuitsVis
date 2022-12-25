@@ -25,6 +25,8 @@ const rl = readline.createInterface({
 console.log('Welcome to the TensorFlow.js REPL!');
 console.log('Enter a TensorFlow.js expression or statement and press enter to evaluate it.');
 
+show = (x) => console.log(x.arraySync());
+
 rl.on('line', (input) => {
     try {
         // Evaluate the input and print the result

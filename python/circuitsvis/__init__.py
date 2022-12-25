@@ -5,6 +5,7 @@ import circuitsvis.attention
 import circuitsvis.examples
 import circuitsvis.tokens
 import circuitsvis.log_probs
+import circuitsvis.tokens_multi
 
 __version__ = version("circuitsvis")
 
