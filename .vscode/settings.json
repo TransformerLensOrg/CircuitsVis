@@ -29,6 +29,7 @@
   "rewrap.reformat": false,
   "editor.formatOnSave": true,
   "python.linting.pylintArgs": [
-    "--rcfile=./python/.pylintrc"
+    "--rcfile=./python/.pylintrc",
+    "--generated-members=numpy.* ,torch.* ,cv2.* , cv.*"
   ]
 }
