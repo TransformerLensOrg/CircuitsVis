@@ -22,7 +22,7 @@
   },
   "scripts": {
     "test": "jest",
-    "lint": "eslint",
+    "lint": "eslint src",
     "buildBrowser": "node ./esbuild.js",
     "buildNode": "tsc --project tsconfig.build.json",
     "build": "yarn buildBrowser && yarn buildNode",

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-loss-of-precision */
 export const mockTokens: string[] = [
   "<|endoftext|>",
   "Help",
