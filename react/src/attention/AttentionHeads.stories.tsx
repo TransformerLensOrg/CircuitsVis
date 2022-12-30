@@ -8,7 +8,7 @@ export default {
   component: AttentionHeads,
   argTypes: {
     negativeColor: { control: "color" },
-    positiveColor: { control: "color" },
+    positiveColor: { control: "color" }
   }
 } as ComponentMeta<typeof AttentionHeads>;
 
