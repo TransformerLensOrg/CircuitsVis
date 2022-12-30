@@ -6,15 +6,15 @@ import {
   mockTopKTokens,
   mockCorrectTokenRank,
   mockCorrectTokenLogProb
-} from "./mocks/logProbVis";
-import { LogProbVis } from "./LogProbVis";
+} from "./mocks/mockTokenLogProbs";
+import { TokenLogProbs } from "./TokenLogProbs";
 
 export default {
-  component: LogProbVis
-} as ComponentMeta<typeof LogProbVis>;
+  component: TokenLogProbs
+} as ComponentMeta<typeof TokenLogProbs>;
 
-const Template: ComponentStory<typeof LogProbVis> = (args) => (
-  <LogProbVis {...args} />
+const Template: ComponentStory<typeof TokenLogProbs> = (args) => (
+  <TokenLogProbs {...args} />
 );
 
 export const SmallModelExample = Template.bind({});

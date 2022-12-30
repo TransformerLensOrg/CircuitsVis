@@ -117,13 +117,19 @@ export function Tooltip({
   );
 }
 
-export function LogProbVis({
+/**
+ * Token log probs visualizer
+ *
+ * Shows the log probabilities of the top k next tokens for each token in the
+ * prompt. Hover over each token to see these.
+ */
+export function TokenLogProbs({
   prompt,
   topKLogProbs,
   topKTokens,
   correctTokenRank,
   correctTokenLogProb
-}: LogProbVisProps) {
+}: TokenLogProbsProps) {
   return (
     // Padding to ensure that the tooltip is visible - pretty janky, sorry!
     <div style={{ paddingBottom: 350 }}>
@@ -151,18 +157,29 @@ export function LogProbVis({
   );
 }
 
-export interface LogProbVisProps {
-  prompt: string[];
+export interface TokenLogProbsProps {
   /**
+   * Prompt as a list of tokens.
+   */
+  prompt: string[];
+
+  /**
+   * Log probs of the top K next tokens, for each token in the prompt.
    */
   topKLogProbs: number[][];
+
   /**
+   * Top K next tokens, for each token in the prompt.
    */
   topKTokens: string[][];
+
   /**
+   * Rank of the correct next token, for each token in the prompt.
    */
   correctTokenRank: number[];
+
   /**
+   * Log prob of the correct next token, for each token in the prompt.
    */
   correctTokenLogProb: number[];
 }
