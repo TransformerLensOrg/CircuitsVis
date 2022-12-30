@@ -1,7 +1,11 @@
+export { AttentionHeads } from "./attention/AttentionHeads";
+export { AttentionPattern } from "./attention/AttentionPattern";
 export { AttentionPatterns } from "./attention/AttentionPatterns";
+export { ColoredTokens } from "./tokens/ColoredTokens";
 export { Hello } from "./examples/Hello";
 export { render } from "./render-helper";
 export { TextNeuronActivations } from "./activations/TextNeuronActivations";
 export { ColoredTokens } from "./tokens/ColoredTokens";
 export { AttentionPattern } from "./attention/AttentionPattern";
 export { LogProbVis } from "./logits/LogProbVis";
+export { TopkTokens } from "./topkTokens/TopkTokens";

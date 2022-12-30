@@ -54,6 +54,8 @@ export function colorAttentionTensors(attentionInput: number[][][]): Tensor4D {
 
 /**
  * Attention Patterns
+ *
+ * @deprecated Use `AttentionHeads` instead.
  */
 export function AttentionPatterns({
   tokens,
