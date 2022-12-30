@@ -59,10 +59,10 @@ export function AttentionHeadsSelector({
                   borderColor: attentionHeadColor(idx, attention.length),
                   boxShadow: isFocused
                     ? `0px 0px 4px 3px ${attentionHeadColor(
-                      idx,
-                      attention.length,
-                      "60%"
-                    )}`
+                        idx,
+                        attention.length,
+                        "60%"
+                      )}`
                     : undefined
                 }}
               >
