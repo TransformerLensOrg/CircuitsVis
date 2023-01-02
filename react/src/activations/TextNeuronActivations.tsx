@@ -4,6 +4,7 @@ import { Container, Row, Col } from "react-grid-system";
 import { ColoredTokens } from "../tokens/ColoredTokens";
 import { RangeSelector } from "../shared/RangeSelector";
 import { NumberSelector } from "../shared/NumberSelector";
+import { minMaxInNestedArray } from "../utils/arrayOps";
 
 /**
  * Get the selected activations
@@ -31,10 +32,14 @@ export function getSelectedActivations(
  */
 export function Items({
   activationsList,
-  tokensList
+  tokensList,
+  minValue,
+  maxValue
 }: {
   activationsList: number[][] | null;
   tokensList: string[][] | null;
+  minValue?: number;
+  maxValue?: number;
 }) {
   // Styling for the background of the samples
   const boxedSampleStyle = {
@@ -57,6 +62,8 @@ export function Items({
           <Row key={index}>
             <Col style={boxedSampleStyle}>
               <ColoredTokens
+                minValue={minValue}
+                maxValue={maxValue}
                 tokens={tokensList[index]}
                 values={activations}
                 paddingBottom={0}
@@ -98,6 +105,9 @@ export function TextNeuronActivations({
     typeof activations[0][0][0] === "number"
       ? ([activations] as number[][][][])
       : (activations as number[][][][]);
+
+  // Obtain min and max activations for a consistent color scale across all samples
+  const [minValue, maxValue] = minMaxInNestedArray(activationsList);
 
   // Convert the activations to a tensor
   const activationsTensors = activationsList.map((sampleActivations) => {
@@ -219,6 +229,8 @@ export function TextNeuronActivations({
           <Items
             activationsList={selectedActivations}
             tokensList={selectedTokens}
+            minValue={minValue}
+            maxValue={maxValue}
           />
         </Col>
       </Row>
