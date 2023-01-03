@@ -10,10 +10,14 @@ import { ColoredTokens } from "../tokens/ColoredTokens";
  */
 export function SampleItems({
   activationsList,
-  tokensList
+  tokensList,
+  minValue,
+  maxValue
 }: {
   activationsList: number[][] | null;
   tokensList: string[][] | null;
+  minValue?: number;
+  maxValue?: number;
 }) {
   // Styling for the background of the samples
   const boxedSampleStyle = {
@@ -36,6 +40,8 @@ export function SampleItems({
           <Row key={index}>
             <Col style={boxedSampleStyle}>
               <ColoredTokens
+                minValue={minValue}
+                maxValue={maxValue}
                 tokens={tokensList[index]}
                 values={activations}
                 paddingBottom={0}
