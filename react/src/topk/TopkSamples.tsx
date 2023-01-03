@@ -3,6 +3,7 @@ import { Container, Row, Col } from "react-grid-system";
 import { SampleItems } from "../shared/SampleItems";
 import { RangeSelector } from "../shared/RangeSelector";
 import { NumberSelector } from "../shared/NumberSelector";
+import { minMaxInNestedArray } from "../utils/arrayOps";
 
 /**
  * List of samples in descending order of max token activation value for the
@@ -16,6 +17,9 @@ export function TopkSamples({
   zerothDimensionLabels,
   firstDimensionLabels
 }: TopkSamplesProps) {
+  // Obtain min and max activations for a consistent color scale across all samples
+  const [minValue, maxValue] = minMaxInNestedArray(activations);
+
   const numberOfLayers = activations.length;
   const numberOfNeurons = activations[0].length;
   const numberOfSamples = activations[0][0].length;
@@ -125,6 +129,8 @@ export function TopkSamples({
           <SampleItems
             activationsList={selectedActivations}
             tokensList={selectedTokens}
+            minValue={minValue}
+            maxValue={maxValue}
           />
         </Col>
       </Row>
