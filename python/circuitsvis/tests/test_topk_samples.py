@@ -8,7 +8,6 @@ class TestTopkSamples:
         # Monkeypatch uuid4 to always return the same uuid
         monkeypatch.setattr(circuitsvis.utils.render, "uuid4", lambda: "mock")
         monkeypatch.setattr(circuitsvis, "__version__", "1.0.0")
-        # (n_neurons (3), samples (3), tokens (varied))
         tokens = [
             [
                 ["And", " here"],
