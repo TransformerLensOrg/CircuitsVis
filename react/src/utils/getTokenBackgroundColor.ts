@@ -16,9 +16,17 @@ export function getTokenBackgroundColor(
   negativeColor: AnyColor = "red",
   positiveColor: AnyColor = "blue"
 ): Colord {
+  // original_color.mix("white", x) interpolates between original_color and white, with x being the ratio of white. So x=0 is original_color, x=1 is white. Clamp at 0 to avoid negative values.
   if (value > 0) {
-    return colord(positiveColor).mix(colord("white"), 1 - value / max);
+    return colord(positiveColor).mix(
+      colord("white"),
+      Math.max(1 - value / max, 0)
+    );
   }
 
-  return colord(negativeColor).mix(colord("white"), 1 - value / min);
+  // value and min are assumed to be negative. We negate them to be consistent with the positive case.
+  return colord(negativeColor).mix(
+    colord("white"),
+    Math.max(1 - -value / -min, 0)
+  );
 }
