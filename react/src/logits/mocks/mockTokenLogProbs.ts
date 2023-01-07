@@ -1,4 +1,4 @@
-// eslint-disable @typescript-eslint/no-loss-of-precision
+// eslint-disable-file @typescript-eslint/no-loss-of-precision
 
 export const mockPrompt: string[] = [
   "<|endoftext|>",
