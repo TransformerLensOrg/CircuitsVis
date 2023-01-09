@@ -6,6 +6,7 @@ import circuitsvis.examples
 import circuitsvis.tokens
 import circuitsvis.topk_samples
 import circuitsvis.topk_tokens
+import circuitsvis.logits
 
 __version__ = version("circuitsvis")
 

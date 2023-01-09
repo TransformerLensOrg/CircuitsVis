@@ -2,24 +2,19 @@ import React from "react";
 import { colord, AnyColor } from "colord";
 import { usePopperTooltip } from "react-popper-tooltip";
 import { getTokenBackgroundColor } from "../../utils/getTokenBackgroundColor";
-
-export function formatTokenText(token: string) {
-  // Handle special tokens (e.g. spaces/line breaks)
-  const tokenReplaceSpaces = token.replace(/\s/g, "&nbsp;");
-  const tokenReplaceLineBreaks = tokenReplaceSpaces.replace(/\n/g, "¶");
-  return tokenReplaceLineBreaks;
-}
+import { formatTokenText } from "./Token";
 
 /**
  * Token (shown as an inline block)
  */
-export function Token({
+export function TokenCustomTooltip({
   token,
   value,
   min,
   max,
   negativeColor,
-  positiveColor
+  positiveColor,
+  tooltip = <>{"Intentionally Left Blank"}</>
 }: {
   token: string;
   value: number;
@@ -27,6 +22,7 @@ export function Token({
   max: number;
   negativeColor?: AnyColor;
   positiveColor?: AnyColor;
+  tooltip?: React.ReactNode;
 }) {
   // Hover state
   const { getTooltipProps, setTooltipRef, setTriggerRef, visible } =
@@ -82,20 +78,17 @@ export function Token({
           ref={setTooltipRef}
           {...getTooltipProps({
             style: {
-              background: "#333",
-              color: "white",
+              background: "#eee",
+              color: "black",
               textAlign: "center",
               padding: 10,
               borderRadius: 5,
               boxShadow: "5px 5px rgba(0, 0, 0, 0.03)",
-              marginTop: 15,
-              zIndex: 1
+              marginTop: 15
             }
           })}
         >
-          <strong>{token}</strong>
-          <br />
-          {value}
+          {tooltip}
         </div>
       )}
     </>
