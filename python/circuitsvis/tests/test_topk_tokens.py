@@ -3,7 +3,7 @@ import circuitsvis.utils.render
 import numpy as np
 
 
-class TestTopk:
+class TestTopkTokens:
     def test_matches_snapshot(self, snapshot, monkeypatch):
         # Monkeypatch uuid4 to always return the same uuid
         monkeypatch.setattr(circuitsvis.utils.render, "uuid4", lambda: "mock")

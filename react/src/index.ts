@@ -5,5 +5,6 @@ export { ColoredTokens } from "./tokens/ColoredTokens";
 export { Hello } from "./examples/Hello";
 export { render } from "./render-helper";
 export { TextNeuronActivations } from "./activations/TextNeuronActivations";
+export { TopkTokens } from "./topk/TopkTokens";
+export { TopkSamples } from "./topk/TopkSamples";
 export { TokenLogProbs } from "./logits/TokenLogProbs";
-export { TopkTokens } from "./topkTokens/TopkTokens";

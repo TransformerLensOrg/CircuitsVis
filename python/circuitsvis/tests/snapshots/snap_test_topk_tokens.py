@@ -7,7 +7,7 @@ from snapshottest import Snapshot
 
 snapshots = Snapshot()
 
-snapshots['TestTopk.test_matches_snapshot 1'] = '''<div id="circuits-vis-mock" style="margin: 15px 0;"/>
+snapshots['TestTopkTokens.test_matches_snapshot 1'] = '''<div id="circuits-vis-mock" style="margin: 15px 0;"/>
     <script crossorigin type="module">
     import { render, TopkTokens } from "https://unpkg.com/circuitsvis@1.0.0/dist/cdn/esm.js";
     render(
