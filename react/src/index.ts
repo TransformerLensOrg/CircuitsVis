@@ -4,7 +4,6 @@ export { AttentionPatterns } from "./attention/AttentionPatterns";
 export { ColoredTokens } from "./tokens/ColoredTokens";
 export { ColoredTokensMulti } from "./tokens/ColoredTokensMulti";
 export { Hello } from "./examples/Hello";
-export { LogProbVis } from "./logits/LogProbVis";
 export { render } from "./render-helper";
 export { TextNeuronActivations } from "./activations/TextNeuronActivations";
 export { TokenLogProbs } from "./logits/TokenLogProbs";
