@@ -87,39 +87,6 @@ jobs:
         env:
           POETRY_PYPI_TOKEN_PYPI: ${{ secrets.POETRY_PYPI_TOKEN_PYPI }}
 
-  commit-version-updates:
-    name: Bump Python & Node package versions
-    needs:
-      - semver-parser
-      - release-react
-      - release-python
-    runs-on: ubuntu-latest
-    permissions:
-      actions: write
-      contents: write
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    steps:
-      - uses: actions/checkout@v3
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.9'
-          cache: 'poetry'
-      - name: Bump Python package version
-        run: poetry version ${{needs.semver-parser.outputs.semver}}
-        working-directory: python
-      - name: Bump Node package version
-        run: yarn version --new-version ${{needs.semver-parser.outputs.semver}} --no-git-tag-version --no-commit-hooks
-        working-directory: react
-      - name: Commit changes
-        uses: stefanzweifel/git-auto-commit-action@v4.16.0
-        with:
-          commit_message: Release version ${{needs.semver-parser.outputs.semver}}
-          branch: main
-
   publish-storybook:
     name: Publish docs to GitHub Pages
     environment:

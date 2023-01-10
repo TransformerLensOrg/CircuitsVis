@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "circuitsvis"
-version = "1.37.0"
+version = "0.0.0" # This is updated by the CI/CD pipeline
 description = "Mechanistic Interpretability Visualizations"
 authors = ["Alan Cooney <41682961+alan-cooney@users.noreply.github.com>"]
 license = "MIT"
