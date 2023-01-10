@@ -93,7 +93,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     needs:
-      - commit-version-updates
+      - release-react
     runs-on: ubuntu-latest
     env:
       working-directory: react
