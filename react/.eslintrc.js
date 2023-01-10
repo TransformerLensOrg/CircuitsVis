@@ -33,7 +33,11 @@ module.exports = {
   ],
   rules: {
     "import/prefer-default-export": "off",
-    "import/no-extraneous-dependencies": ["error", { "devDependencies": ["**/*.test.*", "**/*.stories.*"] }],
+    "import/no-extraneous-dependencies": [
+      "error",
+      { devDependencies: ["**/*.test.*", "**/*.stories.*"] }
+    ],
+    "no-plusplus": ["error", { allowForLoopAfterthoughts: true }],
     "react/jsx-filename-extension": "off",
     "react/require-default-props": "off", // Not needed with TS
     "react/react-in-jsx-scope": "off" // Esbuild injects this for us
