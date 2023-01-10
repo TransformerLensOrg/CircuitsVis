@@ -62,34 +62,38 @@ export function ValueSelector({
 }
 
 export function NumberInput({
+  value,
   setValue,
+  defaultValue,
   label
 }: {
+  value: number;
   setValue: (value: number) => void;
+  defaultValue?: number;
   label: string;
 }) {
-  const [inputValue, setInputValue] = useState("");
-
   const handleInputChange = (event: { target: { value: string } }) => {
-    setInputValue(event.target.value);
+    setValue(parseFloat(event.target.value));
   };
 
   const handleButtonClick = () => {
-    setValue(parseFloat(inputValue));
+    setValue(defaultValue!);
   };
 
   return (
     <div>
-      <label htmlFor={label}>{label}:</label>
+      <label htmlFor={label}>{label}:</label>{" "}
       <input
         type="text"
         id="number"
-        value={inputValue}
+        value={value}
         onChange={handleInputChange}
       />
-      <button type="button" onClick={handleButtonClick}>
-        Set
-      </button>
+      {defaultValue && (
+        <button type="button" onClick={handleButtonClick}>
+          Reset
+        </button>
+      )}
     </div>
   );
 }
@@ -176,20 +180,23 @@ export function ColoredTokensMulti({
 
   const [displayedValueIndex, setDisplayedValueIndex] = useState<number>(0);
 
-  const [overridePositiveBound, setOverridePositiveBound] =
-    useState<number>(NaN);
-  const [overrideNegativeBound, setOverrideNegativeBound] =
-    useState<number>(NaN);
+  // Positive and negative bounds state
+  const defaultPositiveBound = Number(
+    positiveBoundsTensor.arraySync()[displayedValueIndex].toFixed(PRECISION)
+  );
+  const defaultNegativeBound = Number(
+    negativeBoundsTensor.arraySync()[displayedValueIndex].toFixed(PRECISION)
+  );
+  const [positiveBound, setOverridePositiveBound] = useState<number>(
+    Number(defaultPositiveBound)
+  );
+  const [negativeBound, setOverrideNegativeBound] = useState<number>(
+    Number(defaultNegativeBound)
+  );
 
   const displayedValues = valuesTensor
     .slice([0, displayedValueIndex], [-1, 1])
     .squeeze<Tensor1D>([1]);
-  const currentPositiveBound =
-    overridePositiveBound ||
-    positiveBoundsTensor.arraySync()[displayedValueIndex];
-  const currentNegativeBound =
-    overrideNegativeBound ||
-    negativeBoundsTensor.arraySync()[displayedValueIndex];
 
   // Padding to ensure that the tooltip is visible - pretty janky, sorry!
   return (
@@ -200,25 +207,27 @@ export function ColoredTokensMulti({
         selectedValue={displayedValueIndex}
         setSelectedValue={setDisplayedValueIndex}
       />
-      <div style={{ fontWeight: "bold" }}>
-        Positive Bound: {currentPositiveBound.toFixed(PRECISION)}
-      </div>
-      <div style={{ fontWeight: "bold" }}>
-        Negative Bound: {currentNegativeBound.toFixed(PRECISION)}
-      </div>
+
       <NumberInput
+        value={positiveBound}
         setValue={setOverridePositiveBound}
+        defaultValue={defaultPositiveBound}
         label={"Positive Bound"}
       />
       <NumberInput
+        value={negativeBound}
         setValue={setOverrideNegativeBound}
+        defaultValue={defaultNegativeBound}
         label={"Negative Bound"}
       />
+
+      <br />
+
       <ColoredTokensCustomTooltips
         tokens={tokens}
         values={displayedValues.arraySync()}
-        maxValue={currentPositiveBound}
-        minValue={currentNegativeBound}
+        maxValue={positiveBound}
+        minValue={negativeBound}
         tooltips={displayedValues.arraySync().map((_val, i) => (
           <Tooltip
             key={i}
