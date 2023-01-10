@@ -15,5 +15,5 @@ export const SmallModelExample = Template.bind({});
 SmallModelExample.args = {
     tokens: mockTokens,
     values: mockValues,
-    labels: mockLabels,
+    labels: mockLabels
 };

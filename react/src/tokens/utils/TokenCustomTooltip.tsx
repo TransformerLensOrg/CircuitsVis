@@ -14,11 +14,7 @@ export function TokenCustomTooltip({
   max,
   negativeColor,
   positiveColor,
-  tooltip = (
-    <React.Fragment>
-      {"Intentionally Left Blank"}
-    </React.Fragment>
-  )
+  tooltip = <React.Fragment>{"Intentionally Left Blank"}</React.Fragment>
 }: {
   token: string;
   value: number;
@@ -62,11 +58,11 @@ export function TokenCustomTooltip({
     borderWidth: 1,
     borderStyle: "solid",
     borderColor: isFocus ? "rgba(0,0,200,0.5)" : "#eee",
-    fontWeight: isFocus ? "bold" : "normal",
+    fontWeight: isFocus ? "bold" : "normal"
   };
 
   // Handle special tokens (e.g. spaces/line breaks)
-  const tokenReplaceLineBreaks = formatTokenText(token)
+  const tokenReplaceLineBreaks = formatTokenText(token);
   const lineBreakElements = token.match(/\n/g)!;
 
   return (
@@ -92,7 +88,7 @@ export function TokenCustomTooltip({
               padding: 10,
               borderRadius: 5,
               boxShadow: "5px 5px rgba(0, 0, 0, 0.03)",
-              marginTop: 15,
+              marginTop: 15
             }
           })}
         >

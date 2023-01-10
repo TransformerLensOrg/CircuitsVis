@@ -3,9 +3,7 @@ import { colord, AnyColor } from "colord";
 import { usePopperTooltip } from "react-popper-tooltip";
 import { getTokenBackgroundColor } from "../../utils/getTokenBackgroundColor";
 
-export function formatTokenText(
-  token: string
-) {
+export function formatTokenText(token: string) {
   // Handle special tokens (e.g. spaces/line breaks)
   const tokenReplaceSpaces = token.replace(/\s/g, "&nbsp;");
   const tokenReplaceLineBreaks = tokenReplaceSpaces.replace(/\n/g, "¶");
@@ -64,7 +62,7 @@ export function Token({
   };
 
   // Handle special tokens (e.g. spaces/line breaks)
-  const tokenReplaceLineBreaks = formatTokenText(token)
+  const tokenReplaceLineBreaks = formatTokenText(token);
   const lineBreakElements = token.match(/\n/g)!;
 
   return (

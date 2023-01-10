@@ -1,12 +1,7 @@
-
-import { Rank, tensor, Tensor1D, Tensor2D, Tensor3D } from "@tensorflow/tfjs";
-import { AnyColor } from "colord";
+import { Rank, tensor, Tensor1D, Tensor2D } from "@tensorflow/tfjs";
 import React, { useState, useEffect } from "react";
-import { TokenCustomTooltip } from "./utils/TokenCustomTooltip";
-import { ColoredTokens } from "./ColoredTokens";
 import { ColoredTokensCustomTooltips } from "./ColoredTokensCustomTooltips";
 import { useHoverLock } from "../attention/components/useHoverLock";
-import { range } from "../utils/misc"
 
 const PRECISION = 6;
 
@@ -65,11 +60,11 @@ export function ValueSelector({
     return <div>{valueSelectors}</div>;
 }
 
-// 
+//
 export function NumberInput({
     value,
     setValue,
-    label,
+    label
 }: {
     value: number;
     setValue: (value: number) => void;
@@ -77,8 +72,8 @@ export function NumberInput({
 }) {
     const [inputValue, setInputValue] = useState("");
 
-    const handleInputChange = (event: { target: { value: string; }; }) => {
-        setInputValue((event.target.value));
+    const handleInputChange = (event: { target: { value: string } }) => {
+        setInputValue(event.target.value);
     };
 
     const handleButtonClick = () => {
@@ -106,7 +101,7 @@ export function Tooltip({
     labels,
     values,
     tokenIndex,
-    currentValueIndex,
+    currentValueIndex
 }: {
     title: string;
     labels: string[];
@@ -120,29 +115,31 @@ export function Tooltip({
     for (let i = 0; i < numValues; i++) {
         valueRows.push(
             <tr key={i}>
-                <td
-                    style={{ fontWeight: "bold" }}>
-                    {labels[i]}
-                </td>
+                <td style={{ fontWeight: "bold" }}>{labels[i]}</td>
                 <td
                     style={{
                         textAlign: "right",
                         fontWeight: currentValueIndex == i ? "bold" : "normal"
-                    }}>
+                    }}
+                >
                     {values.bufferSync().get(tokenIndex, i).toFixed(PRECISION)}
                 </td>
             </tr>
         );
     }
 
-    return <>
-        <div style={{ fontWeight: "bold", fontSize: 16, backgroundColor: "white" }}>{title}</div>
-        <table>
-            <tbody>
-                {valueRows}
-            </tbody>
-        </table>
-    </>
+    return (
+        <>
+            <div
+                style={{ fontWeight: "bold", fontSize: 16, backgroundColor: "white" }}
+            >
+                {title}
+            </div>
+            <table>
+                <tbody>{valueRows}</tbody>
+            </table>
+        </>
+    );
 }
 
 /**
@@ -161,49 +158,82 @@ export function ColoredTokensMulti({
 }: ColoredTokensMultiProps) {
     const valuesTensor = tensor<Rank.R2>(values);
 
-    const numTokens = valuesTensor.shape[0]
-    const numValues = valuesTensor.shape[1]
+    const numTokens = valuesTensor.shape[0];
+    const numValues = valuesTensor.shape[1];
 
     // Define default positive and negative bounds if not provided
     // These are the max/min elements of the value tensor, capped at +-1e-7 (not zero, to avoid a bug in our color calculation code)
-    const positiveBoundsTensor: Tensor1D = positiveBounds ? tensor<Rank.R1>(positiveBounds) : valuesTensor.max(0).maximum(1e-7);
-    const negativeBoundsTensor: Tensor1D = negativeBounds ? tensor<Rank.R1>(negativeBounds) : valuesTensor.min(0).minimum(-1e-7);
+    const positiveBoundsTensor: Tensor1D = positiveBounds
+        ? tensor<Rank.R1>(positiveBounds)
+        : valuesTensor.max(0).maximum(1e-7);
+    const negativeBoundsTensor: Tensor1D = negativeBounds
+        ? tensor<Rank.R1>(negativeBounds)
+        : valuesTensor.min(0).minimum(-1e-7);
 
     // Define default labels if not provided
-    const valueLabels = labels ? labels : Array.from(Array(numValues).keys()).map((_, i) => `${i}`);
+    const valueLabels =
+        labels || Array.from(Array(numValues).keys()).map((_, i) => `${i}`);
 
     const [displayedValueIndex, setDisplayedValueIndex] = useState<number>(0);
 
-    const [overridePositiveBound, setOverridePositiveBound] = useState<number>(NaN);
-    const [overrideNegativeBound, setOverrideNegativeBound] = useState<number>(NaN);
+    const [overridePositiveBound, setOverridePositiveBound] =
+        useState<number>(NaN);
+    const [overrideNegativeBound, setOverrideNegativeBound] =
+        useState<number>(NaN);
 
-    const displayedValues = valuesTensor.slice([0, displayedValueIndex], [-1, 1]).squeeze<Tensor1D>([1]);
-    const currentPositiveBound = overridePositiveBound ? overridePositiveBound : positiveBoundsTensor.arraySync()[displayedValueIndex];
-    const currentNegativeBound = overrideNegativeBound ? overrideNegativeBound : negativeBoundsTensor.arraySync()[displayedValueIndex];
+    const displayedValues = valuesTensor
+        .slice([0, displayedValueIndex], [-1, 1])
+        .squeeze<Tensor1D>([1]);
+    const currentPositiveBound =
+        overridePositiveBound ||
+        positiveBoundsTensor.arraySync()[displayedValueIndex];
+    const currentNegativeBound =
+        overrideNegativeBound ||
+        negativeBoundsTensor.arraySync()[displayedValueIndex];
 
     // Padding to ensure that the tooltip is visible - pretty janky, sorry!
-    return <div style={{ paddingBottom: 20 * numValues }}>
-        <ValueSelector values={valuesTensor} labels={valueLabels} selectedValue={displayedValueIndex} setSelectedValue={setDisplayedValueIndex} />
-        <div style={{ fontWeight: "bold" }}>Positive Bound: {currentPositiveBound.toFixed(PRECISION)}</div>
-        <div style={{ fontWeight: "bold" }}>Negative Bound: {currentNegativeBound.toFixed(PRECISION)}</div>
-        <NumberInput value={overridePositiveBound} setValue={setOverridePositiveBound} label={"Positive Bound"} />
-        <NumberInput value={overrideNegativeBound} setValue={setOverrideNegativeBound} label={"Negative Bound"} />
-        <ColoredTokensCustomTooltips
-            tokens={tokens}
-            values={displayedValues.arraySync()}
-            maxValue={currentPositiveBound}
-            minValue={currentNegativeBound}
-            tooltips={displayedValues.arraySync().map((val, i) => <Tooltip
-                title={tokens[i]}
-                labels={valueLabels}
+    return (
+        <div style={{ paddingBottom: 20 * numValues }}>
+            <ValueSelector
                 values={valuesTensor}
-                tokenIndex={i}
-                currentValueIndex={displayedValueIndex}
-            />)}
-        />
-    </div>;
-};
-
+                labels={valueLabels}
+                selectedValue={displayedValueIndex}
+                setSelectedValue={setDisplayedValueIndex}
+            />
+            <div style={{ fontWeight: "bold" }}>
+                Positive Bound: {currentPositiveBound.toFixed(PRECISION)}
+            </div>
+            <div style={{ fontWeight: "bold" }}>
+                Negative Bound: {currentNegativeBound.toFixed(PRECISION)}
+            </div>
+            <NumberInput
+                value={overridePositiveBound}
+                setValue={setOverridePositiveBound}
+                label={"Positive Bound"}
+            />
+            <NumberInput
+                value={overrideNegativeBound}
+                setValue={setOverrideNegativeBound}
+                label={"Negative Bound"}
+            />
+            <ColoredTokensCustomTooltips
+                tokens={tokens}
+                values={displayedValues.arraySync()}
+                maxValue={currentPositiveBound}
+                minValue={currentNegativeBound}
+                tooltips={displayedValues.arraySync().map((val, i) => (
+                    <Tooltip
+                        title={tokens[i]}
+                        labels={valueLabels}
+                        values={valuesTensor}
+                        tokenIndex={i}
+                        currentValueIndex={displayedValueIndex}
+                    />
+                ))}
+            />
+        </div>
+    );
+}
 
 export interface ColoredTokensMultiProps {
     /**
@@ -219,10 +249,10 @@ export interface ColoredTokensMultiProps {
      */
     labels?: string[];
     /**
-     * 
+     *
      */
     positiveBounds?: number[];
     /**
      */
-    negativeBounds?: number[]
+    negativeBounds?: number[];
 }

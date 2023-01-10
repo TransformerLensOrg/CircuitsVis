@@ -1,6 +1,12 @@
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 import React from "react";
-import { mockPrompt, mockTopKLogProbs, mockTopKTokens, mockCorrectTokenRank, mockCorrectTokenLogProb } from "./mocks/logProbVis";
+import {
+  mockPrompt,
+  mockTopKLogProbs,
+  mockTopKTokens,
+  mockCorrectTokenRank,
+  mockCorrectTokenLogProb
+} from "./mocks/logProbVis";
 import { LogProbVis } from "./LogProbVis";
 
 export default {
