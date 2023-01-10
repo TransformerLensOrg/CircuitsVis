@@ -20,13 +20,13 @@ export function getTokenBackgroundColor(
   if (value > 0) {
     return colord(positiveColor).mix(
       colord("white"),
-      Math.max(1 - value / max, 0)
+      Math.min(Math.max(1 - value / max, 0), 1)
     );
   }
 
   // value and min are assumed to be negative. We negate them to be consistent with the positive case.
   return colord(negativeColor).mix(
     colord("white"),
-    Math.max(1 - -value / -min, 0)
+    Math.min(Math.max(1 - -value / -min, 0), 1)
   );
 }
