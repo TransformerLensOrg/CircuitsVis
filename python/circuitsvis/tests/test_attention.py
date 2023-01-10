@@ -7,7 +7,6 @@ from circuitsvis.attention import attention_patterns
 class TestAttention:
     def test_matches_snapshot(self, snapshot, monkeypatch):
         monkeypatch.setattr(circuitsvis.utils.render, "uuid4", lambda: "mock")
-        monkeypatch.setattr(circuitsvis, "__version__", "1.0.0")
 
         res = attention_patterns(
             tokens=["a", "b"],

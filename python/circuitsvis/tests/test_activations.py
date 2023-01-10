@@ -6,7 +6,6 @@ import numpy as np
 class TestTextNeuronActivations:
     def test_single_matches_snapshot(self, snapshot, monkeypatch):
         monkeypatch.setattr(circuitsvis.utils.render, "uuid4", lambda: "mock")
-        monkeypatch.setattr(circuitsvis, "__version__", "1.0.0")
 
         res = text_neuron_activations(
             tokens=["a", "b"],
@@ -18,7 +17,6 @@ class TestTextNeuronActivations:
 
     def test_multi_matches_snapshot(self, snapshot, monkeypatch):
         monkeypatch.setattr(circuitsvis.utils.render, "uuid4", lambda: "mock")
-        monkeypatch.setattr(circuitsvis, "__version__", "1.0.0")
 
         res = text_neuron_activations(
             tokens=[["a", "b"], ["c", "d", "e"]],
