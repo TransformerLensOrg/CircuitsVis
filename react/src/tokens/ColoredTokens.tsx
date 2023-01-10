@@ -15,13 +15,14 @@ export function ColoredTokens({
   negativeColor,
   positiveColor,
   tokens,
-  values
+  values,
+  paddingBottom
 }: ColoredTokensProps) {
   const tokenMin = minValue ?? Math.min(...values);
   const tokenMax = maxValue ?? Math.max(...values);
 
   return (
-    <div className="colored-tokens" style={{ paddingBottom: 30 }}>
+    <div className="colored-tokens" style={{ paddingBottom }}>
       {tokens.map((token, key) => (
         <Token
           key={key}
@@ -87,6 +88,13 @@ export interface ColoredTokensProps {
    * @example #0000ff
    */
   positiveColor?: AnyColor;
+
+  /**
+   * The padding below the sample
+   *
+   * @default 30
+   */
+  paddingBottom?: number;
 
   /**
    * List of tokens

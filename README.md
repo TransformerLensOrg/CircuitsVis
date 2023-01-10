@@ -1,5 +1,9 @@
 # CircuitsVis
 
+[![Release](https://github.com/alan-cooney/CircuitsVis/actions/workflows/release.yml/badge.svg)](https://github.com/alan-cooney/CircuitsVis/actions/workflows/release.yml)
+[![NPMJS](https://img.shields.io/npm/v/circuitsvis)](https://www.npmjs.com/package/circuitsvis)
+[![Pypi](https://img.shields.io/pypi/v/circuitsvis)](https://pypi.org/project/circuitsvis/)
+
 Mechanistic Interpretability visualizations, that work both in both Python (e.g. with
 [Jupyter Lab](https://jupyter.org/)) and JavaScript (e.g. [React](https://reactjs.org/) or plain HTML).
 

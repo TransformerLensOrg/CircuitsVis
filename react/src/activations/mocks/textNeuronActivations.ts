@@ -1,155 +1,78 @@
-export const mockTokens: string[] = [
-  "<EOT>",
-  "Creating",
-  " interpretability",
-  " vis",
-  "ualizations",
-  " is",
-  ' "',
-  "fun",
-  '"',
-  "."
-];
+const text: string = `
+  A goose (PL: geese) is a bird of any of several waterfowl species in the family Anatidae. This group comprises the genera Anser (the grey geese and white geese) and Branta (the black geese). Some other birds, mostly related to the shelducks, have "goose" as part of their names. More distantly related members of the family Anatidae are swans, most of which are larger than true geese, and ducks, which are smaller.
 
-export const mockActivations: number[][][] = [
-  [
-    [
-      0.2249477415356615, 0.026657260186085323, 0.13561454520030725,
-      0.36810400974613594
-    ],
-    [
-      0.03956995069934339, 0.008309234340619377, 0.04955739630017578,
-      0.09093973996692672
-    ],
-    [
-      0.02273148795053394, 0.006034768019949071, 0.0614954132156435,
-      0.1251505150432119
-    ]
-  ],
-  [
-    [
-      -0.2427785967705303, 0.0362798993852788, 0.05731204181164133,
-      0.011375287034888423
-    ],
-    [
-      0.4988880780202632, 0.07889110429355813, 0.046278650210148486,
-      0.11155659767447049
-    ],
-    [
-      0.04732713049082058, 0.1317817169436528, 0.036321266241724805,
-      0.053047480263783114
-    ]
-  ],
-  [
-    [
-      0.03839585103925034, 0.014245251220987, 0.15601982752866486,
-      0.11870706517801356
-    ],
-    [
-      0.02088915146748793, 0.03975232744167451, 0.008478765759431392,
-      0.09572562876474412
-    ],
-    [
-      0.33428095202633007, 0.030812433490374623, 0.150277048512028,
-      0.022869646577579714
-    ]
-  ],
-  [
-    [
-      0.016215276831092473, 0.20428665910777882, 0.10366287757342078,
-      0.0623690229750914
-    ],
-    [
-      0.017159864523167437, 0.027285599990623025, 0.031632830659771786,
-      0.03651103240031694
-    ],
-    [
-      0.32483154298814354, 0.21208902826822737, 0.22592075936019554,
-      0.03326949855962519
-    ]
-  ],
-  [
-    [
-      0.041190280083443435, 0.029338487231599753, 0.04795299552147436,
-      0.07190704741050437
-    ],
-    [
-      0.038432437463039815, 0.40060790567425714, 0.15940966961044795,
-      0.06779661607135715
-    ],
-    [
-      0.048785083620022394, 0.19324109665947525, 0.08220280557179326,
-      0.041616969153603856
-    ]
-  ],
-  [
-    [
-      0.08931331494501922, 0.16593060568804247, 0.020157210345225017,
-      0.051311847801988206
-    ],
-    [
-      0.03808648146410773, 0.09140084249276109, 0.058805298174090755,
-      0.26007686447201694
-    ],
-    [
-      0.027808185606260312, 0.11019555509863939, 0.03635827043841956,
-      0.18214573003863563
-    ]
-  ],
-  [
-    [
-      0.15798959745898333, 0.18905212987232314, 0.17153832787222242,
-      0.07048525145848196
-    ],
-    [
-      0.01916227274283989, 0.2434030227813739, 0.03644166931588682,
-      0.06083410994188605
-    ],
-    [
-      0.08082032641699881, 0.10839073605325339, 0.0468269740252887,
-      0.07153055578509598
-    ]
-  ],
-  [
-    [
-      0.06077635749331768, 0.10440840417611191, 0.062208319107400774,
-      0.01549412980415866
-    ],
-    [
-      0.06230497766364423, 0.034321231940160804, 0.19021494118412166,
-      0.1770577605773952
-    ],
-    [
-      0.0424569274064751, 0.005916519092430199, 0.1250417945082903,
-      0.04422491057045931
-    ]
-  ],
-  [
-    [
-      0.29779008166615456, 0.024372339109661884, 0.05112979185550663,
-      0.08181601810289717
-    ],
-    [
-      0.015784488696563532, 0.06576382151435546, 0.34171413197480105,
-      0.05897424631149476
-    ],
-    [
-      0.04217638138973007, 0.10474390020960403, 0.06892250045205231,
-      0.07856648071222189
-    ]
-  ],
-  [
-    [
-      0.030602907270024515, 0.20542896402213076, 0.1944040631841366,
-      0.14843032048784033
-    ],
-    [
-      0.24972229725954276, 0.010264909530616657, 0.07746664681112428,
-      0.04052740381939161
-    ],
-    [
-      0.028781982104685116, 0.09679424616439394, 0.16663316767456404,
-      0.34757821329578337
-    ]
-  ]
-];
+  The term "goose" may refer to either a male or female bird, but when paired with "gander", refers specifically to a female one (the latter referring to a male). Young birds before fledging are called goslings.[1] The collective noun for a group of geese on the ground is a gaggle; when in flight, they are called a skein, a team, or a wedge; when flying close together, they are called a plump.[2]
+  Contents
+
+      1 Etymology
+      2 True geese and their relatives
+      3 Fossil record
+      4 Migratory patterns
+          4.1 Preparation
+          4.2 Navigation
+          4.3 Formation
+      5 Other birds called "geese"
+      6 In popular culture
+          6.1 "Gray Goose Laws" in Iceland
+      7 Gallery
+      8 See also
+      9 References
+      10 Further reading
+      11 External links
+
+  Etymology
+
+  The word "goose" is a direct descendant of,*ghans-. In Germanic languages, the root gave Old English gōs with the plural gēs and gandres (becoming Modern English goose, geese, gander, and gosling, respectively), Frisian goes, gies and guoske, New High German Gans, Gänse, and Ganter, and Old Norse gās.
+
+  This term also gave Lithuanian: žąsìs, Irish: gé (goose, from Old Irish géiss), Hindi: कलहंस, Latin: anser, Spanish: ganso, Ancient Greek: χήν (khēn), Dutch: gans, Albanian: gatë swans), Finnish: hanhi, Avestan zāō, Polish: gęś, Romanian: gâscă / gânsac, Ukrainian: гуска / гусак (huska / husak), Russian: гусыня / гусь (gusyna / gus), Czech: husa, and Persian: غاز (ghāz).[1][3]
+  True geese and their relatives
+  Snow geese (Anser caerulescens) in Quebec, Canada
+  Chinese geese (Anser cygnoides domesticus), the domesticated form of the swan goose (Anser cygnoides)
+  Barnacle geese (Branta leucopsis) in Naantali, Finland
+
+  The two living genera of true geese are: Anser, grey geese and white geese, such as the greylag goose and snow goose, and Branta, black geese, such as the Canada goose.
+
+  Two genera of geese are only tentatively placed in the Anserinae; they may belong to the shelducks or form a subfamily on their own: Cereopsis, the Cape Barren goose, and Cnemiornis, the prehistoric New Zealand goose. Either these or, more probably, the goose-like coscoroba swan is the closest living relative of the true geese.
+
+  Fossils of true geese are hard to assign to genus; all that can be said is that their fossil record, particularly in North America, is dense and comprehensively documents many different species of true geese that have been around since about 10 million years ago in the Miocene. The aptly named Anser atavus (meaning "progenitor goose") from some 12 million years ago had even more plesiomorphies in common with swans. In addition, some goose-like birds are known from subfossil remains found on the Hawaiian Islands.
+
+  Geese are monogamous, living in permanent pairs throughout the year; however, unlike most other permanently monogamous animals, they are territorial only during the short nesting season. Paired geese are more dominant and feed more, two factors that result in more young.[4][5]
+
+  Geese honk while in flight to encourage other members of the flock to maintain a 'v-formation' and to help communicate with one another.[6]
+  Fossil record
+
+  Geese fossils have been found ranging from 10 to 12 million years ago (Middle Miocene). Garganornis ballmanni from Late Miocene (~ 6-9 Ma) of Gargano region of central Italy, stood one and a half meters tall and weighed about 22 kilograms. The evidence suggests the bird was flightless, unlike modern geese.[7]
+  Migratory patterns
+
+  Geese like the Canada goose do not always migrate.[8] Some members of the species only move south enough to ensure a supply of food and water. When European settlers came to America, the birds were seen as easy prey and were almost wiped out of the population. The species was reintroduced across the northern U.S. range and their population has been growing ever since.[9]
+  Preparation
+`;
+
+function chunkText(textArr: string[]): string[][] {
+  const chunks: string[][] = [];
+  let i = 0;
+  // Split textArr into 12 chunks of 75 tokens
+  const chunkSize = 75;
+  while (i < textArr.length) {
+    chunks.push(textArr.slice(i, i + chunkSize));
+    i += chunkSize;
+  }
+  return chunks;
+}
+
+export const mockTokens: string[][] = chunkText(text.split(/(?=\s)/));
+
+const numLayers: number = 2;
+const numNeurons: number = 3;
+function createRandom3DActivationMatrix(shape: number[]) {
+  return Array.from(Array(shape[0]), () =>
+    Array.from(Array(shape[1]), () =>
+      Array.from(Array(shape[2]), () => Math.random())
+    )
+  );
+}
+export const mockActivations: number[][][][] = mockTokens.map((tokens) => {
+  return createRandom3DActivationMatrix([tokens.length, numLayers, numNeurons]);
+});
+
+export const neuronLabels: string[] = ["3", "9", "42"];

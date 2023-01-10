@@ -1,5 +1,6 @@
 # Distribution/packaging
 *.egg-info/
+.DS_Store
 .eggs/
 build/
 .build/
@@ -17,3 +18,4 @@ package-lock.json
 yarn-error.log
 .parcel-cache/
 storybook-static/
+build-storybook.log

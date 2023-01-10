@@ -1,0 +1,22 @@
+name: Storybook Publish to Chromatic
+
+on: push
+
+jobs:
+  # Note this is designed primarily for testing. We also publish the Storybook
+  # in the release workflow to GitHub Pages (which is then used for docs).
+  storybook:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: react
+    steps:
+      - uses: actions/checkout@v1
+      - name: Install dependencies
+        run: yarn
+      - name: Publish Storybook to Chromatic
+        uses: chromaui/action@v1
+        with:
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          workingDir: react
