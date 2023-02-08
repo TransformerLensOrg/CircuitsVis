@@ -22,4 +22,10 @@ describe("getBackgroundColor", () => {
     const hsl = res.toHsl();
     expect(hsl.l).toBeCloseTo(100);
   });
+
+  it("Check that 0 returns a brightness of 1", () => {
+    // If the brightness is <0.6, the text will be white and invisible
+    const res = getTokenBackgroundColor(0, 0, 1);
+    expect(res.brightness()).toBeCloseTo(1);
+  });
 });
