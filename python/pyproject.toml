@@ -21,7 +21,6 @@ poethepoet = "^0.16.5"
 pytest = "^7.2.0"
 snapshottest = "^0.6.0"
 twine = "^4.0.1"
-transformer-lens = "^0.2.0"
 
 
 [tool.poetry.group.jupyter.dependencies]
