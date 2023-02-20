@@ -17,9 +17,6 @@ export function TopkSamples({
   zerothDimensionLabels,
   firstDimensionLabels
 }: TopkSamplesProps) {
-  // Obtain min and max activations for a consistent color scale across all samples
-  const [minValue, maxValue] = minMaxInNestedArray(activations);
-
   const numberOfLayers = activations.length;
   const numberOfNeurons = activations[0].length;
   const numberOfSamples = activations[0][0].length;
@@ -45,6 +42,11 @@ export function TopkSamples({
   const selectedTokens: string[][] = sampleNumbers.map((sampleNumber) => {
     return tokens[layerNumber][neuronNumber][sampleNumber];
   });
+
+  // For a consistent color scale across all samples in this layer and neuron
+  const [minValue, maxValue] = minMaxInNestedArray(
+    activations[layerNumber][neuronNumber]
+  );
 
   const selectRowStyle = {
     paddingTop: 5,
