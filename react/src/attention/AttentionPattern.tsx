@@ -11,6 +11,7 @@ import {
 } from "chart.js";
 import { Chart, ChartProps } from "react-chartjs-2";
 import { Col, Row } from "react-grid-system";
+import { colord } from "colord";
 import { getTokenBackgroundColor } from "../utils/getTokenBackgroundColor";
 
 /**
@@ -30,13 +31,23 @@ ChartJS.register(
  * Contains information about a single block on the chart.
  */
 export interface Block {
-  /** Source token */
+  /** Source token with index suffix */
   x: string;
-  /** Destination token */
+  /** Destination token with index suffix */
   y: string;
   /** Attention value */
   v: number;
+  /** Source token */
+  srcToken: string;
+  /** Destination token */
+  destToken: string;
+  /** Source index */
+  srcIdx: number;
+  /** Destination index */
+  destIdx: number;
 }
+
+const DefaultUpperTriColor = "rgb(200,200,200)";
 
 /**
  * Attention pattern from destination to source tokens. Displays a heatmap of
@@ -48,12 +59,13 @@ export function AttentionPattern({
   minValue = -1,
   negativeColor,
   positiveColor,
+  upperTriColor = DefaultUpperTriColor,
   showAxisLabels = true,
   tokens
 }: AttentionPatternProps) {
   // Tokens must be unique (for the categories), so we add an index prefix
   const uniqueTokens = useMemo(
-    () => tokens.map((token, idx) => `(${idx}) ${token.replace(/\s/g, "")}`),
+    () => tokens.map((token, idx) => `${token.replace(/\s/g, "")} (${idx})`),
     [tokens]
   );
 
@@ -62,13 +74,17 @@ export function AttentionPattern({
     return attention
       .map((src, destIdx) =>
         src.map((value, srcIdx) => ({
+          srcIdx,
+          destIdx,
+          srcToken: tokens[srcIdx],
+          destToken: tokens[destIdx],
           x: uniqueTokens[srcIdx],
           y: uniqueTokens[destIdx],
           v: value
         }))
       )
       .flat();
-  }, [attention, uniqueTokens]);
+  }, [attention, tokens, uniqueTokens]);
 
   // Format the chart data
   const data: ChartData<"matrix", Block[], unknown> = {
@@ -79,6 +95,10 @@ export function AttentionPattern({
         // Set the background color for each block, based on the attention value
         backgroundColor(context: ScriptableContext<"matrix">) {
           const block = context.dataset.data[context.dataIndex] as any as Block;
+          if (block.srcIdx > block.destIdx) {
+            // Color the upper triangular part separately
+            return colord(upperTriColor).toRgbString();
+          }
           const color = getTokenBackgroundColor(
             block.v,
             minValue,
@@ -104,14 +124,17 @@ export function AttentionPattern({
       // Tooltip (hover) options
       tooltip: {
         enabled: showAxisLabels,
+        yAlign: "bottom",
         callbacks: {
           title: () => "", // Hide the title
           label({ raw }: TooltipItem<"matrix">) {
             const block = raw as Block;
+            if (block.destIdx < block.srcIdx) return "N/A"; // Just show N/A for the upper triangular part
             return [
-              `Destination: ${block.y}`,
-              `Source: ${block.x}`,
-              `value: ${block.v}`
+              `(${block.destIdx}, ${block.srcIdx})`,
+              `Src: ${block.srcToken}`,
+              `Dest: ${block.destToken} `,
+              `Val: ${block.v}`
             ];
           }
         }
@@ -123,7 +146,7 @@ export function AttentionPattern({
         type: "category" as any,
         labels: uniqueTokens,
         offset: true,
-        ticks: { display: true },
+        ticks: { display: true, minRotation: 45, maxRotation: 90 },
         grid: { display: false },
         display: showAxisLabels
       },
@@ -212,6 +235,20 @@ export interface AttentionPatternProps {
    * @example #0000ff
    */
   positiveColor?: string;
+
+  /**
+   * Upper triangular color
+   *
+   * Color to use for the upper triangular part of the attention pattern to make visualization slightly nicer.
+   * The upper triangular part is irrelevant because of the causal mask.
+   *
+   * @default rgb(200, 200, 200)
+   *
+   * @example rgb(200, 200, 200)
+   *
+   * @example #C8C8C8
+   */
+  upperTriColor?: string;
 
   /**
    * Show axis labels
