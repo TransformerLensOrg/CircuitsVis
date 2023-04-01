@@ -60,6 +60,7 @@ def attention_heads(
 def attention_patterns(
     tokens: List[str],
     attention: Union[list, np.ndarray, torch.Tensor],
+    attention_head_names: Optional[List[str]] = None, 
 ) -> RenderedHTML:
     """Attention Patterns
 
@@ -79,6 +80,7 @@ def attention_patterns(
         "AttentionPatterns",
         tokens=tokens,
         attention=attention,
+        headLabels=attention_head_names,
     )
 
 
