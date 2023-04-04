@@ -1,12 +1,12 @@
 """CircuitsVis"""
 from importlib_metadata import version
-import circuitsvis.activations
-import circuitsvis.attention
-import circuitsvis.examples
-import circuitsvis.tokens
-import circuitsvis.topk_samples
-import circuitsvis.topk_tokens
-import circuitsvis.logits
+import circuitsvis.activations as activations
+import circuitsvis.attention as attention
+import circuitsvis.examples as examples
+import circuitsvis.tokens as tokens
+import circuitsvis.topk_samples as topk_samples
+import circuitsvis.topk_tokens as topk_tokens
+import circuitsvis.logits as logits
 
 __version__ = version("circuitsvis")
 
