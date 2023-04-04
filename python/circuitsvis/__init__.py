@@ -8,7 +8,8 @@ import circuitsvis.topk_samples as topk_samples
 import circuitsvis.topk_tokens as topk_tokens
 import circuitsvis.logits as logits
 
-__version__ = version("circuitsvis")
+# __version__ = version("circuitsvis")
+__version__ = "1.39.1"
 
 __all__ = [
     "activations",
