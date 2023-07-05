@@ -343,7 +343,9 @@ def from_cache(
         file_url = 'file://' + str(file_path.resolve())
         with open(str(file_path), "w") as f:
             f.write(help_data + title_data + data)
-        webbrowser.open(file_url)
+        result = webbrowser.open(file_url)
+        if not result:
+            raise RuntimeError(f"Failed to open {file_url} in browser. However, the file was saved to {file_path}, so you can download it and open it manually.")
         # os.remove(str(file_path))
     elif return_mode == "html":
         return HTML(help_data + title_data + data)
