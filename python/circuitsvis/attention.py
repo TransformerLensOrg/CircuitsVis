@@ -453,7 +453,7 @@ def make_multiple_choice_from_attention_patterns(
     if mode == "large":
         html_str = (html_str
             .replace("AttentionPatterns", "AttentionHeads")
-            .replace("headLabels", "attentionHeadPatterns")
+            .replace("headLabels", "attentionHeadNames")
         )
 
     for i, (attn, tokens) in enumerate(zip(attn_list, tokens_list), start=1):
