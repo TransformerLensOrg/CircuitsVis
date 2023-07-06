@@ -4,7 +4,7 @@ import torch as t
 from torch import Tensor
 from transformer_lens import HookedTransformer, ActivationCache
 import einops
-from attention import attention_heads, attention_patterns
+from circuitsvis.attention import attention_heads, attention_patterns
 
 
 def concat_lists(*lists):
