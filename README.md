@@ -15,3 +15,5 @@ Make sure to also run:
 ```
 pip install transformer_lens
 ```
+
+<img src="https://raw.githubusercontent.com/callummcdougall/computational-thread-art/master/example_images/misc/CallumMcDougall_circuit_visualisations_colorful_clear_simple_bo_6c1b2148-84e2-4ab8-906e-d104cdc85e06.png" width="320">
