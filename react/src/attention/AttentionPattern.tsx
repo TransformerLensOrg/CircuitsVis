@@ -61,6 +61,7 @@ export function AttentionPattern({
   positiveColor,
   upperTriColor = DefaultUpperTriColor,
   showAxisLabels = true,
+  zoomed = false,
   tokens
 }: AttentionPatternProps) {
   // Tokens must be unique (for the categories), so we add an index prefix
@@ -164,15 +165,37 @@ export function AttentionPattern({
 
   return (
     <Col>
-      <Row style={{ aspectRatio: showAxisLabels ? undefined : "1/1" }}>
-        <Chart
-          type="matrix"
-          options={options}
-          data={data}
-          width={1000}
-          height={1000}
-          updateMode="none"
-        />
+      <Row>
+        <div
+          style={{
+            // Chart.js charts resizing is weird.
+            // Responsive chart elements (which all are by default) require the
+            // parent element to have position: 'relative' and no sibling elements.
+            // There were previously issues that only occured at particular diplay
+            // sizes and zoom levels. See:
+            // https://github.com/alan-cooney/CircuitsVis/pull/63
+            // https://www.chartjs.org/docs/latest/configuration/responsive.html#important-note
+            // https://stackoverflow.com/a/48770978/7086623
+            position: "relative",
+            // Set the maximum width of zoomed heads such that a head with just a
+            // few tokens doesn't have crazy large boxes per token and the chart
+            // doesn't overflow the screen. Other heads fill their width.
+            maxWidth: zoomed
+              ? `min(100%, ${Math.round(tokens.length * 8)}em)`
+              : "initial",
+            width: zoomed ? "initial" : "100%",
+            aspectRatio: "1/1"
+          }}
+        >
+          <Chart
+            type="matrix"
+            options={options}
+            data={data}
+            width={1000}
+            height={1000}
+            updateMode="none"
+          />
+        </div>
       </Row>
     </Col>
   );
@@ -254,6 +277,11 @@ export interface AttentionPatternProps {
    * Show axis labels
    */
   showAxisLabels?: boolean;
+
+  /**
+   * Is this a zoomed in view?
+   */
+  zoomed?: boolean;
 
   /**
    * List of tokens

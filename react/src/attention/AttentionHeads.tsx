@@ -143,17 +143,7 @@ export function AttentionHeads({
       <Row>
         <Col xs={12}>
           <h3 style={{ marginBottom: 10 }}>{headNames[focused]} Zoomed</h3>
-
-          <div
-            style={{
-              position: "relative",
-              // Set the maximum width such that a head with just a few tokens
-              // doesn't have crazy large boxes per token. Note this is the
-              // width of the full chart (including axis labels) so it also
-              // needs a sensible lowest maximum.
-              maxWidth: `${Math.max(Math.round(tokens.length * 2.4), 20)}em`
-            }}
-          >
+          <div>
             <h2
               style={{
                 position: "absolute",
@@ -174,6 +164,7 @@ export function AttentionHeads({
               minValue={minValue}
               negativeColor={negativeColor}
               positiveColor={positiveColor}
+              zoomed={true}
               tokens={tokens}
             />
           </div>
