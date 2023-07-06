@@ -4,6 +4,7 @@ import uuid
 import json
 import einops
 import random
+import itertools
 import webbrowser
 import torch as t
 import numpy as np
@@ -157,26 +158,69 @@ Hover over the text to see the attention paid to each token, and details of the 
     "batch_dim": r"""
 <br><br>Your cache has a batch dimension, meaning you can select different sequences to show using the menu below.
 """,
-    "value_weighted_attn": r"""
-<br><br>You've specified value-weighted attention, meaning every attention probability <code>A<sub>h</sub>[q, k]</code> will be replaced with <code>A<sub>h</sub>[q, k] * norm(v<sub>h</sub>[k]) / max<sub>k</sub>{norm(v<sub>h</sub>[k])}</code>. This more accurately reflects the size of the vector which is moved from source to destination. Note, this means they will sum to less than 1.
+    "value-weighted": r"""
+<br><br>You've specified value-weighted attention, meaning every attention probability <code>A<sup>h</sup>[q, k]</code> will be replaced with <code>A<sup>h</sup>[q, k] * norm(v<sup>h</sup>[k]) / max<sub>k</sub>{norm(v<sup>h</sup>[k])}</code>. This more accurately reflects the size of the vector which is moved from source to destination. Note, this means they will sum to less than 1. Note that you can also choose <code>"info-weighted"</code> attention, which includes the <code>W<sup>h</sup><sub>O</sub></code> matrix.
+""",
+    "info-weighted": r"""
+<br><br>You've specified info-weighted attention, meaning every attention probability <code>A<sup>h</sup>[q, k]</code> will be replaced with <code>A<sup>h</sup>[q, k] * norm(v<sup>h</sup>[k] @ W<sup>h</sup><sub>O</sub>) / max<sub>k</sub>{norm(v<sup>h</sup>[k] @ W<sup>h</sup><sub>O</sub>)}</code>. This more accurately reflects the size of the vector which is moved from source to destination. Note, this means they will sum to less than 1.
 """
 }
 
 
 
 
+def get_weighted_attention(
+    pattern: Float[Tensor, "*batch head seq_Q seq_K"],
+    model: HookedTransformer,
+    attention_type: Literal["standard", "value-weighted", "info-weighted"],
+    layers_and_heads: Optional[Union[int, List]] = None,
+    v: Optional[Float[Tensor, "*batch head seq_K d_head"]] = None,
+) -> Float[Tensor, "*batch head seq_Q seq_K"]:
+    '''
+    Returns attention probabilities (possibly value or info-weighted).
+    '''
+    if isinstance(layers_and_heads, int):
+        # In this case, we're taking all the W_O's from a single layer
+        layers = layers_and_heads
+        heads = range(model.cfg.n_heads)
+    elif isinstance(layers_and_heads, list):
+        # In this case, we're taking the W_O's from a list of (layer, head) tuples
+        layers, heads = zip(*layers_and_heads)
+
+    match attention_type:
+        case "value-weighted":
+            v_norms: Float[Tensor, "*batch head seq_K"] = v.norm(dim=-1)
+            v_norms_rescaled = v_norms / einops.reduce(v_norms, "... head seq_K -> ... head 1", "max")
+            pattern *= einops.repeat(v_norms_rescaled, "... head seq_K -> ... head 1 seq_K")
+        case "info-weighted":
+            info = einops.einsum(v, model.W_O[layers, heads], "... head seq_K d_head, head d_head d_model -> ... head seq_K d_model")
+            info_norms: Float[Tensor, "*batch head seq_K"] = info.norm(dim=-1)
+            info_norms_rescaled = info_norms / einops.reduce(info_norms, "... head seq_K -> ... head 1", "max")
+            pattern *= einops.repeat(info_norms_rescaled, "... head seq_K -> ... head 1 seq_K")
+
+    return pattern
+
+
+
+
+# * TODO - create an "attribution" function, which shows the small attention plot, but the interpretation of the colors for head H is 'what is the direct
+# * effect of head H on the output of the model, in the direction of the correct token'.
+
+
+
 def from_cache(
     cache: ActivationCache,
-    tokens: Union[str, List[str]],
+    tokens: Union[List[str], List[List[str]]],
     heads: Optional[Union[Tuple[int, int], List[Tuple[int, int]]]] = None,
     layers: Optional[Union[int, List[int]]] = None,
     batch_idx: Optional[Union[int, List[int]]] = None,
-    use_value_weighted_attn: bool = False,
+    attention_type: Literal["standard", "value-weighted", "info-weighted"] = "standard",
     mode: Literal["large", "small", "lines"] = "small",
     radioitems: bool = False,
     return_mode: Literal["html", "browser", "view"] = "html",
     help: bool = False,
     title: Optional[str] = None,
+    display_mode: Literal["dark", "light"] = "dark",
 ):
     '''
     Arguments:
@@ -186,6 +230,8 @@ def from_cache(
             attention, plus `q` and `k` if you're using `lines` mode).
         tokens
             Either a list of strings (if batch size is 1), or a list of lists of strings (if batch size is > 1).
+            Note, we don't allow this argument to be a string, because we might let mistakes (particularly BOS token)
+            go unnoticed.
 
     Optional arguments:
 
@@ -200,9 +246,11 @@ def from_cache(
             If the cache has a batch dimension, then you can specify this argument (as either an int, or list of ints). 
             Note that you can have nontrivial batch size in your visualisations (you'll be able to select different 
             sequences using a dropdown).
-        use_value_weighted_attn
-            If True, then the visualisation will use value-weighted attention, i.e. every attn prob A_h[q, k] will be 
-            replaced with A_h[q, k] * norm(v_h[k]) / max_k norm(v_h[k]). Defaults to False.
+        attention_type
+            If "value-weighted", then the visualisation will use value-weighted attention, i.e. every attn prob A_h[q, k]
+            will be replaced with A_h[q, k] * norm(v_h[k]) / max_k norm(v_h[k]).
+            If "info-weighted", then the visualisation will use info-weighted attention, i.e. every attn prob A_h[q, k]
+            will be replaced with A_h[q, k] * norm(v_h[k] @ W_O) / max_k norm(v_h[k] @ W_O).
         mode
             This can be "large", "small" or "lines", for producing the three different types of attention plots (see 
             below for examples of all). 
@@ -213,123 +261,138 @@ def from_cache(
             can be displayed in a notebook, or using the `display` function from `IPython.display`).
         help
             If True, prints out a string explaining the visualisation. Defulats to False.
+        display_mode
+            Can be dark or light. This only affects `mode="lines"`, because this one's dark mode is hard to see when
+            you're in light mode (as opposed to "small" or "large" modes, which work in both color schemes).
     '''
+
+    # Check arguments
+    assert mode in ["large", "small", "lines"], "mode must be one of 'large', 'small' or 'lines'"
+    assert attention_type in ["standard", "value-weighted", "info-weighted"], "attention_type must be one of 'standard', 'value-weighted' or 'info-weighted'"
+    assert return_mode in ["html", "browser", "view"], "return_mode must be one of 'html', 'browser' or 'view'"
+    assert isinstance(tokens, list), "tokens must be a list of strings (or a list of lists of strings, if batch size is nontrivial). Use `model.to_str_tokens`."
+    assert (layers is None) or (heads is None), "Can only specify layers or heads, not both."
+    if heads is not None:
+        if isinstance(heads, tuple): heads = [heads]
+        assert isinstance(heads, list) and isinstance(heads[0][0], int), "heads must be a 2-tuple of (layer, head_idx) or list of 2-tuples, e.g. [(10, 7), (11, 10)]"
+
+
+
+    # Define useful things
     model: HookedTransformer = cache.model
     cfg: HookedTransformerConfig = model.cfg
 
-    # If mode is "lines", we only support a limited set of methods
-    if mode == "lines":
-        cache_dict = {}
-        for layer in range(cfg.n_layers):
-            components = ["q", "k", "pattern", "v"] if use_value_weighted_attn else ["q", "k", "pattern"]
-            assert all([utils.get_act_name(s, layer) in cache for s in components])
-            for s in ["q", "k", "pattern"]:
-                activations = cache[utils.get_act_name(s, layer)]
-                activations = activations.squeeze(0) if (batch_idx is None) else activations[batch_idx]
-                has_batch_dim = activations.ndim == 4
-                assert not(has_batch_dim), "Can't use batch dim on `mode='lines'`. Please either choose a cache with one dimension, or specify `batch_idx` as an integer."
-                if s == "pattern" and use_value_weighted_attn:
-                    v = cache["v", layer].transpose(-2, -3).unsqueeze(-3)
-                    v = v.squeeze(0) if (batch_idx is None) else v[batch_idx]
-                    v_norms = v.norm(dim=-1)
-                    activations = activations * v_norms / v_norms.max(dim=-1, keepdim=True).values
-                cache_dict[utils.get_act_name(s, layer)] = activations
-        if batch_idx is not None:
-            tokens = tokens[batch_idx]
 
+    # Make sure all the appropriate activations are in the cache
+    # First we need to get all the layers we'll be using
+    match (heads, layers):
+        case (None, None):
+            layers_needed = list(range(cache.model.cfg.n_layers))
+        case (None, _):
+            assert isinstance(layers, int) or isinstance(layers, list), "layers must be an int or list"
+            layers_needed = layers if isinstance(layers, list) else [layers]
+        case (_, None):
+            assert isinstance(heads, tuple) or isinstance(heads, list), "heads must be a tuple or list, e.g. [(10, 7), (11, 10)]"
+            layers_needed = list(set([layer for (layer, head_idx) in heads]))
+    # Second, we need to figure out what activations we'll need
+    components_needed = ["pattern"]
+    if attention_type in ["value-weighted", "info-weighted"]:
+        components_needed.append("v")
+    if mode == "lines":
+        components_needed.extend(["q", "k"])
+    # Finally, we check that they're in the cache, which will help make code shorter later on)
+    for (layer, component) in itertools.product(layers_needed, components_needed):
+        assert utils.get_act_name(component, layer) in cache, f"cache must contain component {component!r} for layer {layer}"
+        has_nontrivial_batch_dim = (cache["pattern", layer].ndim == 4) and (cache["pattern", layer].shape[0] > 1)
+
+
+    # Get the correct tokens (possibly by indexing them), also throw in some more argument checking
+    if has_nontrivial_batch_dim:
+        will_have_nontrivial_batch_dim = True
+        # has nontrivial = function of the cache. will have nontrivial = the thing we get after indexing (e.g. this is False if we index to a single sequence)
+        assert isinstance(tokens[0], list), "For a cache with nontrivial batch size, tokens must be a list of lists of strings"
+        match batch_idx:
+            case int(): tokens = tokens[batch_idx]; will_have_nontrivial_batch_dim = False
+            case list(): tokens = [tokens[i] for i in batch_idx]
+            case None: batch_idx = list(range(len(tokens)))
+    else:
+        will_have_nontrivial_batch_dim = False
+        assert isinstance(tokens[0], str), "For a cache with trivial batch size, tokens must be a list of strings"
+        assert batch_idx is None, "Can't specify batch index if cache doesn't have batch dim"
+
+
+    if mode == "lines":
+        # Check we don't have a batch dim (lines doesn't support this, too much hassle and I don't expect there to be good use cases)
+        assert not(will_have_nontrivial_batch_dim), "Can't use batch dim on `mode='lines'`. Please either choose a cache with one dimension, or specify `batch_idx` as an integer."
+        
+        cache_dict = {}
+        for layer in layers_needed:
+
+            # Get all components (in a way that sets them to be None if they aren't in cache)
+            components = {
+                name: cache[name, layer].squeeze(0) if (batch_idx is None) else cache[name, layer][batch_idx]
+                for name in components_needed
+            }
+            q, k, v, pattern = map(lambda x: components.get(x, None), ["q", "k", "v", "pattern"])
+
+            # Get value or info-weighted attn, if required
+            pattern = get_weighted_attention(pattern, model, attention_type, layer, v)
+
+            # Store activations (we'll only need q, k and pattern)
+            for name, value in {"q": q, "k": k, "pattern": pattern}.items():
+                cache_dict[utils.get_act_name(name, layer)] = value
+
+        # Call our funnction to get the html
         html = attn_lines(
             cache = ActivationCache(cache_dict, model=model),
             tokens = tokens,
-            html_action='return',
-            head_list = heads,
+            layers_needed = layers_needed,
+            heads = heads,
+            display_mode = display_mode,
         )
 
     else:
             
         # For utility, get a list of all layers and all (layer, head) tuples which we'll be getting from the cache.
-        if layers is None:
-            if heads is None:
-                layers_real = list(range(cfg.n_layers))
-                heads_real = [
-                    (layer, head)
-                    for layer in layers_real
-                    for head in range(cfg.n_heads)
-                ]
-            else:
-                layers_real = sorted(set([head[0] for head in heads]))
-                heads_real = heads
-        else:
-            assert heads is None
-            layers_real = layers if isinstance(layers, list) else [layers]
-            heads_real = [
-                (layer, head)
-                for layer in layers_real
-                for head in range(cfg.n_heads)
-            ]
-
-        # Define batch size, and batch index (if it's None, I need to be able to index all batches)
-        # Also, if we're indexing into the cache via batch_idx, I also need to index into the list of tokens
-        batch_size = cache["pattern", layers_real[0]].shape[0] if cache.has_batch_dim else 1
-        if cache.has_batch_dim:
-            if batch_idx is None:
-                batch_idx = list(range(batch_size))
-            elif isinstance(batch_idx, int):
-                tokens = tokens[batch_idx]
-            else:
-                tokens = [tokens[i] for i in batch_idx]
-
-        # Make sure cache has everything we need
-        for layer in layers_real:
-            assert utils.get_act_name("pattern", layer) in cache, f"Cache does not have activations for layer {layer}."
-        
+        if heads is None:
+            heads = list(itertools.product(layers_needed, range(cfg.n_heads))) if (heads is None) else heads
+            
         # Get all attention patterns for all sequences we want
-        attn_all: Float[Tensor, "*batch head seq_Q seq_K"] = t.stack([
+        pattern_all: Float[Tensor, "*batch head seq_Q seq_K"] = t.stack([
             cache["pattern", layer][batch_idx, head] if cache.has_batch_dim else cache["pattern", layer][head]
-            for layer, head in heads_real
-        ], dim=0)
-        has_batch_dim = attn_all.ndim == 4
-        if has_batch_dim: attn_all = attn_all.transpose(0, 1)
+            for layer, head in heads
+        ], dim=-3)
 
-        # Apply value-weighted attention if called for
-        if use_value_weighted_attn:
-            for layer in layers_real:
-                assert utils.get_act_name("v", layer) in cache, f"Cache does not have value vectors for layer {layer}."
+        # Get value or info-weighted attn, if required
+        v_all = None
+        if attention_type in ["value-weighted", "info-weighted"]:
             v_all: Float[Tensor, "*batch head seq_K d_head"] = t.stack([
                 cache["v", layer][batch_idx, :, head] if cache.has_batch_dim else cache["v", layer][:, head]
-                for layer, head in heads_real
-            ], dim=0)
-            if has_batch_dim: v_all = v_all.transpose(0, 1)
-            v_norms: Float[Tensor, "*batch head seq_K"] = v_all.norm(dim=-1)
-            # ! Note - I don't know if this is the best way to normalize; it might show entire layers / heads as less important.
-            # I've got a single norm (scalar value) for each head.
-            v_norms_rescaled = v_norms / einops.reduce(v_norms, "... head seq_K -> ... head 1", "max")
-
-            attn_all *= einops.repeat(v_norms_rescaled, "... head seq_K -> ... head 1 seq_K")
-
+                for layer, head in heads
+            ], dim=-3)
+        pattern_all = get_weighted_attention(pattern_all, model, attention_type, heads, v_all)
 
         # Split depending on whether we have a batch dimension
-        if has_batch_dim:
+        if will_have_nontrivial_batch_dim:
             html = make_multiple_choice_from_attention_patterns(
-                attn_list = [attn[..., :i, :i] for i, attn in zip(map(len, tokens), attn_all)],
+                attn_list = [attn[..., :i, :i] for i, attn in zip(map(len, tokens), pattern_all)],
                 tokens_list = tokens,
                 radioitems = radioitems,
                 mode = mode,
-                attention_head_names = [f"{L}.{H}" for L, H in heads_real],
+                attention_head_names = [f"{L}.{H}" for L, H in heads],
             )
         else:
             html = (attention_heads if (mode == "large") else attention_patterns)(
-                attention = attn_all[..., :len(tokens), :len(tokens)],
+                attention = pattern_all[..., :len(tokens), :len(tokens)],
                 tokens = tokens,
-                attention_head_names = [f"{L}.{H}" for L, H in heads_real],
+                attention_head_names = [f"{L}.{H}" for L, H in heads],
             )
     
     help_data = ""
     if help:
         help_data += help_strings_dicts[mode]
-        if use_value_weighted_attn:
-            help_data += help_strings_dicts["value_weighted_attn"]
-        if has_batch_dim:
-            help_data += help_strings_dicts["batch_dim"]
+        help_data += help_strings_dicts.get(attention_type, "")
+        help_data += help_strings_dicts.get("batch_dim", "")
         help_data += "<br><br><hr><br>"
     title_data = f"<h1>{title}</h1>" if title else ""
     data = getattr(html, "data", str(html))
@@ -478,28 +541,28 @@ def make_multiple_choice_from_attention_patterns(
 def attn_lines(
     cache: ActivationCache,
     tokens: Union[List[str], List[List[str]]],
-    html_action='view',
-    head_list: Optional[List[Tuple[int, int]]] = None,
+    layers_needed: Optional[List[int]] = None,
+    heads: Optional[List[Tuple[int, int]]] = None,
+    display_mode: Literal["dark", "light"] = "dark",
 ):
     '''
     If head_list is not None, then there's a list of possible (layer, head) combinations.
     If head_list is None, then we show every possible (layer, head) using different dropdowns for layer and head.
     '''
     model: HookedTransformer = cache.model
-    cfg = model.cfg
+    cfg: HookedTransformerConfig = model.cfg
 
     # Generate unique div id to enable multiple visualizations in one notebook
     vis_id = 'bertviz-%s' % (uuid.uuid4().hex)
-    if head_list is None:
+    if heads is None:
         head_options = """<span class="dropdown-label">Layer: </span><select id="layer"></select>&nbsp;<span class="dropdown-label">Head: </span> <select id="att_head"></select>"""
     else:
         head_options = """<span class="dropdown-label">Head: </span> <select id="layer_and_head">{}</select>""".format(
             "".join([
                 f"""<option value="({layer},{head})">{layer}.{head}</option>"""
-                for layer, head in head_list
+                for layer, head in heads
             ])
         )
-
     vis_html = f"""
         <div id={vis_id} style="padding:8px;font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;">
         <span style="user-select:none">
@@ -512,35 +575,32 @@ def attn_lines(
     __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
     attn_data = {
-        "attn": t.stack([cache["pattern", layer] for layer in range(cfg.n_layers)]).tolist(),
-        "queries": t.stack([cache["q", layer] for layer in range(cfg.n_layers)]).transpose(1, 2).tolist(),
-        "keys": t.stack([cache["k", layer] for layer in range(cfg.n_layers)]).transpose(1, 2).tolist(),
+        "attn": [t.zeros_like(cache["pattern", layers_needed[0]]).tolist() for _ in range(cfg.n_layers)],
+        "queries": [t.zeros_like(cache["q", layers_needed[0]]).transpose(0, 1).tolist() for _ in range(cfg.n_layers)],
+        "keys": [t.zeros_like(cache["k", layers_needed[0]]).transpose(0, 1).tolist() for _ in range(cfg.n_layers)],
         "text": tokens,
     }
-
+    for layer in layers_needed:
+        attn_data["attn"][layer] = cache["pattern", layer].tolist()
+        attn_data["queries"][layer] = cache["q", layer].transpose(0, 1).tolist()
+        attn_data["keys"][layer] = cache["k", layer].transpose(0, 1).tolist()
+    
     params = {
         'attention': attn_data,
         'root_div_id': vis_id,
         'bidirectional': False,
-        'display_mode': 'dark',
-        'layer': 0 if (head_list is None) else head_list[0][0],
-        'head': 0 if (head_list is None) else head_list[0][1],
+        'display_mode': display_mode,
+        'layer': layers_needed[0] if (heads is None) else heads[0][0],
+        'head': 0 if (heads is None) else heads[0][1],
     }
     vis_js = open(os.path.join(__location__, 'neuron_view.js')).read()
     html1 = HTML('<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>')
     html2 = HTML(vis_html)
 
-    if html_action == 'view':
-        display(html1)
-        display(html2)
-        display(Javascript(f'window.bertviz_params = {json.dumps(params)}'))
-        display(Javascript(vis_js))
-        return attn_data, html2
-    elif html_action == 'return':
-        script1 = '\n<script type="text/javascript">\n' + Javascript(f'window.bertviz_params = {json.dumps(params)}').data + '\n</script>\n'
-        script2 = '\n<script type="text/javascript">\n' + Javascript(vis_js).data + '\n</script>\n'
-        neuron_html = HTML(html1.data + html2.data + script1 + script2)
-        return neuron_html
+    script1 = '\n<script type="text/javascript">\n' + Javascript(f'window.bertviz_params = {json.dumps(params)}').data + '\n</script>\n'
+    script2 = '\n<script type="text/javascript">\n' + Javascript(vis_js).data + '\n</script>\n'
+    html = HTML(html1.data + html2.data + script1 + script2)
+    return html
 
 
 

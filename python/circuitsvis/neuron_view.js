@@ -249,7 +249,7 @@ requirejs(['jquery', 'd3'],
                 .attr("width", SOFTMAX_WIDTH + MATRIX_WIDTH + DOT_WIDTH)
                 .attr("font-size", 20 + "px")
                 .text("No token selected")
-                .attr("fill", 'white');
+                .attr("fill", getColor("text"));
         }
 
         function renderHorizLines(svg, id, start_pos, end_pos) {
@@ -747,7 +747,15 @@ requirejs(['jquery', 'd3'],
         
             vectorContainer.selectAll("text")
                 .data(dotProducts)
-                .style("fill", "white")
+                .style("fill", function (d) {
+                    if (d - dotProductMean > 2.5) {
+                        return 'white';
+                    } else if (d - dotProductMean < -3.0) {
+                        return 'white'
+                    } else {
+                        return getColor('text')
+                    }
+                })
                 .style("fill-opacity", function (d, i) {
                     return i <= query_index ? 0.6 : 0.0;
                 })
@@ -814,7 +822,7 @@ requirejs(['jquery', 'd3'],
         
             vectorContainer.selectAll("text")
                 .data(softmaxed)
-                .style("fill", "white")
+                .style("fill", getColor('text'))
                 .style("fill-opacity", function (d, i) {
                     return i <= query_index ? 0.6 : 0.0;
                 })

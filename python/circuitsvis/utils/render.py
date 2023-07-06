@@ -165,6 +165,7 @@ def render_local(react_element_name: str, **kwargs) -> str:
     return html
 
 
+
 def render_cdn(react_element_name: str, **kwargs: PythonProperty) -> str:
     """Render (from the CDN)
 
