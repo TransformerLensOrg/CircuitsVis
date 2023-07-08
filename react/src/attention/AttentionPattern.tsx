@@ -171,7 +171,7 @@ export function AttentionPattern({
             // Chart.js charts resizing is weird.
             // Responsive chart elements (which all are by default) require the
             // parent element to have position: 'relative' and no sibling elements.
-            // There were previously issues that only occured at particular diplay
+            // There were previously issues that only occured at particular display
             // sizes and zoom levels. See:
             // https://github.com/alan-cooney/CircuitsVis/pull/63
             // https://www.chartjs.org/docs/latest/configuration/responsive.html#important-note
