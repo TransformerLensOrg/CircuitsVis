@@ -62,6 +62,7 @@ export function AttentionPattern({
   upperTriColor = DefaultUpperTriColor,
   showAxisLabels = true,
   zoomed = false,
+  maskUpperTri = true,
   tokens
 }: AttentionPatternProps) {
   // Tokens must be unique (for the categories), so we add an index prefix
@@ -96,7 +97,7 @@ export function AttentionPattern({
         // Set the background color for each block, based on the attention value
         backgroundColor(context: ScriptableContext<"matrix">) {
           const block = context.dataset.data[context.dataIndex] as any as Block;
-          if (block.srcIdx > block.destIdx) {
+          if (maskUpperTri && block.srcIdx > block.destIdx) {
             // Color the upper triangular part separately
             return colord(upperTriColor).toRgbString();
           }
@@ -130,7 +131,10 @@ export function AttentionPattern({
           title: () => "", // Hide the title
           label({ raw }: TooltipItem<"matrix">) {
             const block = raw as Block;
-            if (block.destIdx < block.srcIdx) return "N/A"; // Just show N/A for the upper triangular part
+            if (maskUpperTri && block.destIdx < block.srcIdx) {
+              // Just show N/A for the upper triangular part
+              return "N/A";
+            }
             return [
               `(${block.destIdx}, ${block.srcIdx})`,
               `Src: ${block.srcToken}`,
@@ -260,10 +264,21 @@ export interface AttentionPatternProps {
   positiveColor?: string;
 
   /**
+   * Mask upper triangular
+   *
+   * Whether or not to mask the upper triangular portion of the attention patterns.
+   *
+   * Should be true for causal attention, false for bidirectional attention.
+   *
+   * @default true
+   */
+  maskUpperTri?: boolean;
+
+  /**
    * Upper triangular color
    *
    * Color to use for the upper triangular part of the attention pattern to make visualization slightly nicer.
-   * The upper triangular part is irrelevant because of the causal mask.
+   * Only applied if maskUpperTri is set to true.
    *
    * @default rgb(200, 200, 200)
    *
