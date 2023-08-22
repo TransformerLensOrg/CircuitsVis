@@ -14,6 +14,7 @@ def attention_heads(
     min_value: Optional[float] = None,
     negative_color: Optional[str] = None,
     positive_color: Optional[str] = None,
+    mask_upper_tri: Optional[bool] = None,
 ) -> RenderedHTML:
     """Attention Heads
 
@@ -37,6 +38,9 @@ def attention_heads(
         positive_color: Color for positive values. This can be any valid CSS
         color string. Be mindful of color blindness if not using the default
         here.
+        mask_upper_tri: Whether or not to mask the upper triangular portion of
+        the attention patterns. Should be true for causal attention, false for
+        bidirectional attention.
 
     Returns:
         Html: Attention pattern visualization
@@ -49,6 +53,7 @@ def attention_heads(
         "negativeColor": negative_color,
         "positiveColor": positive_color,
         "tokens": tokens,
+        "maskUpperTri": mask_upper_tri,
     }
 
     return render(
@@ -90,6 +95,7 @@ def attention_pattern(
     negative_color: Optional[str] = None,
     show_axis_labels: Optional[bool] = None,
     positive_color: Optional[str] = None,
+    mask_upper_tri: Optional[bool] = None,
 ) -> RenderedHTML:
     """Attention Pattern
 
@@ -112,6 +118,9 @@ def attention_pattern(
         positive_color: Color for positive values. This can be any valid CSS
         color string. Be mindful of color blindness if not using the default
         here.
+        mask_upper_tri: Whether or not to mask the upper triangular portion of
+        the attention patterns. Should be true for causal attention, false for
+        bidirectional attention.
 
     Returns:
         Html: Attention pattern visualization
@@ -124,6 +133,7 @@ def attention_pattern(
         "negativeColor": negative_color,
         "positiveColor": positive_color,
         "showAxisLabels": show_axis_labels,
+        "maskUpperTri": mask_upper_tri,
     }
 
     return render(

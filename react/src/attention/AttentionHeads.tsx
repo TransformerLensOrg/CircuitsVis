@@ -34,6 +34,7 @@ export function AttentionHeadsSelector({
   onMouseEnter,
   onMouseLeave,
   positiveColor,
+  maskUpperTri,
   tokens
 }: AttentionHeadsProps & {
   attentionHeadNames: string[];
@@ -89,6 +90,7 @@ export function AttentionHeadsSelector({
                   minValue={minValue}
                   negativeColor={negativeColor}
                   positiveColor={positiveColor}
+                  maskUpperTri={maskUpperTri}
                 />
               </div>
             </div>
@@ -112,6 +114,7 @@ export function AttentionHeads({
   minValue,
   negativeColor,
   positiveColor,
+  maskUpperTri = true,
   tokens
 }: AttentionHeadsProps) {
   // Attention head focussed state
@@ -137,6 +140,7 @@ export function AttentionHeads({
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
         positiveColor={positiveColor}
+        maskUpperTri={maskUpperTri}
         tokens={tokens}
       />
 
@@ -165,6 +169,7 @@ export function AttentionHeads({
               negativeColor={negativeColor}
               positiveColor={positiveColor}
               zoomed={true}
+              maskUpperTri={maskUpperTri}
               tokens={tokens}
             />
           </div>
@@ -240,6 +245,17 @@ export interface AttentionHeadsProps {
    * @example #0000ff
    */
   positiveColor?: string;
+
+  /**
+   * Mask upper triangular
+   *
+   * Whether or not to mask the upper triangular portion of the attention patterns.
+   *
+   * Should be true for causal attention, false for bidirectional attention.
+   *
+   * @default true
+   */
+  maskUpperTri?: boolean;
 
   /**
    * Show axis labels
