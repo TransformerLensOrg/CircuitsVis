@@ -36,7 +36,9 @@ export function TextNeuronActivations({
   firstDimensionName = "Layer",
   secondDimensionName = "Neuron",
   firstDimensionLabels,
-  secondDimensionLabels
+  secondDimensionLabels,
+  firstDimensionDefault = 0,
+  secondDimensionDefault = 0
 }: TextNeuronActivationsProps) {
   // If there is only one sample (i.e. if tokens is an array of strings), cast tokens and activations to an array with
   // a single element
@@ -68,8 +70,8 @@ export function TextNeuronActivations({
   const [sampleNumbers, setSampleNumbers] = useState<number[]>([
     ...Array(samplesPerPage).keys()
   ]);
-  const [layerNumber, setLayerNumber] = useState<number>(0);
-  const [neuronNumber, setNeuronNumber] = useState<number>(0);
+  const [layerNumber, setLayerNumber] = useState<number>(firstDimensionDefault);
+  const [neuronNumber, setNeuronNumber] = useState<number>(secondDimensionDefault);
 
   useEffect(() => {
     // When the user changes the samplesPerPage, update the sampleNumbers
@@ -218,4 +220,15 @@ export interface TextNeuronActivationsProps {
    * Labels for the second dimension
    */
   secondDimensionLabels?: string[];
+
+  /**
+   * Default index for the first dimension
+   */
+  firstDimensionDefault?: number;
+
+  /**
+   * Default index for the second dimension
+   */
+  secondDimensionDefault?: number;
+
 }
