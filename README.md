@@ -115,7 +115,7 @@ Note that **this example will render from the CDN**, unless development mode is
 specified. Your visualization will only be available on the CDN once it has been
 released to the latest production version of this library.
 
-#### Continuous Delivery
+#### Publishing a new release
 
-When a PR is merged, it will automatically release updated minor versions of the
-Node and Python libraries.
+When a new GitHub release is created, the codebase will be automatically built
+and deployed to [PyPI](https://pypi.org/project/circuitsvis/).
