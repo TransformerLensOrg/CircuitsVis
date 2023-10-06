@@ -91,7 +91,8 @@ fails due to a PyTorch bug on M1 MacBooks, run `poetry run pip install jupyter`.
 
 You'll first want to create the visualisation in React. To do this, you can copy
 the example from `/react/src/examples/Hello.tsx`. To view changes whilst editing
-this (in [Storybook](https://classic.yarnpkg.com/lang/en/docs/install/#mac-stable)), run the following from the `/react/` directory:
+this (in [Storybook](https://classic.yarnpkg.com/lang/en/docs/install/#mac-stable)), 
+run the following from the `/react/` directory:
 
 ```bash
 yarn storybook
@@ -100,7 +101,11 @@ yarn storybook
 #### Python
 
 This project uses [Poetry](https://python-poetry.org/docs/#installation) for
-package management. To install all rew
+package management. To install run:
+
+```bash
+poetry install
+```
 
 Once you've created your visualization in React, you can then create a short
 function in the Python library to render it. You can see an example in
