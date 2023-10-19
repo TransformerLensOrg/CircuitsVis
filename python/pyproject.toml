@@ -10,7 +10,7 @@ include = ["circuitsvis/dist/cdn/iife.js", "circuitsvis/dist/cdn/iife.js.map"]
 [tool.poetry.dependencies]
 importlib-metadata = ">=5.1.0"
 numpy = [{ version = ">=1.20,<1.25", python = ">=3.8,<3.9" },
-         { version = ">=1.25,<1.26", python = ">=3.9,<3.12" },
+         { version = ">=1.24", python = ">=3.9,<3.12" },
          { version = ">=1.26", python = ">=3.12,<3.13" }]
 python = ">=3.8" 
 torch = ">=1.10" # See PyTorch 2 fix below
