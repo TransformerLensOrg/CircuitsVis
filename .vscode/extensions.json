@@ -31,6 +31,7 @@
         "tushortz.python-extended-snippets",
         "yzhang.markdown-all-in-one",
         "matangover.mypy",
-        "github.vscode-github-actions"
+        "github.vscode-github-actions",
+        "mikoz.black-py"
     ]
 }

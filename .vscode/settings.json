@@ -30,4 +30,12 @@
   "pylint.importStrategy": "fromEnvironment",
   "notebook.formatOnCellExecution": true,
   "notebook.formatOnSave.enabled": true,
+  "mypy.configFile": "python/mypy.ini",
+  "mypy.targets": [
+    "python/circuitsvis",
+    "python/circuitsvis/"
+  ],
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter"
+  },
 }
