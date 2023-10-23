@@ -21,8 +21,7 @@
 			// Set *default* container specific settings.json values on container create.
 			"settings": {
 				"python.defaultInterpreterPath": "/workspaces/CircuitsVis/python/.venv/bin/python",
-				"python.formatting.autopep8Path": "autopep8",
-				"python.linting.mypyPath": "mypy"
+				"mypy.dmypyExecutable": "mypy"
 			},
 			// Add the IDs of extensions you want installed when the container is created.
 			"extensions": [
@@ -35,8 +34,12 @@
 				"donjayamanne.python-extension-pack",
 				"eg2.vscode-npm-script",
 				"esbenp.prettier-vscode",
+				"github.copilot",
 				"github.vscode-pull-request-github",
 				"ionutvmi.path-autocomplete",
+				"mikoz.autoflake-extension",
+				"ms-python.isort",
+				"ms-python.pylint",
 				"ms-python.python",
 				"ms-python.vscode-pylance",
 				"ms-toolsai.jupyter-keymap",
@@ -48,9 +51,12 @@
 				"richie5um2.vscode-sort-json",
 				"rvest.vs-code-prettier-eslint",
 				"stkb.rewrap",
+				"streetsidesoftware.code-spell-checker-british-english",
 				"streetsidesoftware.code-spell-checker",
 				"tushortz.python-extended-snippets",
-				"yzhang.markdown-all-in-one"
+				"yzhang.markdown-all-in-one",
+				"matangover.mypy",
+				"github.vscode-github-actions"
 			]
 		}
 	},

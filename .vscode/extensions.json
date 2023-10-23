@@ -1,9 +1,36 @@
 {
     "recommendations": [
+        "2gua.rainbow-brackets",
+        "christian-kohler.npm-intellisense",
+        "christian-kohler.path-intellisense",
+        "davidanson.vscode-markdownlint",
         "dbaeumer.vscode-eslint",
+        "donjayamanne.githistory",
+        "donjayamanne.python-extension-pack",
+        "eg2.vscode-npm-script",
         "esbenp.prettier-vscode",
+        "github.copilot",
+        "github.vscode-pull-request-github",
+        "ionutvmi.path-autocomplete",
+        "mikoz.autoflake-extension",
+        "ms-python.isort",
+        "ms-python.pylint",
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-toolsai.jupyter-keymap",
+        "ms-toolsai.jupyter-renderers",
+        "ms-toolsai.jupyter",
+        "ms-vsliveshare.vsliveshare-pack",
+        "njpwerner.autodocstring",
+        "redhat.vscode-yaml",
+        "richie5um2.vscode-sort-json",
         "rvest.vs-code-prettier-eslint",
         "stkb.rewrap",
-        "streetsidesoftware.code-spell-checker"
+        "streetsidesoftware.code-spell-checker-british-english",
+        "streetsidesoftware.code-spell-checker",
+        "tushortz.python-extended-snippets",
+        "yzhang.markdown-all-in-one",
+        "matangover.mypy",
+        "github.vscode-github-actions"
     ]
 }

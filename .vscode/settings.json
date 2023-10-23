@@ -1,6 +1,5 @@
 {
   "rewrap.autoWrap.enabled": true,
-  "eslint.packageManager": "yarn",
   "eslint.workingDirectories": [
     {
       "mode": "auto"
@@ -10,26 +9,25 @@
     "ignorePath": "../.gitignore"
   },
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
+    "source.fixAll.eslint": true,
+    "source.organizeImports": true
   },
   "eslint.validate": [
     "javascript",
     "typescript"
   ],
-  "cSpell.words": [
-    "circuitsvis",
-    "Colab",
-    "Colord",
-    "crossorigin",
-    "devcontainer",
-    "Interpretability",
-    "ndarray",
-    "NPMJS"
-  ],
   "rewrap.reformat": false,
   "editor.formatOnSave": true,
-  "python.linting.pylintArgs": [
+  "pylint.args": [
     "--rcfile=./python/.pylintrc",
     "--generated-members=numpy.* ,torch.* ,cv2.* , cv.*"
-  ]
+  ],
+  "python.testing.pytestArgs": [
+      "python/circuitsvis",
+  ],
+  "python.testing.pytestEnabled": true,
+  "rewrap.wrappingColumn": 100,
+  "pylint.importStrategy": "fromEnvironment",
+  "notebook.formatOnCellExecution": true,
+  "notebook.formatOnSave.enabled": true,
 }
