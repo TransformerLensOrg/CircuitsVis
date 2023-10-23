@@ -37,7 +37,7 @@ class TestRenderedHTML:
         html = RenderedHTML(src, src)
 
         # Check the _repr_html_ method is defined (as Jupyter Lab displays this)
-        assert html._repr_html_() == src
+        assert html._repr_html_()[0] == src
 
     def test_show_code(self):
         src = "<p>Hi</p>"
@@ -85,10 +85,10 @@ class TestRender:
         res = render("Hello", name="Bob")
         assert str(res) == str(prod)
 
-    def test_jupyter_verson_is_from_local(self, monkeypatch):
+    def test_jupyter_version_is_from_local(self, monkeypatch):
         monkeypatch.setattr(circuitsvis.utils.render, "uuid4", lambda: "mock")
         monkeypatch.setattr(circuitsvis, "__version__", "1.0.0")
 
         dev = render_local("Hello", name="Bob")
         res = render("Hello", name="Bob")
-        assert res._repr_html_() == dev
+        assert res._repr_html_()[0] == dev
