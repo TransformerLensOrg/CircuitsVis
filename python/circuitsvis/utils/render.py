@@ -43,14 +43,10 @@ class RenderedHTML:
         self.local_src = local_src
         self.cdn_src = cdn_src
 
-    def _repr_html_(self, include_mime=True) -> Union[Tuple[str, Dict], str]:
+    def _repr_html_(self) -> Tuple[str, Dict]:
         """Jupyter/Colab HTML Representation
 
         When Jupyter sees this method, it renders the HTML.
-
-        Args:
-            include_mime: Whether or not to include the mime content type. This is an undocumented
-            IPython feature.
 
         Returns:
             HTML for Jupyter/Colab
@@ -63,14 +59,13 @@ class RenderedHTML:
             src = self.cdn_src
 
         # Return html
-        if include_mime:
-            mime = {"Content-Type": "text/html"}
-            return src, mime
-        return src
+        mime = {"Content-Type": "text/html"}
+        return src, mime
 
     def __html__(self) -> str:
         """Used by some tooling as an alternative to _repr_html_"""
-        return self._repr_html_(include_mime=False)
+        # Just return the source code (not the MIME data), as some tools may not support this.
+        return self._repr_html_()[0]
 
     def show_code(self) -> str:
         """Show the code as HTML source code
