@@ -3,7 +3,6 @@ import shutil
 import subprocess
 import os
 from pathlib import Path
-from typing import Dict, Tuple, Union
 from urllib import request
 from uuid import uuid4
 
@@ -43,29 +42,28 @@ class RenderedHTML:
         self.local_src = local_src
         self.cdn_src = cdn_src
 
-    def _repr_html_(self) -> Tuple[str, Dict]:
+    def _repr_html_(self) -> str:
         """Jupyter/Colab HTML Representation
 
         When Jupyter sees this method, it renders the HTML.
 
         Returns:
-            HTML for Jupyter/Colab
+            str: HTML for Jupyter/Colab
         """
-        # Use local source if we're in dev mode, or offline. Otherwise use the CDN.
-        src: str
-        if is_in_dev_mode() or not internet_on():
-            src = self.local_src
-        else:
-            src = self.cdn_src
+        # Use local source if we're in dev mode
+        if is_in_dev_mode():
+            return self.local_src
 
-        # Return html
-        mime = {"Content-Type": "text/html"}
-        return src, mime
+        # Use local source if we're offline
+        if not internet_on():
+            return self.local_src
+
+        # Otherwise use the CDN
+        return self.cdn_src
 
     def __html__(self) -> str:
         """Used by some tooling as an alternative to _repr_html_"""
-        # Just return the source code (not the MIME data), as some tools may not support this.
-        return self._repr_html_()[0]
+        return self._repr_html_()
 
     def show_code(self) -> str:
         """Show the code as HTML source code
