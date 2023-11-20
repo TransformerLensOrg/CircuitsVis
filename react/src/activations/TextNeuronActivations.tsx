@@ -2,6 +2,7 @@ import { Rank, tensor, Tensor1D, Tensor3D } from "@tensorflow/tfjs";
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col } from "react-grid-system";
 import { SampleItems } from "../shared/SampleItems";
+import { RangeSelector } from "../shared/RangeSelector";
 import { NumberSelector } from "../shared/NumberSelector";
 import { minMaxInNestedArray } from "../utils/arrayOps";
 
@@ -131,6 +132,23 @@ export function TextNeuronActivations({
                 />
               </Col>
             </Row>
+            {/* Only show the sample selector if there is more than one sample */}
+            {numberOfSamples > 1 && (
+              <Row style={selectRowStyle}>
+                <Col>
+                  <label htmlFor="sample-selector" style={{ marginRight: 15 }}>
+                    Samples:
+                  </label>
+                  <RangeSelector
+                    id="sample-selector"
+                    largestNumber={numberOfSamples - 1}
+                    currentRangeArr={sampleNumbers}
+                    setCurrentValue={setSampleNumbers}
+                    numValsInRange={samplesPerPage}
+                  />
+                </Col>
+              </Row>
+            )}
           </Col>
           <Col>
             {/* Only show the sample per page selector if there is more than one sample */}
