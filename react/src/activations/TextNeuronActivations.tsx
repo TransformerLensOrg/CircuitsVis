@@ -2,7 +2,6 @@ import { Rank, tensor, Tensor1D, Tensor3D } from "@tensorflow/tfjs";
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col } from "react-grid-system";
 import { SampleItems } from "../shared/SampleItems";
-import { RangeSelector } from "../shared/RangeSelector";
 import { NumberSelector } from "../shared/NumberSelector";
 import { minMaxInNestedArray } from "../utils/arrayOps";
 
