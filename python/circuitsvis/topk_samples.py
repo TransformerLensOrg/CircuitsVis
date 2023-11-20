@@ -1,16 +1,13 @@
 """Activations visualizations"""
+import torch
 from typing import List, Optional, Union
-from jaxtyping import Float
-from torch import Tensor
 
 from circuitsvis.utils.render import RenderedHTML, render
 
 
 def topk_samples(
     tokens: List[List[List[List[str]]]],
-    activations: Union[
-        List[List[List[List[float]]]], Float[Tensor, "layer neuron sample token"]
-    ],
+    activations: Union[List[List[List[List[float]]]], torch.Tensor],
     zeroth_dimension_name: Optional[str] = "Layer",
     first_dimension_name: Optional[str] = "Neuron",
     zeroth_dimension_labels: Optional[List[str]] = None,
