@@ -72,7 +72,9 @@ export function TextNeuronActivations({
     ...Array(samplesPerPage).keys()
   ]);
   const [layerNumber, setLayerNumber] = useState<number>(firstDimensionDefault);
-  const [neuronNumber, setNeuronNumber] = useState<number>(secondDimensionDefault);
+  const [neuronNumber, setNeuronNumber] = useState<number>(
+    secondDimensionDefault
+  );
 
   useEffect(() => {
     // When the user changes the samplesPerPage, update the sampleNumbers
@@ -217,8 +219,7 @@ export interface TextNeuronActivationsProps {
    */
   secondDimensionDefault?: number;
 
-
-    /**
+  /**
    * Whether to show the selector dropdowns
    */
   showSelectors?: boolean;
