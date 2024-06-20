@@ -119,3 +119,16 @@ released to the latest production version of this library.
 
 When a new GitHub release is created, the codebase will be automatically built
 and deployed to [PyPI](https://pypi.org/project/circuitsvis/).
+
+### Citation
+
+Please cite this library as:
+
+```BibTeX
+@misc{cooney2023circuitsvis,
+    title = {CircuitsVis},
+    author = {Alan Cooney},
+    year = {2023},
+    howpublished = {\url{https://github.com/TransformerLensOrg/CircuitsVis}},
+}
+```
