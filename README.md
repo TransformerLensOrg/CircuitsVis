@@ -7,7 +7,7 @@
 Mechanistic Interpretability visualizations, that work both in both Python (e.g. with
 [Jupyter Lab](https://jupyter.org/)) and JavaScript (e.g. [React](https://reactjs.org/) or plain HTML).
 
-View them all at https://alan-cooney.github.io/CircuitsVis
+View them all at [https://transformerlensorg.github.io/CircuitsVis](https://transformerlensorg.github.io/CircuitsVis)
 
 ## Use
 
@@ -28,7 +28,7 @@ yarn add circuitsvis
 ### Add visualizations
 
 You can use any of the components from the [demo
-page](https://alan-cooney.github.io/CircuitsVis). These show the source code for
+page](https://transformerlensorg.github.io/CircuitsVis). These show the source code for
 use with React, and for Python you can instead import the function with the same
 name.
 
