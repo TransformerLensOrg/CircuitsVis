@@ -127,7 +127,7 @@ Please cite this library as:
 ```BibTeX
 @misc{cooney2023circuitsvis,
     title = {CircuitsVis},
-    author = {Alan Cooney},
+    author = {Alan Cooney and Neel Nanda},
     year = {2023},
     howpublished = {\url{https://github.com/TransformerLensOrg/CircuitsVis}},
 }
