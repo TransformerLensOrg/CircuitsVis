@@ -46,6 +46,11 @@ def text_neuron_activations(
             f"activations must be of type np.ndarray, torch.Tensor, or list, not {type(activations)}"
         )
 
+    if isinstance(tokens, (Int)):
+        raise TypeError(
+            f"tokens should be list of tokens as strings"
+        )
+
     return render(
         "TextNeuronActivations",
         tokens=tokens,
