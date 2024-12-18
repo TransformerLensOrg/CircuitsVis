@@ -177,7 +177,7 @@ export function AttentionPattern({
             // parent element to have position: 'relative' and no sibling elements.
             // There were previously issues that only occured at particular display
             // sizes and zoom levels. See:
-            // https://github.com/alan-cooney/CircuitsVis/pull/63
+            // https://github.com/TransformerLensOrg/CircuitsVis/pull/63
             // https://www.chartjs.org/docs/latest/configuration/responsive.html#important-note
             // https://stackoverflow.com/a/48770978/7086623
             position: "relative",

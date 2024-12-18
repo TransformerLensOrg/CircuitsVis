@@ -8,7 +8,7 @@ on:
 jobs:
   checks:
     name: Run checks workflow
-    uses: alan-cooney/CircuitsVis/.github/workflows/checks.yml@main
+    uses: TransformerLensOrg/CircuitsVis/.github/workflows/checks.yml@main
 
   semver-parser:
     name: Parse the semantic version from the release

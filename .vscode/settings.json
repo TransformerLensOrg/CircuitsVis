@@ -9,8 +9,8 @@
     "ignorePath": "../.gitignore"
   },
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true,
-    "source.organizeImports": true
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "explicit"
   },
   "eslint.validate": [
     "javascript",
@@ -23,7 +23,7 @@
     "--generated-members=numpy.* ,torch.* ,cv2.* , cv.*"
   ],
   "python.testing.pytestArgs": [
-      "python/circuitsvis",
+    "python/circuitsvis",
   ],
   "python.testing.pytestEnabled": true,
   "rewrap.wrappingColumn": 100,

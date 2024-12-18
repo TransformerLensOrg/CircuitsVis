@@ -3,7 +3,7 @@
 Mechanistic Interpretability visualizations in React.
 
 View all available components in Storybook at
-https://alan-cooney.github.io/CircuitsVis .
+https://TransformerLensOrg.github.io/CircuitsVis .
 
 ## Use
 
@@ -73,5 +73,5 @@ You can use this package directly from a CDN (e.g. unpkg) to render visualizatio
 
 ### Within a Python project
 
-See https://github.com/alan-cooney/CircuitsVis for details of how to use this
+See https://github.com/TransformerLensOrg/CircuitsVis for details of how to use this
 library within a Python project.
