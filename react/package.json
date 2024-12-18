@@ -30,7 +30,7 @@
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
   },
-  "repository": "https://github.com/alan-cooney/CircuitsVis",
+  "repository": "https://github.com/TransformerLensOrg/CircuitsVis",
   "author": "Alan Cooney",
   "license": "MIT",
   "dependencies": {
