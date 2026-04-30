@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
 import { Col, Container, Row } from "react-grid-system";
 import { AttentionPattern } from "./AttentionPattern";
+import { colorAttentionTensors } from "./AttentionPatterns";
+import { Tokens, TokensView } from "./components/AttentionTokens";
 import { useHoverLock, UseHoverLockState } from "./components/useHoverLock";
 
 /**
@@ -35,6 +37,7 @@ export function AttentionHeadsSelector({
   onMouseLeave,
   positiveColor,
   maskUpperTri,
+  matchColor,
   tokens
 }: AttentionHeadsProps & {
   attentionHeadNames: string[];
@@ -88,8 +91,12 @@ export function AttentionHeadsSelector({
                   showAxisLabels={false}
                   maxValue={maxValue}
                   minValue={minValue}
-                  negativeColor={negativeColor}
-                  positiveColor={positiveColor}
+                  negativeColor={matchColor ? undefined : negativeColor}
+                  positiveColor={
+                    matchColor
+                      ? attentionHeadColor(idx, attention.length)
+                      : positiveColor
+                  }
                   maskUpperTri={maskUpperTri}
                 />
               </div>
@@ -115,13 +122,40 @@ export function AttentionHeads({
   negativeColor,
   positiveColor,
   maskUpperTri = true,
+  showTokens = true,
+  matchColor = false,
   tokens
 }: AttentionHeadsProps) {
   // Attention head focussed state
   const { focused, onClick, onMouseEnter, onMouseLeave } = useHoverLock(0);
 
+  // State for the token view type
+  const [tokensView, setTokensView] = useState<TokensView>(
+    TokensView.DESTINATION_TO_SOURCE
+  );
+
+  // State for which token is focussed
+  const {
+    focused: focussedToken,
+    onClick: onClickToken,
+    onMouseEnter: onMouseEnterToken,
+    onMouseLeave: onMouseLeaveToken
+  } = useHoverLock();
+
   const headNames =
     attentionHeadNames || attention.map((_, idx) => `Head ${idx}`);
+
+  // Color the attention values (by head) for interactive tokens
+  const coloredAttention = useMemo(() => {
+    if (!showTokens || !attention || attention.length === 0) return null;
+    const numHeads = attention.length;
+    const numDestTokens = attention[0]?.length || 0;
+    const numSrcTokens = attention[0]?.[0]?.length || 0;
+
+    if (numDestTokens === 0 || numSrcTokens === 0 || numHeads === 0)
+      return null;
+    return colorAttentionTensors(attention);
+  }, [attention, showTokens]);
 
   return (
     <Container>
@@ -141,6 +175,7 @@ export function AttentionHeads({
         onMouseLeave={onMouseLeave}
         positiveColor={positiveColor}
         maskUpperTri={maskUpperTri}
+        matchColor={matchColor}
         tokens={tokens}
       />
 
@@ -166,8 +201,12 @@ export function AttentionHeads({
               attention={attention[focused]}
               maxValue={maxValue}
               minValue={minValue}
-              negativeColor={negativeColor}
-              positiveColor={positiveColor}
+              negativeColor={matchColor ? undefined : negativeColor}
+              positiveColor={
+                matchColor
+                  ? attentionHeadColor(focused, attention.length)
+                  : positiveColor
+              }
               zoomed={true}
               maskUpperTri={maskUpperTri}
               tokens={tokens}
@@ -175,6 +214,42 @@ export function AttentionHeads({
           </div>
         </Col>
       </Row>
+
+      {showTokens && coloredAttention && (
+        <Row>
+          <Col xs={12}>
+            <div className="tokens" style={{ marginTop: 20 }}>
+              <h4 style={{ display: "inline-block", marginRight: 15 }}>
+                Tokens
+                <span style={{ fontWeight: "normal" }}> (click to focus)</span>
+              </h4>
+              <select
+                value={tokensView}
+                onChange={(e) => setTokensView(e.target.value as TokensView)}
+              >
+                <option value={TokensView.DESTINATION_TO_SOURCE}>
+                  Source ← Destination
+                </option>
+                <option value={TokensView.SOURCE_TO_DESTINATION}>
+                  Destination ← Source
+                </option>
+              </select>
+              <div style={{ marginTop: 10 }}>
+                <Tokens
+                  coloredAttention={coloredAttention}
+                  focusedHead={focused}
+                  focusedToken={focussedToken}
+                  onClickToken={onClickToken}
+                  onMouseEnterToken={onMouseEnterToken}
+                  onMouseLeaveToken={onMouseLeaveToken}
+                  tokens={tokens}
+                  tokensView={tokensView}
+                />
+              </div>
+            </div>
+          </Col>
+        </Row>
+      )}
 
       <Row></Row>
     </Container>
@@ -261,6 +336,24 @@ export interface AttentionHeadsProps {
    * Show axis labels
    */
   showAxisLabels?: boolean;
+
+  /**
+   * Show interactive tokens
+   *
+   * Whether to show interactive token visualization where hovering over tokens shows attention strength to other tokens.
+   *
+   * @default true
+   */
+  showTokens?: boolean;
+
+  /**
+   * Match colors
+   *
+   * Whether to match colors between attention patterns, token visualization, and head headers for visual consistency.
+   *
+   * @default true
+   */
+  matchColor?: boolean;
 
   /**
    * List of tokens

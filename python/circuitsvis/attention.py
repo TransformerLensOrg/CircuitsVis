@@ -3,6 +3,7 @@ from typing import List, Optional, Union
 
 import numpy as np
 import torch
+
 from circuitsvis.utils.render import RenderedHTML, render
 
 
@@ -15,6 +16,8 @@ def attention_heads(
     negative_color: Optional[str] = None,
     positive_color: Optional[str] = None,
     mask_upper_tri: Optional[bool] = None,
+    show_tokens: Optional[bool] = None,
+    match_color: Optional[bool] = None,
 ) -> RenderedHTML:
     """Attention Heads
 
@@ -24,8 +27,8 @@ def attention_heads(
     is then shown in full size.
 
     Args:
-        attention: Attention head activations of the shape [dest_tokens x
-        src_tokens]
+        attention: Attention head activations of the shape [heads x dest_tokens x src_tokens]
+        or [dest_tokens x src_tokens] (will be expanded to single head)
         tokens: List of tokens (e.g. `["A", "person"]`). Must be the same length
         as the list of values.
         max_value: Maximum value. Used to determine how dark the token color is
@@ -41,12 +44,43 @@ def attention_heads(
         mask_upper_tri: Whether or not to mask the upper triangular portion of
         the attention patterns. Should be true for causal attention, false for
         bidirectional attention.
+        show_tokens: Whether to show interactive token visualization where
+        hovering over tokens shows attention strength to other tokens.
+        match_color: Whether to match colors between attention patterns, token
+        visualization, and head headers for visual consistency.
 
     Returns:
         Html: Attention pattern visualization
     """
+
+    # Convert attention to numpy array if it's not already
+    attention_np: np.ndarray
+    if isinstance(attention, torch.Tensor):
+        attention_np = attention.detach().cpu().numpy()
+    elif isinstance(attention, np.ndarray):
+        attention_np = attention
+    else:
+        attention_np = np.array(attention)
+
+    # Ensure attention is 3D (num_heads, dest_len, src_len)
+    if attention_np.ndim == 2:
+        attention_np = attention_np[np.newaxis, :, :]
+    elif attention_np.ndim != 3:
+        raise ValueError(
+            f"Attention tensor must be 2D or 3D, got {attention_np.ndim}D tensor."
+        )
+
+    num_heads, dest_len, src_len = attention_np.shape
+
+    # Validate token count matches attention dimensions
+    if len(tokens) != dest_len or len(tokens) != src_len:
+        raise ValueError(
+            f"Token count ({len(tokens)}) doesn't match attention dimensions "
+            f"(dest: {dest_len}, src: {src_len}). For causal attention, these should all be equal."
+        )
+
     kwargs = {
-        "attention": attention,
+        "attention": attention_np,
         "attentionHeadNames": attention_head_names,
         "maxValue": max_value,
         "minValue": min_value,
@@ -54,6 +88,8 @@ def attention_heads(
         "positiveColor": positive_color,
         "tokens": tokens,
         "maskUpperTri": mask_upper_tri,
+        "showTokens": show_tokens,
+        "matchColor": match_color,
     }
 
     return render(
