@@ -16,6 +16,14 @@ export function getTokenBackgroundColor(
   negativeColor: AnyColor = "red",
   positiveColor: AnyColor = "blue"
 ): Colord {
+  // Zero is the neutral point and must stay white even when an observed
+  // range has no positive values. Dividing 0 by a zero maximum produces NaN,
+  // which colord represents as transparent black and makes token text
+  // unreadable on a white page.
+  if (value === 0) {
+    return colord("white");
+  }
+
   // original_color.mix("white", x) interpolates between original_color and
   // white, with x being the ratio of white. So x=0 is original_color, x=1 is
   // white. Clamp at 0 to avoid negative values.
