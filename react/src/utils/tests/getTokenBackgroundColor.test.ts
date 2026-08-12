@@ -28,4 +28,10 @@ describe("getBackgroundColor", () => {
     const res = getTokenBackgroundColor(0, 0, 1);
     expect(res.brightness()).toBeCloseTo(1);
   });
+
+  it("keeps zero white when the observed maximum is zero", () => {
+    const res = getTokenBackgroundColor(0, 0, 0);
+    expect(res.toRgbString()).toBe("rgb(255, 255, 255)");
+    expect(res.brightness()).toBeCloseTo(1);
+  });
 });
